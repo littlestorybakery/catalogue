@@ -64,7 +64,8 @@
       hidden: !!p.hidden,
       quote_only: !!p.quote_only,
       addon: !!p.addon,
-      sort: Number(p.sort) || 0
+      sort: Number(p.sort) || 0,
+      updated_at: p.updated_at || undefined   // 用来检查有没有被另一部装置改过
     };
   }
 

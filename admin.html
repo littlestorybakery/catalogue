@@ -587,8 +587,10 @@ if(DEMO){
 
 /* =================== DATA =================== */
 let CATS = [], PRODS = [], SETTINGS = {}, filterCat = '', query = '';
-async function loadAll(){
-  busy(true,'载入中…');
+let lastLoad = 0, settingsDirty = false, catsDirty = false;
+// silent = 背景更新（不显示"载入中"，也不会盖掉正在打字的内容）
+async function loadAll(silent){
+  if(!silent) busy(true,'载入中…');
   try{
     const [c,p,s] = await Promise.all([
       sb.from('categories').select('*').order('sort'),
@@ -597,10 +599,36 @@ async function loadAll(){
     ]);
     if(c.error||p.error||s.error) throw (c.error||p.error||s.error);
     CATS = c.data; PRODS = p.data.map(normalizeProduct); SETTINGS = Object.assign(defaultSettings(), (s.data&&s.data.data)||{});
-    renderProducts(); renderCats(); fillSettings(); loadMeter();
-  }catch(e){ toast(friendly(e), true); }
-  busy(false);
+    lastLoad = Date.now();
+    renderProducts();
+    if(!(silent && catsDirty)){ renderCats(); catsDirty = false; }
+    if(!(silent && settingsDirty)){ fillSettings(); settingsDirty = false; }
+    if(!silent) loadMeter();
+  }catch(e){ if(!silent) toast(friendly(e), true); }
+  if(!silent) busy(false);
 }
+
+// 拿某个产品在云端的最新版本（null = 已经被删除）
+async function fetchProduct(id){
+  const { data, error } = await sb.from('products').select('*').eq('id', id).maybeSingle();
+  if(error) throw error;
+  return data ? normalizeProduct(data) : null;
+}
+function replaceLocal(fresh){
+  const i = PRODS.findIndex(x=>x.id===fresh.id);
+  if(i>=0) PRODS[i] = fresh; else PRODS.push(fresh);
+}
+
+// 切换回后台（例如从手机换到电脑、或回到这个分页）时，自动拿最新资料
+function autoRefresh(){
+  if(document.hidden || $('#vApp').hidden || !$('#busy').hidden) return;
+  if($('#editor').classList.contains('open')) return;
+  if(Date.now() - lastLoad < 15000) return;
+  loadAll(true);
+}
+document.addEventListener('visibilitychange', autoRefresh);
+window.addEventListener('focus', autoRefresh);
+setInterval(autoRefresh, 60000);
 
 async function loadMeter(){
   try{
@@ -661,7 +689,17 @@ $('#catChips').addEventListener('click', e=>{ const b=e.target.closest('[data-fc
 $('#plist').addEventListener('click', async e=>{
   const row = e.target.closest('.prow'); if(!row) return;
   const p = PRODS.find(x=>x.id===row.dataset.id);
-  if(e.target.closest('[data-edit]')) return openEditor(p);
+  if(e.target.closest('[data-edit]')){
+    // 打开前先拿云端最新版本，避免用到旧资料
+    busy(true,'载入中…');
+    try{
+      const fresh = await fetchProduct(p.id);
+      busy(false);
+      if(!fresh){ toast('这个产品已经在另一部装置被删除了', true); loadAll(true); return; }
+      replaceLocal(fresh); renderProducts(); openEditor(fresh);
+    }catch(err){ busy(false); toast(friendly(err), true); }
+    return;
+  }
   const mv = e.target.closest('[data-mv]');
   if(mv){
     const list = PRODS.filter(x=>x.category_slug===p.category_slug).sort((a,b)=>a.sort-b.sort);
@@ -676,14 +714,18 @@ $('#plist').addEventListener('change', async e=>{
   if(!e.target.matches('[data-sold]')) return;
   const p = PRODS.find(x=>x.id===e.target.closest('.prow').dataset.id);
   const v = e.target.checked; p.sold_out = v;
-  const { error } = await sb.from('products').update({ sold_out:v, updated_at:new Date().toISOString() }).eq('id', p.id);
+  const { data, error } = await sb.from('products').update({ sold_out:v, updated_at:new Date().toISOString() }).eq('id', p.id).select('updated_at');
+  if(!error && data && data[0]) p.updated_at = data[0].updated_at;
+  if(!error && data && data.length===0){ toast('这个产品已经在另一部装置被删除了', true); loadAll(true); return; }
   if(error){ p.sold_out=!v; e.target.checked=!v; toast(friendly(error), true); }
   else toast(v ? `${p.name_zh||p.name_en} 已设为售罄` : `${p.name_zh||p.name_en} 恢复供应`);
 });
 
 /* =================== EDITOR =================== */
 let editing = null;
-const prodPicker = imagePicker($('#prodImgBox'), { maxSide:1200, thumb:400, original:()=>editing && editing.image_url, originalThumb:()=>editing && editing.thumb_url });
+const prodPicker = imagePicker($('#prodImgBox'), { maxSide:1200, thumb:400,
+  original:()=>editing && (editing.image_url_cloud ?? editing.image_url),
+  originalThumb:()=>editing && (editing.thumb_url_cloud ?? editing.thumb_url) });
 function optRow(o){
   return `<div class="optrow">
     <div class="full"><label>规格（中文）</label><input data-k="label_zh" value="${esc(o.label_zh)}" placeholder="可留空，例如 盒装 (2片)"></div>
@@ -747,6 +789,29 @@ $('#eSave').addEventListener('click', async ()=>{
   if(!$('#eQuote').checked && options.some(o=>!(o.price>0))){ toast('价钱要大过 0（定制品可以打开"只询价"）', true); return; }
   busy(true, '保存中…'); $('#eSave').disabled = true;
   try{
+    // 保存前检查：这个产品有没有在另一部装置被改过 / 删除
+    if(editing.id && editing.updated_at){
+      const fresh = await fetchProduct(editing.id);
+      if(!fresh){
+        busy(false); $('#eSave').disabled = false;
+        alert('这个产品已经在另一部装置被删除了，所以这次的修改没有保存。');
+        closeEditor(true); await loadAll(); return;
+      }
+      if(fresh.updated_at !== editing.updated_at){
+        busy(false);
+        const overwrite = confirm('⚠️ 这个产品刚刚在另一部装置被修改过。\n\n按「确定」：用你现在画面上的内容覆盖\n按「取消」：放弃这次修改，载入最新版本');
+        if(!overwrite){
+          $('#eSave').disabled = false;
+          replaceLocal(fresh); renderProducts(); prodPicker.set(''); openEditor(fresh);
+          toast('已载入最新版本');
+          return;
+        }
+        busy(true, '保存中…');
+        // 用最新的照片资料，换照片时才会删掉正确的旧照片
+        editing.updated_at = fresh.updated_at;
+        editing.image_url_cloud = fresh.image_url; editing.thumb_url_cloud = fresh.thumb_url;
+      }
+    }
     const img = await prodPicker.commit('products');
     const image_url = img.url, thumb_url = img.thumb;
     const row = {
@@ -759,7 +824,13 @@ $('#eSave').addEventListener('click', async ()=>{
       updated_at: new Date().toISOString()
     };
     if(editing.id){
-      const { error } = await sb.from('products').update(row).eq('id', editing.id); if(error) throw error;
+      let q = sb.from('products').update(row).eq('id', editing.id);
+      if(editing.updated_at) q = q.eq('updated_at', editing.updated_at);   // 最后一道保险：版本不对就不会写入
+      const { data, error } = await q.select('id'); if(error) throw error;
+      if(data && data.length===0){
+        alert('⚠️ 保存的同时，另一部装置也改了这个产品，所以这次没有写入。\n已经载入最新版本，请再改一次。');
+        closeEditor(true); await loadAll(); busy(false); $('#eSave').disabled = false; return;
+      }
     } else {
       row.sort = PRODS.filter(p=>p.category_slug===row.category_slug).reduce((m,p)=>Math.max(m,p.sort),0) + 1;
       const { error } = await sb.from('products').insert(row); if(error) throw error;
@@ -773,9 +844,11 @@ $('#eDel').addEventListener('click', async ()=>{
   if(!confirm(`确定删除「${editing.name_zh||editing.name_en}」？删除后不能复原。\n（只是暂时不卖的话，可以用"隐藏"或"售罄"）`)) return;
   busy(true,'删除中…');
   try{
+    const fresh = await fetchProduct(editing.id);
     const { error } = await sb.from('products').delete().eq('id', editing.id); if(error) throw error;
-    if(editing.image_url) await removeImage(editing.image_url);
-    if(editing.thumb_url) await removeImage(editing.thumb_url);
+    const src = fresh || editing;
+    if(src.image_url) await removeImage(src.image_url);
+    if(src.thumb_url) await removeImage(src.thumb_url);
     closeEditor(true); toast('已删除'); await loadAll();
   }catch(e){ toast(friendly(e), true); }
   busy(false);
@@ -800,6 +873,7 @@ function renderCats(){
       <div style="display:flex;gap:8px"><button class="btn btn-dark btn-sm" data-csave style="flex:1">保存</button><button class="btn btn-red btn-sm" data-cdel>删除</button></div>
     </div>`).join('') || '<div class="empty card">还没有分类</div>';
 }
+$('#clist').addEventListener('input', ()=>{ catsDirty = true; });
 $('#clist').addEventListener('click', async e=>{
   const row = e.target.closest('.catrow'); if(!row) return;
   const c = CATS.find(x=>x.slug===row.dataset.slug);
@@ -809,7 +883,7 @@ $('#clist').addEventListener('click', async e=>{
     const upd = { name_zh: row.querySelector('[data-ck=name_zh]').value.trim(), name_en: row.querySelector('[data-ck=name_en]').value.trim(), icon:c.icon };
     const { error } = await sb.from('categories').update(upd).eq('slug', c.slug);
     if(error) return toast(friendly(error), true);
-    Object.assign(c, upd); renderCats(); renderProducts(); toast('分类已保存 ✓'); return;
+    Object.assign(c, upd); catsDirty = false; renderCats(); renderProducts(); toast('分类已保存 ✓'); return;
   }
   if(e.target.closest('[data-cdel]')){
     const n = PRODS.filter(p=>p.category_slug===c.slug).length;
@@ -849,8 +923,20 @@ function fillSettings(){
   if(!aboutPicker) aboutPicker = imagePicker($('#aboutImgBox'), { maxSide:1400, original:()=>SETTINGS.about_image });
   heroPicker.set(SETTINGS.hero_image); aboutPicker.set(SETTINGS.about_image);
 }
+$('#setForm').addEventListener('input', ()=>{ settingsDirty = true; });
 $('#setForm').addEventListener('submit', async e=>{
   e.preventDefault(); const f = e.target;
+  // 保存前检查：设定有没有在另一部装置被改过
+  try{
+    const cur = await sb.from('settings').select('data').eq('id',1).maybeSingle();
+    if(cur.error) throw cur.error;
+    const cloud = Object.assign(defaultSettings(), (cur.data&&cur.data.data)||{});
+    if(JSON.stringify(cloud) !== JSON.stringify(SETTINGS)){
+      const overwrite = confirm('⚠️ 店铺设定刚刚在另一部装置被修改过。\n\n按「确定」：用你现在画面上的内容覆盖\n按「取消」：放弃这次修改，载入最新设定');
+      if(!overwrite){ SETTINGS = cloud; settingsDirty = false; fillSettings(); toast('已载入最新设定'); return; }
+      SETTINGS = cloud;
+    }
+  }catch(err){ toast(friendly(err), true); return; }
   const wa = f.elements.whatsapp.value.replace(/\D/g,'');
   if(wa.length < 9){ toast('WhatsApp 号码好像不对', true); return; }
   busy(true,'保存中…');
@@ -865,7 +951,7 @@ $('#setForm').addEventListener('submit', async e=>{
     data.about_image = (await aboutPicker.commit('site')).url;
     const { error } = await sb.from('settings').upsert({ id:1, data });
     if(error) throw error;
-    SETTINGS = data; toast('设定已保存 ✓'); loadMeter();
+    SETTINGS = data; settingsDirty = false; toast('设定已保存 ✓'); loadMeter();
   }catch(err){ toast(friendly(err), true); }
   busy(false);
 });
@@ -893,10 +979,14 @@ $('#seedBtn').addEventListener('click', async ()=>{
   if(!confirm('导入初始菜单（分类 + 产品 + 店铺设定）？')) return;
   busy(true,'导入中…');
   try{
+    // 另一部装置可能已经导入过了，避免重复
+    const chk = await sb.from('products').select('id').limit(1);
+    if(chk.error) throw chk.error;
+    if(chk.data && chk.data.length){ toast('资料库已经有菜单了（可能是另一部装置导入的），不会重复导入'); await loadAll(); busy(false); return; }
     const s = window.LSB_SEED;
     let r = await sb.from('categories').upsert(s.categories.map(c=>({ slug:c.slug, name_zh:c.name_zh, name_en:c.name_en, icon:c.icon, sort:c.sort })));
     if(r.error) throw r.error;
-    r = await sb.from('products').insert(s.products.map(p=>{ const n = normalizeProduct(p,0); delete n.id; return n; }));
+    r = await sb.from('products').insert(s.products.map(p=>{ const n = normalizeProduct(p,0); delete n.id; delete n.updated_at; return n; }));
     if(r.error) throw r.error;
     r = await sb.from('settings').upsert({ id:1, data: Object.assign({}, s.settings, SETTINGS) });
     if(r.error) throw r.error;

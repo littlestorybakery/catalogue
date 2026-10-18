@@ -62,7 +62,7 @@
             data = JSON.parse(JSON.stringify(data));
             if (single) data = data[0] || null;
           } else {
-            if (op === "update") rows.filter(match).forEach(r => Object.assign(r, payload));
+            if (op === "update") { const hit = rows.filter(match); hit.forEach(r => Object.assign(r, payload)); data = JSON.parse(JSON.stringify(hit)); }
             if (op === "insert") [].concat(payload).forEach(r => rows.push(Object.assign({ id: "demo-" + (++n) }, r)));
             if (op === "upsert") [].concat(payload).forEach(r => {
               const key = r.id !== undefined ? "id" : "slug";
