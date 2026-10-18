@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>后台管理 · Little Story Bakery</title>
+<meta name="theme-color" content="#4C3320">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>🥐</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5EDE2; --paper:#FBF6EE; --card:#FFFCF7; --line:#E7D9C6; --line-soft:#EFE5D7;
+  --brown:#6E4B30; --brown-d:#4C3320; --text:#4A3626; --muted:#8E7762; --accent:#C49A6C;
+  --ok:#3F7A4F; --ok-bg:#E6F1E4; --warn:#B4643A; --warn-bg:#FBE9DD; --red:#B33A2E;
+  --shadow:0 6px 24px rgba(92,62,36,.08); --shadow-lg:0 18px 50px rgba(76,51,32,.2);
+  --sans:'Noto Sans SC',system-ui,-apple-system,sans-serif; --script:'Dancing Script',cursive;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+input,textarea,select{font:inherit;color:inherit}
+img{display:block;max-width:100%}
+a{color:var(--brown)}
+.icon{width:18px;height:18px;display:inline-block;flex:none}
+.icon svg{width:100%;height:100%;display:block}
+.wrap{max-width:900px;margin:0 auto;padding:0 14px}
+[hidden]{display:none!important}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;padding:10px 18px;font-weight:500;font-size:14px;transition:background .15s,transform .1s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn-dark{background:var(--brown);color:#FFF6EA}
+.btn-dark:hover{background:var(--brown-d)}
+.btn-line{border:1.5px solid var(--line);background:var(--card);color:var(--brown-d)}
+.btn-line:hover{border-color:var(--brown)}
+.btn-red{color:var(--red);border:1.5px solid #E9C6C0;background:var(--card)}
+.btn-sm{padding:7px 12px;font-size:13px}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:30;background:var(--brown-d);color:#FFF3E2}
+.bar .wrap{display:flex;align-items:center;gap:10px;height:56px}
+.bar b{font-family:var(--script);font-size:22px;margin-right:auto;line-height:1}
+.bar b small{font-family:var(--sans);font-size:11px;opacity:.7;margin-left:6px}
+.bar a,.bar button{color:#F1DCC0;font-size:13px;text-decoration:none;padding:6px 8px;border-radius:8px;white-space:nowrap}
+.bar b{white-space:nowrap}
+@media (max-width:420px){.bar .wrap{gap:2px}.bar a,.bar button{padding:6px 5px;font-size:12px}.bar b{font-size:19px}}
+.bar a:hover,.bar button:hover{background:rgba(255,255,255,.08)}
+.tabs{position:sticky;top:56px;z-index:29;background:var(--paper);border-bottom:1px solid var(--line-soft)}
+.tabs .wrap{display:flex;gap:4px}
+.tabs button{flex:1;padding:12px 6px;font-size:14px;color:var(--muted);border-bottom:2.5px solid transparent}
+.tabs button.on{color:var(--brown-d);font-weight:700;border-color:var(--brown)}
+
+main{padding:16px 0 120px}
+.card{background:var(--card);border:1px solid var(--line-soft);border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(92,62,36,.04)}
+h2{font-size:18px;margin:0 0 4px;color:var(--brown-d)}
+.muted{color:var(--muted);font-size:13px}
+
+/* login */
+.login{max-width:380px;margin:9vh auto 0;padding:0 16px}
+.login .card{padding:24px}
+.login h1{font-family:var(--script);font-size:34px;text-align:center;margin:0;color:var(--brown-d)}
+.login p.c{text-align:center;margin:2px 0 20px}
+
+.field{display:block;margin-top:12px}
+.field>span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.field input,.field textarea,.field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:15px;outline:none}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--brown);box-shadow:0 0 0 3px rgba(110,75,48,.12)}
+.field textarea{resize:vertical;min-height:64px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.msg{margin-top:12px;font-size:13px;padding:9px 12px;border-radius:10px}
+.msg.err{background:var(--warn-bg);color:var(--red)}
+.msg.ok{background:var(--ok-bg);color:var(--ok)}
+
+/* product tools */
+.tools{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.tools input{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:14px;outline:none;min-width:0}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:12.5px;white-space:nowrap}
+.chips button.on{background:var(--brown);color:#FFF6EA;border-color:var(--brown)}
+
+.meter{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-bottom:12px}
+.meter .track{flex:1;height:6px;background:var(--line-soft);border-radius:3px;overflow:hidden}
+.meter .fill{height:100%;background:var(--accent);border-radius:3px;width:0}
+
+.group-h{display:flex;align-items:baseline;gap:8px;margin:18px 2px 8px;font-weight:700;color:var(--brown-d)}
+.group-h span{font-weight:400;font-size:12px;color:var(--muted)}
+.plist{display:grid;gap:8px}
+.prow{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line-soft);border-radius:14px;padding:8px}
+.prow.is-hidden{opacity:.55}
+.prow .th{width:58px;height:58px;border-radius:10px;overflow:hidden;background:var(--paper);flex:none;display:grid;place-items:center;color:var(--accent)}
+.prow .th img{width:100%;height:100%;object-fit:cover}
+.prow .th svg{width:60%;height:60%}
+.prow .mid{flex:1;min-width:0;text-align:left;line-height:1.35}
+.prow .mid b{display:block;font-size:14px;color:var(--brown-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow .mid small{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.tag{font-size:10.5px;padding:1px 7px;border-radius:999px;background:var(--paper);color:var(--muted);border:1px solid var(--line-soft)}
+.tag.so{background:var(--warn-bg);color:var(--red);border-color:#F1CDBE}
+.tag.hot{background:#F3E6D4;color:var(--brown)}
+.prow .side{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.sw{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none}
+.sw input{display:none}
+.sw i{width:34px;height:20px;border-radius:10px;background:var(--line);position:relative;transition:background .2s;flex:none}
+.sw i::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
+.sw input:checked+i{background:var(--warn)}
+.sw input:checked+i::after{transform:translateX(14px)}
+.sw.green input:checked+i{background:var(--ok)}
+.mv{display:flex;flex-direction:column}
+.mv button{width:26px;height:22px;display:grid;place-items:center;color:var(--muted);border-radius:6px}
+.mv button:hover{background:var(--paper);color:var(--brown-d)}
+.mv button:disabled{opacity:.25}
+.mv svg{width:14px;height:14px}
+.empty{text-align:center;padding:30px 16px;color:var(--muted)}
+.fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:25;box-shadow:var(--shadow-lg);padding:14px 22px;font-size:15px}
+
+/* editor modal */
+.overlay{position:fixed;inset:0;background:rgba(40,26,16,.45);z-index:50;display:none}
+.overlay.open{display:block}
+.modal{position:fixed;z-index:51;inset:0;background:var(--paper);display:none;flex-direction:column}
+.modal.open{display:flex}
+.modal .mh{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line-soft);background:var(--card)}
+.modal .mh h3{margin:0;font-size:16px;flex:1;color:var(--brown-d)}
+.modal .mb{flex:1;overflow-y:auto;padding:14px 16px 24px;-webkit-overflow-scrolling:touch}
+.modal .mf{display:flex;gap:8px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line-soft);background:var(--card)}
+.modal .mf .btn-dark{flex:1}
+.x{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--paper)}
+
+.imgbox{border:2px dashed var(--line);border-radius:16px;background:var(--card);overflow:hidden;position:relative;transition:border-color .2s,background .2s}
+.imgbox.drag{border-color:var(--brown);background:#FFF5E8}
+.imgbox .pv{aspect-ratio:4/3;display:grid;place-items:center;color:var(--muted);background:var(--paper);text-align:center;font-size:13px;padding:10px}
+.imgbox .pv img{width:100%;height:100%;object-fit:cover}
+.imgbox.wide .pv{aspect-ratio:16/7}
+.imgbox .pv{max-height:300px;width:100%}
+::placeholder{color:#C9B8A6;opacity:1}
+.imgbox .acts{display:flex;gap:6px;flex-wrap:wrap;padding:10px;border-top:1px solid var(--line-soft)}
+.imgbox .acts .btn{flex:1;min-width:0}
+.paste-zone{margin:0 10px 10px;padding:10px;border:1px dashed var(--line);border-radius:10px;font-size:12.5px;color:var(--muted);text-align:center;outline:none;min-height:40px;caret-color:transparent}
+.paste-zone:focus{border-color:var(--brown);background:#FFF8EE;color:var(--brown-d)}
+.imginfo{font-size:12px;color:var(--ok);padding:0 10px 10px}
+
+.opts{display:grid;gap:8px;margin-top:6px}
+.optrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:10px;position:relative}
+.optrow input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px;outline:none;min-width:0}
+.optrow input:focus{border-color:var(--brown)}
+.optrow label{font-size:11px;color:var(--muted);display:block}
+.optrow .rm{position:absolute;right:6px;top:6px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:var(--red)}
+.optrow .rm svg{width:14px;height:14px}
+.optrow .full{grid-column:1/-1;padding-right:26px}
+.flags{display:grid;gap:10px;margin-top:14px;background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:12px}
+.flags .sw{font-size:14px;color:var(--text);justify-content:space-between;width:100%}
+.flags .sw span small{display:block;color:var(--muted);font-size:11.5px}
+.sec-label{font-size:13px;font-weight:700;color:var(--brown-d);margin:20px 0 4px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+
+/* categories */
+.catrow{display:grid;gap:8px;background:var(--card);border:1px solid var(--line-soft);border-radius:14px;padding:12px;margin-bottom:10px}
+.catrow .top{display:flex;align-items:center;gap:10px}
+.catrow .ic{width:46px;height:46px;border-radius:10px;background:var(--paper);display:grid;place-items:center;color:var(--brown);flex:none;overflow:hidden}
+.catrow .ic svg{width:34px;height:34px}
+.catrow .ic img{width:100%;height:100%;object-fit:cover}
+.catrow .top b{flex:1}
+.icon-pick{display:flex;gap:6px;flex-wrap:wrap}
+.icon-pick button{width:40px;height:40px;border-radius:10px;border:1.5px solid var(--line);display:grid;place-items:center;color:var(--brown);background:#fff}
+.icon-pick button.on{border-color:var(--brown);background:#FFF5E8}
+.icon-pick svg{width:26px;height:26px}
+
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:var(--brown-d);color:#FFF6EA;padding:10px 16px;border-radius:12px;font-size:13.5px;z-index:90;opacity:0;pointer-events:none;transition:all .25s;box-shadow:var(--shadow-lg);max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:var(--red)}
+.busy{position:fixed;inset:0;z-index:95;background:rgba(251,246,238,.6);display:grid;place-items:center;font-size:14px;color:var(--brown-d)}
+
+.setup ol{padding-left:20px;margin:8px 0 0}
+.setup li{margin:6px 0}
+.setup code{background:var(--paper);padding:1px 6px;border-radius:6px;font-size:13px}
+
+@media (min-width:760px){
+  .modal{inset:4vh auto 4vh 50%;width:620px;transform:translateX(-50%);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-lg)}
+  .optrow{grid-template-columns:1.2fr 1.2fr .7fr .6fr}
+  .optrow .full{grid-column:auto;padding-right:0}
+  .optrow{padding-right:36px}
+  .fab{right:max(16px,calc(50vw - 450px + 16px))}
+  .toast{bottom:28px}
+}
+</style>
+</head>
+<body>
+
+<!-- 未设定 Supabase -->
+<div id="vSetup" class="login" hidden>
+  <div class="card setup">
+    <h1>Little Story</h1>
+    <p class="c muted">后台还没连接资料库</p>
+    <p>请先完成 README 里的设定步骤：</p>
+    <ol>
+      <li>建立 Supabase 项目，跑 <code>supabase-setup.sql</code></li>
+      <li>在 <code>config.js</code> 填上 <b>SUPABASE_URL</b> 和 <b>SUPABASE_ANON_KEY</b></li>
+      <li>在 Supabase → Authentication 建立管理员帐号</li>
+    </ol>
+    <div style="margin-top:18px;padding-top:16px;border-top:1px dashed var(--line)">
+      <p style="margin:0 0 10px"><b>想先看看后台长什么样子？</b><br><span class="muted">示范模式可以试用全部功能（加产品、贴照片、售罄…），资料只存在这台装置，网站的示范模式也会跟着更新。</span></p>
+      <button class="btn btn-dark" id="demoBtn" style="width:100%;padding:12px">进入示范模式</button>
+      <p class="muted" style="margin:10px 0 0;text-align:center"><a href="index.html" target="_blank" rel="noopener">查看网站 →</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- 登入 -->
+<div id="vLogin" class="login" hidden>
+  <div class="card">
+    <h1>Little Story</h1>
+    <p class="c muted">后台管理 · Admin</p>
+    <form id="loginForm">
+      <label class="field" id="lEmailWrap"><span>Email</span><input type="email" id="lEmail" autocomplete="username" required></label>
+      <label class="field"><span>密码 Password</span><input type="password" id="lPass" autocomplete="current-password" required></label>
+      <button class="btn btn-dark" style="width:100%;margin-top:16px;padding:12px" type="submit" id="lBtn">登入</button>
+    </form>
+    <div style="text-align:center;margin-top:12px"><button class="muted" id="forgot" style="text-decoration:underline">忘记密码？</button></div>
+    <div id="lMsg"></div>
+  </div>
+</div>
+
+<!-- 重设密码 -->
+<div id="vReset" class="login" hidden>
+  <div class="card">
+    <h1>Little Story</h1>
+    <p class="c muted">设定新密码</p>
+    <form id="resetForm">
+      <label class="field"><span>新密码（至少 8 个字）</span><input type="password" id="rPass" minlength="8" autocomplete="new-password" required></label>
+      <button class="btn btn-dark" style="width:100%;margin-top:16px;padding:12px" type="submit">保存新密码</button>
+    </form>
+    <div id="rMsg"></div>
+  </div>
+</div>
+
+<!-- 没权限 -->
+<div id="vDenied" class="login" hidden>
+  <div class="card">
+    <h1>Little Story</h1>
+    <p class="c muted" id="deniedTxt">这个帐号没有管理权限</p>
+    <p class="muted">请在 Supabase SQL Editor 把这个 email 加进 <code>admins</code> 表。</p>
+    <button class="btn btn-line" style="width:100%;margin-top:10px" data-logout>登出</button>
+  </div>
+</div>
+
+<!-- 主画面 -->
+<div id="vApp" hidden>
+  <div class="bar"><div class="wrap">
+    <b>Little Story <small id="modeTag">后台</small></b>
+    <button id="demoReset" hidden>重置</button>
+    <a href="index.html" target="_blank" rel="noopener">查看网站 ↗</a>
+    <button data-logout>登出</button>
+  </div></div>
+  <div class="tabs"><div class="wrap">
+    <button data-tab="products" class="on">产品</button>
+    <button data-tab="categories">分类</button>
+    <button data-tab="settings">店铺设定</button>
+  </div></div>
+
+  <main class="wrap">
+    <!-- products -->
+    <div data-pane="products">
+      <div class="meter" id="meter" hidden><span>图片空间</span><div class="track"><div class="fill" id="meterFill"></div></div><span id="meterTxt"></span></div>
+      <div id="seedBox" class="card" hidden style="margin-bottom:14px">
+        <h2>资料库还是空的</h2>
+        <p class="muted" style="margin:4px 0 12px">可以一键导入现有菜单（三明治、香蕉蛋糕、4粒包）和分类，之后再慢慢改。</p>
+        <button class="btn btn-dark" id="seedBtn">导入初始菜单</button>
+      </div>
+      <div class="tools"><input id="q" type="search" placeholder="搜寻产品…"></div>
+      <div class="chips" id="catChips"></div>
+      <div id="plist"></div>
+    </div>
+
+    <!-- categories -->
+    <div data-pane="categories" hidden>
+      <p class="muted" style="margin:0 0 12px">分类会显示在网站上方。改名字、换图标，或调整顺序。</p>
+      <div id="clist"></div>
+      <button class="btn btn-line" id="addCat" style="width:100%">+ 新增分类</button>
+    </div>
+
+    <!-- settings -->
+    <div data-pane="settings" hidden>
+      <form id="setForm">
+        <div class="card">
+          <h2>基本资料</h2>
+          <label class="field"><span>店名</span><input name="shop_name"></label>
+          <label class="field"><span>WhatsApp 号码（例如 0182252881）</span><input name="whatsapp" inputmode="tel"></label>
+          <div class="row2">
+            <label class="field"><span>标语（中文）</span><input name="tagline_zh"></label>
+            <label class="field"><span>标语（英文）</span><input name="tagline_en"></label>
+          </div>
+          <label class="field"><span>公告横幅（留空就不显示）例如：中秋节礼盒接受预订中！</span><input name="announcement"></label>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>取货 & 配送</h2>
+          <div class="row2">
+            <label class="field"><span>免运费地区</span><input name="free_delivery_area"></label>
+            <label class="field"><span>满多少免运 (RM)</span><input name="free_delivery_min" type="number" min="0" step="1" inputmode="decimal"></label>
+          </div>
+          <label class="field"><span>自取说明（中文）</span><textarea name="pickup_note_zh" rows="2"></textarea></label>
+          <label class="field"><span>自取说明（英文）</span><textarea name="pickup_note_en" rows="2"></textarea></label>
+          <label class="field"><span>配送说明（中文）</span><textarea name="delivery_note_zh" rows="2"></textarea></label>
+          <label class="field"><span>配送说明（英文）</span><textarea name="delivery_note_en" rows="2"></textarea></label>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>关于我们</h2>
+          <label class="field"><span>特点（一行一个，用 | 分开中英文）</span><textarea name="about_points" rows="6"></textarea></label>
+          <div class="sec-label">关于我们照片（可选）</div>
+          <div id="aboutImgBox"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>首页大图（可选）</h2>
+          <p class="muted" style="margin:4px 0 8px">不放的话，首页会自动用产品照片拼贴。横的照片效果最好。</p>
+          <div id="heroImgBox"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>社交媒体</h2>
+          <label class="field"><span>Instagram</span><input name="instagram" type="url"></label>
+          <label class="field"><span>Facebook</span><input name="facebook" type="url"></label>
+          <label class="field"><span>Google 商家 / 地图</span><input name="google" type="url"></label>
+        </div>
+        <button class="btn btn-dark" type="submit" style="width:100%;margin-top:16px;padding:13px">保存设定</button>
+      </form>
+    </div>
+  </main>
+  <button class="btn btn-dark fab" id="addProd">+ 新增产品</button>
+</div>
+
+<!-- product editor -->
+<div class="overlay" id="overlay"></div>
+<div class="modal" id="editor" role="dialog" aria-modal="true">
+  <div class="mh"><button class="x" data-close aria-label="关闭"><span class="icon" data-i="close"></span></button><h3 id="edTitle">编辑产品</h3></div>
+  <div class="mb">
+    <div id="prodImgBox"></div>
+
+    <div class="sec-label">产品资料</div>
+    <label class="field"><span>分类</span><select id="eCat"></select></label>
+    <div class="row2">
+      <label class="field"><span>中文名</span><input id="eNameZh" placeholder="例如：鸡蛋芝士三明治"></label>
+      <label class="field"><span>英文名</span><input id="eNameEn" placeholder="e.g. Egg & Cheese"></label>
+    </div>
+    <label class="field"><span>介绍 / 材料（中文）</span><textarea id="eDescZh" rows="2" placeholder="番茄、芝士、生菜…"></textarea></label>
+    <label class="field"><span>介绍 / 材料（英文）</span><textarea id="eDescEn" rows="2" placeholder="Tomato, cheese, lettuce…"></textarea></label>
+
+    <div class="sec-label">口味（可选）</div>
+    <p class="muted" style="margin:0">同一个价钱、不同口味的，可以放在一个产品里让顾客选。例如 4粒包：红豆、咖椰…。一行一个，中英文用 | 分开。</p>
+    <label class="field" style="margin-top:6px"><textarea id="eFlavors" rows="3" placeholder="红豆 | Red bean&#10;咖椰牛油 | Kaya butter"></textarea></label>
+
+    <div class="sec-label">价钱 & 规格</div>
+    <p class="muted" style="margin:0">只有一种规格的话，规格名字留空就好。例如蛋糕可以加"整条"和"盒装"。</p>
+    <div class="opts" id="eOpts"></div>
+    <button class="btn btn-line btn-sm" id="addOpt" style="margin-top:8px">+ 加规格</button>
+
+    <div class="sec-label">设定</div>
+    <label class="field"><span>需要提前几天预订？（0 = 不用预订）</span><input id="ePre" type="number" min="0" max="60" inputmode="numeric"></label>
+    <div class="flags">
+      <label class="sw"><span>售罄<small>顾客看得到，但不能下单</small></span><input type="checkbox" id="eSold"><i></i></label>
+      <label class="sw green"><span>热门推荐<small>显示在首页"热门推荐"</small></span><input type="checkbox" id="ePop"><i></i></label>
+      <label class="sw"><span>隐藏<small>暂时不在网站显示</small></span><input type="checkbox" id="eHide"><i></i></label>
+      <label class="sw green"><span>搭配推荐<small>同分类的其他产品页会推荐这款（例如抹酱 → 贝果页）</small></span><input type="checkbox" id="eAddon"><i></i></label>
+      <label class="sw green"><span>只询价（定制品）<small>不显示价钱，按下去直接 WhatsApp 询问</small></span><input type="checkbox" id="eQuote"><i></i></label>
+    </div>
+    <div id="eDelWrap" style="margin-top:22px"><button class="btn btn-red" id="eDel" style="width:100%">删除这个产品</button></div>
+  </div>
+  <div class="mf"><button class="btn btn-line" data-close>取消</button><button class="btn btn-dark" id="eSave">保存</button></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="busy" id="busy" hidden><span id="busyTxt">处理中…</span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="seed-data.js"></script>
+<script src="demo-backend.js"></script>
+<script src="shared.js"></script>
+<script>
+(function(){
+const { ICONS, money, esc, normalizeProduct, defaultSettings } = LSB;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const BUCKET = 'product-images';
+const UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>';
+const DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+$$('[data-i]').forEach(el=>{ el.innerHTML = ICONS[el.dataset.i]||''; });
+
+function toast(t, err){ const el=$('#toast'); el.textContent=t; el.classList.toggle('err',!!err); el.classList.add('show'); clearTimeout(el._h); el._h=setTimeout(()=>el.classList.remove('show'), err?5000:2200); }
+function busy(on, txt){ $('#busy').hidden=!on; if(txt) $('#busyTxt').textContent=txt; }
+function view(id){ ['vSetup','vLogin','vReset','vDenied','vApp'].forEach(v=>$('#'+v).hidden = v!==id); }
+function friendly(e){
+  const m = (e && (e.message||e.error_description||e.toString())) || '未知错误';
+  if(/Invalid login/i.test(m)) return 'Email 或密码不正确';
+  if(/row-level security|permission|not authorized|403/i.test(m)) return '没有权限，请确认这个 email 在 admins 表里';
+  if(/Failed to fetch|NetworkError/i.test(m)) return '网络连不上，请检查网络后再试';
+  if(/exceeded the maximum allowed size|Payload too large/i.test(m)) return '图片太大了';
+  return m;
+}
+
+const DEMO = !LSB.hasSupabase;
+const sb = DEMO ? LSB_DEMO.client() : LSB.sb();
+
+/* =================== IMAGE: compress / upload / paste =================== */
+async function loadBitmap(file){
+  if('createImageBitmap' in window){
+    try { return await createImageBitmap(file, { imageOrientation:'from-image' }); } catch(e){}
+  }
+  return await new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>res(img); img.onerror=()=>rej(new Error('这个档案不是图片，或格式不支援（iPhone HEIC 请先截图或转成 JPG）')); img.src=URL.createObjectURL(file); });
+}
+function toBlob(canvas, type, q){ return new Promise(r=>canvas.toBlob(r, type, q)); }
+// 压缩：最长边 maxSide，WebP（不支援就 JPG），太大再降画质
+async function compress(file, maxSide){
+  const bmp = await loadBitmap(file);
+  const w0 = bmp.width, h0 = bmp.height;
+  const scale = Math.min(1, maxSide / Math.max(w0,h0));
+  const w = Math.round(w0*scale), h = Math.round(h0*scale);
+  const c = document.createElement('canvas'); c.width=w; c.height=h;
+  const ctx = c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); ctx.drawImage(bmp,0,0,w,h);
+  let type='image/webp', q=0.8;
+  let blob = await toBlob(c, type, q);
+  if(!blob || blob.type!=='image/webp'){ type='image/jpeg'; blob = await toBlob(c, type, 0.82); q=0.82; }
+  while(blob.size > 350*1024 && q > 0.5){ q -= 0.1; blob = await toBlob(c, type, q); }
+  return { blob, type, w, h, before:file.size, after:blob.size };
+}
+function kb(n){ return n>1024*1024 ? (n/1024/1024).toFixed(1)+' MB' : Math.round(n/1024)+' KB'; }
+function storagePath(url){
+  const k = `/storage/v1/object/public/${BUCKET}/`; const i = (url||'').indexOf(k);
+  return i>=0 ? decodeURIComponent(url.slice(i+k.length).split('?')[0]) : null;
+}
+async function uploadBlob(folder, r){
+  const ext = r.type==='image/webp' ? 'webp' : 'jpg';
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const { error } = await sb.storage.from(BUCKET).upload(path, r.blob, { contentType:r.type, cacheControl:'31536000', upsert:false });
+  if(error) throw error;
+  return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+}
+async function removeImage(url){
+  const p = storagePath(url); if(!p) return;
+  try{ await sb.storage.from(BUCKET).remove([p]); }catch(e){ console.warn(e); }
+}
+
+// 图片选择器组件：上传 / 拍照 / 贴上 / 拖拉
+// 回传 { get(): {url, pending}, set(url), reset() }
+function imagePicker(host, opts){
+  const maxSide = opts.maxSide || 1200;
+  let url = '', pending = null, pendingThumb = null, preview = '';
+  host.innerHTML = `<div class="imgbox ${opts.wide?'wide':''}">
+      <div class="pv"></div>
+      <div class="acts">
+        <label class="btn btn-line btn-sm" style="cursor:pointer">📷 上传 / 拍照<input type="file" accept="image/*" hidden></label>
+        <button type="button" class="btn btn-line btn-sm" data-clip>📋 贴上图片</button>
+        <button type="button" class="btn btn-red btn-sm" data-rm>移除</button>
+      </div>
+      <div class="paste-zone" contenteditable="true" spellcheck="false" aria-label="贴上图片的地方">在这里长按 / 右键 → 贴上，或电脑按 Ctrl+V（⌘V）</div>
+      <div class="imginfo"></div>
+    </div>`;
+  const box = host.querySelector('.imgbox'), pv = host.querySelector('.pv'), info = host.querySelector('.imginfo'), zone = host.querySelector('.paste-zone');
+  function draw(){
+    const src = preview || url;
+    pv.innerHTML = src ? `<img src="${esc(src)}" alt="">` : `<span>还没有照片<br><small>可以上传、拍照、贴上，或把图片拖进来</small></span>`;
+    host.querySelector('[data-rm]').hidden = !src;
+  }
+  async function take(file){
+    if(!file || !/^image\//.test(file.type||'image/')) { toast('这不是图片档案', true); return; }
+    info.textContent = '压缩中…';
+    try{
+      const r = await compress(file, maxSide);
+      pending = r; pendingThumb = opts.thumb ? await compress(file, opts.thumb) : null;
+      if(preview) URL.revokeObjectURL(preview); preview = URL.createObjectURL(r.blob);
+      info.textContent = `✓ 已压缩 ${kb(r.before)} → ${kb(r.after)}（${r.w}×${r.h}）${pendingThumb?` + 小图 ${kb(pendingThumb.after)}`:''} · 按保存才会上传`;
+      draw();
+    }catch(e){ info.textContent=''; toast(friendly(e), true); }
+  }
+  host.querySelector('input[type=file]').addEventListener('change', e=>{ take(e.target.files[0]); e.target.value=''; });
+  host.querySelector('[data-rm]').addEventListener('click', ()=>{ url=''; pending=null; pendingThumb=null; if(preview) URL.revokeObjectURL(preview); preview=''; info.textContent=''; draw(); });
+  host.querySelector('[data-clip]').addEventListener('click', async ()=>{
+    if(!navigator.clipboard || !navigator.clipboard.read){ zone.focus(); toast('这个浏览器不支援，请在下面的框里长按 → 贴上'); return; }
+    try{
+      const items = await navigator.clipboard.read();
+      for(const it of items){ const t = it.types.find(t=>t.startsWith('image/')); if(t){ const b = await it.getType(t); return take(new File([b],'paste',{type:t})); } }
+      toast('剪贴板里没有图片', true);
+    }catch(e){ zone.focus(); toast('请允许读取剪贴板，或在下面的框里长按 → 贴上'); }
+  });
+  function fromClipboardEvent(e){
+    const items = e.clipboardData && e.clipboardData.items; if(!items) return false;
+    for(const it of items){ if(it.kind==='file' && it.type.startsWith('image/')){ take(it.getAsFile()); return true; } }
+    return false;
+  }
+  zone.addEventListener('paste', e=>{ e.preventDefault(); e.stopPropagation(); if(!fromClipboardEvent(e)) toast('剪贴板里没有图片', true); });
+  zone.addEventListener('beforeinput', e=>{ if(e.inputType!=='insertFromPaste') e.preventDefault(); });
+  zone.addEventListener('drop', e=>e.preventDefault());
+  ['dragenter','dragover'].forEach(ev=>box.addEventListener(ev, e=>{ e.preventDefault(); box.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(ev=>box.addEventListener(ev, e=>{ e.preventDefault(); box.classList.remove('drag'); }));
+  box.addEventListener('drop', e=>{ const f=e.dataTransfer.files[0]; if(f) take(f); });
+  draw();
+  return {
+    el: host, fromClipboardEvent,
+    set(u){ url=u||''; pending=null; if(preview) URL.revokeObjectURL(preview); preview=''; info.textContent=''; draw(); },
+    // 保存时调用：有新图就上传，并删掉旧图
+    // 保存时调用：有新图就上传（大图 + 小图），并删掉旧图。回传 { url, thumb }
+    async commit(folder){
+      const old = opts.original ? opts.original() : '';
+      const oldThumb = opts.originalThumb ? opts.originalThumb() : '';
+      if(pending){
+        const newUrl = await uploadBlob(folder, pending);
+        const newThumb = pendingThumb ? await uploadBlob(folder + '/t', pendingThumb) : '';
+        if(old && old!==newUrl) await removeImage(old);
+        if(oldThumb && oldThumb!==newThumb) await removeImage(oldThumb);
+        url = newUrl; pending=null; pendingThumb=null; if(preview) URL.revokeObjectURL(preview); preview=''; info.textContent=''; draw();
+        return { url, thumb:newThumb };
+      }
+      if(!url){
+        if(old) await removeImage(old);
+        if(oldThumb) await removeImage(oldThumb);
+        return { url:'', thumb:'' };
+      }
+      return { url, thumb:oldThumb };
+    },
+    dirty(){ return !!pending; }
+  };
+}
+
+/* =================== AUTH =================== */
+let ME = null;
+async function checkAdmin(){
+  const { data, error } = await sb.rpc('is_admin');
+  if(error) throw error;
+  return !!data;
+}
+async function onSession(session){
+  if(!session){ view('vLogin'); return; }
+  ME = session.user;
+  try{
+    if(!(await checkAdmin())){ $('#deniedTxt').textContent = `${ME.email} 没有管理权限`; view('vDenied'); return; }
+  }catch(e){ toast(friendly(e), true); view('vLogin'); return; }
+  view('vApp'); loadAll();
+}
+let recovering = false;
+sb.auth.onAuthStateChange((ev, session)=>{
+  if(ev==='PASSWORD_RECOVERY'){ recovering = true; view('vReset'); return; }
+  if(recovering) return;
+  if(ev==='SIGNED_IN' || ev==='INITIAL_SESSION' || ev==='SIGNED_OUT') onSession(session);
+});
+// 固定 email：登入只要输入密码
+const FIXED_EMAIL = (LSB.cfg.ADMIN_EMAIL || '').trim();
+if(FIXED_EMAIL){
+  $('#lEmail').value = FIXED_EMAIL;
+  $('#lEmailWrap').hidden = true;
+  $('#lPass').setAttribute('autofocus','');
+}
+$('#loginForm').addEventListener('submit', async e=>{
+  e.preventDefault(); $('#lBtn').disabled=true; $('#lMsg').innerHTML='';
+  const { error } = await sb.auth.signInWithPassword({ email:$('#lEmail').value.trim(), password:$('#lPass').value });
+  $('#lBtn').disabled=false;
+  if(error) $('#lMsg').innerHTML = `<div class="msg err">${esc(friendly(error))}</div>`;
+});
+$('#forgot').addEventListener('click', async ()=>{
+  const email = $('#lEmail').value.trim();
+  if(!email){ $('#lMsg').innerHTML = '<div class="msg err">请先在上面填 email</div>'; return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.href.split('#')[0] });
+  $('#lMsg').innerHTML = error ? `<div class="msg err">${esc(friendly(error))}</div>` : '<div class="msg ok">已寄出重设密码的 email，请去信箱查看</div>';
+});
+$('#resetForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const { error } = await sb.auth.updateUser({ password: $('#rPass').value });
+  if(error){ $('#rMsg').innerHTML = `<div class="msg err">${esc(friendly(error))}</div>`; return; }
+  recovering = false; history.replaceState(null,'',location.pathname);
+  toast('密码已更新'); const { data } = await sb.auth.getSession(); onSession(data.session);
+});
+document.addEventListener('click', async e=>{ if(e.target.closest('[data-logout]')){ await sb.auth.signOut(); location.reload(); } });
+if(DEMO){
+  view('vSetup');
+  $('#demoBtn').addEventListener('click', ()=>{
+    $('#modeTag').textContent = '示范模式'; $('#demoReset').hidden = false;
+    onSession({ user:{ email:'demo' } });
+  });
+  $('#demoReset').addEventListener('click', ()=>{
+    if(!confirm('把示范资料恢复成原本的菜单？你在示范模式做的改动会清掉。')) return;
+    sb.reset(); location.reload();
+  });
+}
+
+/* =================== DATA =================== */
+let CATS = [], PRODS = [], SETTINGS = {}, filterCat = '', query = '';
+async function loadAll(){
+  busy(true,'载入中…');
+  try{
+    const [c,p,s] = await Promise.all([
+      sb.from('categories').select('*').order('sort'),
+      sb.from('products').select('*').order('sort'),
+      sb.from('settings').select('data').eq('id',1).maybeSingle()
+    ]);
+    if(c.error||p.error||s.error) throw (c.error||p.error||s.error);
+    CATS = c.data; PRODS = p.data.map(normalizeProduct); SETTINGS = Object.assign(defaultSettings(), (s.data&&s.data.data)||{});
+    renderProducts(); renderCats(); fillSettings(); loadMeter();
+  }catch(e){ toast(friendly(e), true); }
+  busy(false);
+}
+
+async function loadMeter(){
+  try{
+    let total = 0;
+    for(const folder of ['products','products/t','site','categories']){
+      let offset = 0;
+      for(;;){
+        const { data, error } = await sb.storage.from(BUCKET).list(folder, { limit:1000, offset });
+        if(error) throw error;
+        data.forEach(f=>{ total += (f.metadata && f.metadata.size) || 0; });
+        if(data.length < 1000) break; offset += 1000;
+      }
+    }
+    const cap = 1024*1024*1024; const pct = Math.min(100, total/cap*100);
+    $('#meter').hidden = false; $('#meterFill').style.width = Math.max(1,pct)+'%';
+    $('#meterTxt').textContent = `${kb(total)} / 1 GB`;
+  }catch(e){ console.warn(e); }
+}
+
+/* =================== PRODUCTS LIST =================== */
+function catName(slug){ const c = CATS.find(c=>c.slug===slug); return c ? c.name_zh : '未分类'; }
+function priceSummary(p){
+  if(p.quote_only) return '询价';
+  return p.options.map(o=>`${o.label_zh||o.label_en ? (o.label_zh||o.label_en)+' ' : ''}${money(o.price)}${o.moq>1?` (最少${o.moq})`:''}`).join(' · ');
+}
+function thumb(p){
+  if(p.image_url) return `<img src="${esc(p.thumb_url||p.image_url)}" alt="" loading="lazy">`;
+  const c = CATS.find(c=>c.slug===p.category_slug); return ICONS[(c&&c.icon)||'bread'];
+}
+function renderProducts(){
+  $('#seedBox').hidden = !(PRODS.length===0 && CATS.length===0);
+  $('#catChips').innerHTML = [['','全部']].concat(CATS.map(c=>[c.slug,c.name_zh])).map(([s,n])=>
+    `<button data-fc="${esc(s)}" class="${filterCat===s?'on':''}">${esc(n)} <span style="opacity:.6">${s?PRODS.filter(p=>p.category_slug===s).length:PRODS.length}</span></button>`).join('');
+  const q = query.toLowerCase();
+  const groups = CATS.map(c=>c.slug).concat(['']);
+  let html = '';
+  groups.forEach(slug=>{
+    if(filterCat && filterCat!==slug) return;
+    const list = PRODS.filter(p=>(p.category_slug||'')===slug || (slug==='' && !CATS.some(c=>c.slug===p.category_slug)))
+      .filter(p=>!q || (p.name_zh+p.name_en+p.description_zh+p.description_en).toLowerCase().includes(q))
+      .sort((a,b)=>a.sort-b.sort);
+    if(!list.length && (slug==='' || q)) return;
+    html += `<div class="group-h">${esc(slug?catName(slug):'未分类')} <span>${list.length} 款</span></div>`;
+    if(!list.length){ html += `<div class="empty card">这个分类还没有产品</div>`; return; }
+    html += `<div class="plist">${list.map((p,i)=>`
+      <div class="prow ${p.hidden?'is-hidden':''}" data-id="${p.id}">
+        <div class="mv"><button data-mv="-1" ${i===0||q?'disabled':''} aria-label="往上">${UP}</button><button data-mv="1" ${i===list.length-1||q?'disabled':''} aria-label="往下">${DOWN}</button></div>
+        <button class="th" data-edit>${thumb(p)}</button>
+        <button class="mid" data-edit><b>${esc(p.name_zh||p.name_en||'(没有名字)')}</b><small>${esc(priceSummary(p))}</small>
+          <span class="tags">${p.popular?'<span class="tag hot">热门</span>':''}${p.flavors.length?`<span class="tag">${p.flavors.length} 种口味</span>`:''}${p.preorder_days?`<span class="tag">预订 ${p.preorder_days} 天</span>`:''}${p.hidden?'<span class="tag">已隐藏</span>':''}${p.quote_only?'<span class="tag">询价</span>':''}${p.addon?'<span class="tag">搭配推荐</span>':''}${!p.image_url?'<span class="tag">没有照片</span>':''}</span></button>
+        <div class="side"><label class="sw"><span>售罄</span><input type="checkbox" data-sold ${p.sold_out?'checked':''}><i></i></label></div>
+      </div>`).join('')}</div>`;
+  });
+  $('#plist').innerHTML = html || `<div class="empty">找不到产品</div>`;
+}
+$('#q').addEventListener('input', e=>{ query = e.target.value.trim(); renderProducts(); });
+$('#catChips').addEventListener('click', e=>{ const b=e.target.closest('[data-fc]'); if(b){ filterCat=b.dataset.fc; renderProducts(); } });
+$('#plist').addEventListener('click', async e=>{
+  const row = e.target.closest('.prow'); if(!row) return;
+  const p = PRODS.find(x=>x.id===row.dataset.id);
+  if(e.target.closest('[data-edit]')) return openEditor(p);
+  const mv = e.target.closest('[data-mv]');
+  if(mv){
+    const list = PRODS.filter(x=>x.category_slug===p.category_slug).sort((a,b)=>a.sort-b.sort);
+    const i = list.indexOf(p), j = i + (+mv.dataset.mv); if(j<0||j>=list.length) return;
+    list.splice(i,1); list.splice(j,0,p);
+    list.forEach((x,k)=>x.sort=k+1); renderProducts();
+    const res = await Promise.all(list.map(x=>sb.from('products').update({ sort:x.sort }).eq('id', x.id)));
+    const bad = res.find(r=>r.error); if(bad) toast(friendly(bad.error), true);
+  }
+});
+$('#plist').addEventListener('change', async e=>{
+  if(!e.target.matches('[data-sold]')) return;
+  const p = PRODS.find(x=>x.id===e.target.closest('.prow').dataset.id);
+  const v = e.target.checked; p.sold_out = v;
+  const { error } = await sb.from('products').update({ sold_out:v, updated_at:new Date().toISOString() }).eq('id', p.id);
+  if(error){ p.sold_out=!v; e.target.checked=!v; toast(friendly(error), true); }
+  else toast(v ? `${p.name_zh||p.name_en} 已设为售罄` : `${p.name_zh||p.name_en} 恢复供应`);
+});
+
+/* =================== EDITOR =================== */
+let editing = null;
+const prodPicker = imagePicker($('#prodImgBox'), { maxSide:1200, thumb:400, original:()=>editing && editing.image_url, originalThumb:()=>editing && editing.thumb_url });
+function optRow(o){
+  return `<div class="optrow">
+    <div class="full"><label>规格（中文）</label><input data-k="label_zh" value="${esc(o.label_zh)}" placeholder="可留空，例如 盒装 (2片)"></div>
+    <div><label>规格（英文）</label><input data-k="label_en" value="${esc(o.label_en)}" placeholder="可留空"></div>
+    <div><label>价钱 RM</label><input data-k="price" type="number" step="0.01" min="0" inputmode="decimal" value="${o.price}"></div>
+    <div><label>最少数量</label><input data-k="moq" type="number" min="1" step="1" inputmode="numeric" value="${o.moq}"></div>
+    <button type="button" class="rm" aria-label="删除规格">${ICONS.close}</button>
+  </div>`;
+}
+function readOpts(){
+  return $$('#eOpts .optrow').map(r=>{
+    const g = k => r.querySelector(`[data-k="${k}"]`).value;
+    return { label_zh:g('label_zh').trim(), label_en:g('label_en').trim(), price:Math.round((parseFloat(g('price'))||0)*100)/100, moq:Math.max(1,parseInt(g('moq'),10)||1) };
+  });
+}
+function openEditor(p){
+  const isNew = !p;
+  editing = p ? JSON.parse(JSON.stringify(p)) : normalizeProduct({ category_slug: filterCat || (CATS[0]&&CATS[0].slug) || '', options:[{label_zh:'',label_en:'',price:0,moq:1}] }, 0);
+  if(isNew) editing.id = null;
+  $('#edTitle').textContent = isNew ? '新增产品' : '编辑产品';
+  $('#eCat').innerHTML = CATS.map(c=>`<option value="${esc(c.slug)}">${esc(c.name_zh)} ${esc(c.name_en)}</option>`).join('');
+  $('#eCat').value = editing.category_slug;
+  $('#eNameZh').value = editing.name_zh; $('#eNameEn').value = editing.name_en;
+  $('#eDescZh').value = editing.description_zh; $('#eDescEn').value = editing.description_en;
+  $('#eOpts').innerHTML = editing.options.map(optRow).join('');
+  $('#eFlavors').value = editing.flavors.map(f=>[f.zh,f.en].filter(Boolean).join(' | ')).join('\n');
+  $('#ePre').value = editing.preorder_days;
+  $('#eSold').checked = editing.sold_out; $('#ePop').checked = editing.popular; $('#eHide').checked = editing.hidden; $('#eQuote').checked = editing.quote_only; $('#eAddon').checked = editing.addon;
+  $('#eDelWrap').hidden = isNew;
+  prodPicker.set(editing.image_url);
+  $('#overlay').classList.add('open'); $('#editor').classList.add('open'); document.body.style.overflow='hidden';
+  $('#editor .mb').scrollTop = 0;
+}
+function closeEditor(force){
+  if(!force && prodPicker.dirty() && !confirm('照片还没保存，确定关闭？')) return;
+  $('#overlay').classList.remove('open'); $('#editor').classList.remove('open'); document.body.style.overflow=''; editing=null; prodPicker.set('');
+}
+$$('#editor [data-close]').forEach(b=>b.addEventListener('click', ()=>closeEditor()));
+$('#overlay').addEventListener('click', ()=>closeEditor());
+$('#addProd').addEventListener('click', ()=>{ if(!CATS.length){ toast('请先在"分类"新增分类，或导入初始菜单', true); return; } openEditor(null); });
+$('#addOpt').addEventListener('click', ()=>{ $('#eOpts').insertAdjacentHTML('beforeend', optRow({label_zh:'',label_en:'',price:0,moq:1})); });
+$('#eOpts').addEventListener('click', e=>{
+  const rm = e.target.closest('.rm'); if(!rm) return;
+  if($$('#eOpts .optrow').length<=1){ toast('至少要有一个价钱', true); return; }
+  rm.closest('.optrow').remove();
+});
+// 编辑产品时，整页 Ctrl+V 都能贴上图片
+document.addEventListener('paste', e=>{
+  if(!$('#editor').classList.contains('open')) return;
+  if(e.target.closest && e.target.closest('input,textarea,.paste-zone')) {
+    const hasImg = e.clipboardData && [...e.clipboardData.items].some(i=>i.kind==='file' && i.type.startsWith('image/'));
+    if(!hasImg) return;
+  }
+  if(prodPicker.fromClipboardEvent(e)) e.preventDefault();
+});
+
+$('#eSave').addEventListener('click', async ()=>{
+  const nameZh = $('#eNameZh').value.trim(), nameEn = $('#eNameEn').value.trim();
+  if(!nameZh && !nameEn){ toast('请填产品名字', true); return; }
+  const options = readOpts();
+  if(!$('#eQuote').checked && options.some(o=>!(o.price>0))){ toast('价钱要大过 0（定制品可以打开"只询价"）', true); return; }
+  busy(true, '保存中…'); $('#eSave').disabled = true;
+  try{
+    const img = await prodPicker.commit('products');
+    const image_url = img.url, thumb_url = img.thumb;
+    const row = {
+      category_slug: $('#eCat').value || null, name_zh:nameZh, name_en:nameEn,
+      description_zh: $('#eDescZh').value.trim(), description_en: $('#eDescEn').value.trim(),
+      image_url, thumb_url, options,
+      flavors: $('#eFlavors').value.split('\n').map(l=>{ const [zh,en] = l.split('|'); return { zh:(zh||'').trim(), en:(en||'').trim() }; }).filter(f=>f.zh||f.en),
+      preorder_days: Math.max(0, parseInt($('#ePre').value,10)||0),
+      sold_out: $('#eSold').checked, popular: $('#ePop').checked, hidden: $('#eHide').checked, quote_only: $('#eQuote').checked, addon: $('#eAddon').checked,
+      updated_at: new Date().toISOString()
+    };
+    if(editing.id){
+      const { error } = await sb.from('products').update(row).eq('id', editing.id); if(error) throw error;
+    } else {
+      row.sort = PRODS.filter(p=>p.category_slug===row.category_slug).reduce((m,p)=>Math.max(m,p.sort),0) + 1;
+      const { error } = await sb.from('products').insert(row); if(error) throw error;
+    }
+    closeEditor(true); toast('已保存 ✓'); await loadAll();
+  }catch(e){ toast(friendly(e), true); }
+  busy(false); $('#eSave').disabled = false;
+});
+$('#eDel').addEventListener('click', async ()=>{
+  if(!editing || !editing.id) return;
+  if(!confirm(`确定删除「${editing.name_zh||editing.name_en}」？删除后不能复原。\n（只是暂时不卖的话，可以用"隐藏"或"售罄"）`)) return;
+  busy(true,'删除中…');
+  try{
+    const { error } = await sb.from('products').delete().eq('id', editing.id); if(error) throw error;
+    if(editing.image_url) await removeImage(editing.image_url);
+    if(editing.thumb_url) await removeImage(editing.thumb_url);
+    closeEditor(true); toast('已删除'); await loadAll();
+  }catch(e){ toast(friendly(e), true); }
+  busy(false);
+});
+
+/* =================== CATEGORIES =================== */
+const ICON_KEYS = ['bread','bag','bagel','cake','sandwich','jar','cookie'];
+function renderCats(){
+  $('#clist').innerHTML = CATS.map((c,i)=>`
+    <div class="catrow" data-slug="${esc(c.slug)}">
+      <div class="top">
+        <div class="ic">${c.image_url?`<img src="${esc(c.image_url)}" alt="">`:ICONS[c.icon]||ICONS.bread}</div>
+        <b>${esc(c.name_zh)} <span class="muted">${esc(c.name_en)}</span><br><span class="muted" style="font-weight:400">${PRODS.filter(p=>p.category_slug===c.slug).length} 款产品</span></b>
+        <div class="mv"><button data-cmv="-1" ${i===0?'disabled':''} aria-label="往上">${UP}</button><button data-cmv="1" ${i===CATS.length-1?'disabled':''} aria-label="往下">${DOWN}</button></div>
+      </div>
+      <div class="row2">
+        <label class="field" style="margin:0"><span>中文名</span><input data-ck="name_zh" value="${esc(c.name_zh)}"></label>
+        <label class="field" style="margin:0"><span>英文名</span><input data-ck="name_en" value="${esc(c.name_en)}"></label>
+      </div>
+      <div><span class="muted" style="font-size:12px">图标</span>
+        <div class="icon-pick">${ICON_KEYS.map(k=>`<button type="button" data-icon="${k}" class="${c.icon===k?'on':''}">${ICONS[k]}</button>`).join('')}</div></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-dark btn-sm" data-csave style="flex:1">保存</button><button class="btn btn-red btn-sm" data-cdel>删除</button></div>
+    </div>`).join('') || '<div class="empty card">还没有分类</div>';
+}
+$('#clist').addEventListener('click', async e=>{
+  const row = e.target.closest('.catrow'); if(!row) return;
+  const c = CATS.find(x=>x.slug===row.dataset.slug);
+  const ic = e.target.closest('[data-icon]');
+  if(ic){ c.icon = ic.dataset.icon; row.querySelectorAll('[data-icon]').forEach(b=>b.classList.toggle('on', b===ic)); row.querySelector('.ic').innerHTML = ICONS[c.icon]; return; }
+  if(e.target.closest('[data-csave]')){
+    const upd = { name_zh: row.querySelector('[data-ck=name_zh]').value.trim(), name_en: row.querySelector('[data-ck=name_en]').value.trim(), icon:c.icon };
+    const { error } = await sb.from('categories').update(upd).eq('slug', c.slug);
+    if(error) return toast(friendly(error), true);
+    Object.assign(c, upd); renderCats(); renderProducts(); toast('分类已保存 ✓'); return;
+  }
+  if(e.target.closest('[data-cdel]')){
+    const n = PRODS.filter(p=>p.category_slug===c.slug).length;
+    if(n){ toast(`这个分类还有 ${n} 款产品，请先把产品移到别的分类或删除`, true); return; }
+    if(!confirm(`确定删除分类「${c.name_zh}」？`)) return;
+    const { error } = await sb.from('categories').delete().eq('slug', c.slug);
+    if(error) return toast(friendly(error), true);
+    CATS = CATS.filter(x=>x!==c); renderCats(); renderProducts(); toast('已删除'); return;
+  }
+  const mv = e.target.closest('[data-cmv]');
+  if(mv){
+    const i = CATS.indexOf(c), j = i + (+mv.dataset.cmv); if(j<0||j>=CATS.length) return;
+    CATS.splice(i,1); CATS.splice(j,0,c); CATS.forEach((x,k)=>x.sort=k+1); renderCats(); renderProducts();
+    const res = await Promise.all(CATS.map(x=>sb.from('categories').update({sort:x.sort}).eq('slug',x.slug)));
+    const err = res.find(r=>r.error); if(err) toast(friendly(err.error), true);
+  }
+});
+$('#addCat').addEventListener('click', async ()=>{
+  const zh = prompt('新分类的中文名（例如：节庆礼盒）'); if(!zh) return;
+  const en = prompt('英文名（例如：Festive Gift Boxes）') || '';
+  let slug = (en||'cat').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'cat';
+  while(CATS.some(c=>c.slug===slug)) slug += '-' + Math.random().toString(36).slice(2,5);
+  const row = { slug, name_zh:zh.trim(), name_en:en.trim(), icon:'bread', sort: CATS.length+1 };
+  const { error } = await sb.from('categories').insert(row);
+  if(error) return toast(friendly(error), true);
+  CATS.push(row); renderCats(); renderProducts(); toast('已新增分类');
+});
+
+/* =================== SETTINGS =================== */
+let heroPicker, aboutPicker;
+function fillSettings(){
+  const f = $('#setForm');
+  ['shop_name','whatsapp','tagline_zh','tagline_en','announcement','free_delivery_area','free_delivery_min','pickup_note_zh','pickup_note_en','delivery_note_zh','delivery_note_en','instagram','facebook','google']
+    .forEach(k=>{ if(f.elements[k]) f.elements[k].value = SETTINGS[k] ?? ''; });
+  f.elements.about_points.value = (SETTINGS.about_points||[]).join('\n');
+  if(!heroPicker) heroPicker = imagePicker($('#heroImgBox'), { maxSide:1800, wide:true, original:()=>SETTINGS.hero_image });
+  if(!aboutPicker) aboutPicker = imagePicker($('#aboutImgBox'), { maxSide:1400, original:()=>SETTINGS.about_image });
+  heroPicker.set(SETTINGS.hero_image); aboutPicker.set(SETTINGS.about_image);
+}
+$('#setForm').addEventListener('submit', async e=>{
+  e.preventDefault(); const f = e.target;
+  const wa = f.elements.whatsapp.value.replace(/\D/g,'');
+  if(wa.length < 9){ toast('WhatsApp 号码好像不对', true); return; }
+  busy(true,'保存中…');
+  try{
+    const data = Object.assign({}, SETTINGS);
+    ['shop_name','tagline_zh','tagline_en','announcement','free_delivery_area','pickup_note_zh','pickup_note_en','delivery_note_zh','delivery_note_en','instagram','facebook','google']
+      .forEach(k=>data[k] = f.elements[k].value.trim());
+    data.whatsapp = wa;
+    data.free_delivery_min = Math.max(0, parseFloat(f.elements.free_delivery_min.value)||0);
+    data.about_points = f.elements.about_points.value.split('\n').map(s=>s.trim()).filter(Boolean);
+    data.hero_image = (await heroPicker.commit('site')).url;
+    data.about_image = (await aboutPicker.commit('site')).url;
+    const { error } = await sb.from('settings').upsert({ id:1, data });
+    if(error) throw error;
+    SETTINGS = data; toast('设定已保存 ✓'); loadMeter();
+  }catch(err){ toast(friendly(err), true); }
+  busy(false);
+});
+// 设定页也可以 Ctrl+V 贴到最后点过的图片框
+let lastPicker = null;
+document.addEventListener('pointerdown', e=>{
+  if(e.target.closest('#heroImgBox')) lastPicker = heroPicker;
+  else if(e.target.closest('#aboutImgBox')) lastPicker = aboutPicker;
+});
+document.addEventListener('paste', e=>{
+  if($('[data-pane="settings"]').hidden || $('#editor').classList.contains('open') || !lastPicker) return;
+  if(e.target.closest && e.target.closest('input,textarea,.paste-zone')) return;
+  if(lastPicker.fromClipboardEvent(e)) e.preventDefault();
+});
+
+/* =================== TABS / SEED =================== */
+$$('.tabs [data-tab]').forEach(b=>b.addEventListener('click', ()=>{
+  $$('.tabs [data-tab]').forEach(x=>x.classList.toggle('on', x===b));
+  $$('[data-pane]').forEach(p=>p.hidden = p.dataset.pane!==b.dataset.tab);
+  $('#addProd').hidden = b.dataset.tab!=='products';
+  window.scrollTo(0,0);
+}));
+
+$('#seedBtn').addEventListener('click', async ()=>{
+  if(!confirm('导入初始菜单（分类 + 产品 + 店铺设定）？')) return;
+  busy(true,'导入中…');
+  try{
+    const s = window.LSB_SEED;
+    let r = await sb.from('categories').upsert(s.categories.map(c=>({ slug:c.slug, name_zh:c.name_zh, name_en:c.name_en, icon:c.icon, sort:c.sort })));
+    if(r.error) throw r.error;
+    r = await sb.from('products').insert(s.products.map(p=>{ const n = normalizeProduct(p,0); delete n.id; return n; }));
+    if(r.error) throw r.error;
+    r = await sb.from('settings').upsert({ id:1, data: Object.assign({}, s.settings, SETTINGS) });
+    if(r.error) throw r.error;
+    toast('导入完成 ✓'); await loadAll();
+  }catch(e){ toast(friendly(e), true); }
+  busy(false);
+});
+})();
+</script>
+</body>
+</html>
