@@ -134,5 +134,63 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
-  window.LSB = { cfg, hasSupabase, sb, ICONS, money, normalizeProduct, loadCatalog, esc, waNumber, store, defaultSettings };
+  // ---------- WhatsApp 讯息格式 ----------
+  // {名称} 会自动换成实际内容；某一行里的 {名称} 没有内容（例如自取没有地址），那一整行会自动省略
+  const WA_DEFAULTS = {
+    wa_order: "🤎 *LITTLE STORY BAKERY ORDER CONFIRMATION｜订单确认*\n\n*🧁 Order Details｜订单明细*\n{订单}\n\nSubtotal 小计：{小计}\nDelivery Fee 运费：{运费金额}\n*Total 总额：{总额}*\n\n*{资料标题}*\nName 姓名：{名字}\nAddress 地址：{地址}\nDate 日期：{日期}\nMethod 方式：{方式}\nNotes 备注：{备注}\n\n*💳 Payment Status 付款状态：*\n\nPlease check and confirm your order details. 请确认以上订单资料，谢谢！🤎",
+    wa_item: "{产品} × {数量} — {金额}",
+    wa_wholesale: "你好 {店名}！我想询问批发 🙂\n公司 / 店名：\n想要的产品：\n大概数量：\n需要日期：",
+    wa_school: "你好 {店名}！我想询问学校订单 🙂\n学校名字：\n人数 / 数量：\n需要日期：",
+    wa_event: "你好 {店名}！我想询问活动 / 婚礼 / 企业餐点 🙂\n活动类型：\n人数：\n活动日期：",
+    wa_custom: "你好 {店名}！我想询问定制：{产品} 🎁\n用途 / 节日：\n数量：\n需要日期：\n（参考图片我会另外发）",
+    wa_ask: "你好 {店名}！请问 {产品} 什么时候会再有货？"
+  };
+  function fillTemplate(tpl, vars) {
+    const out = [];
+    String(tpl || "").replace(/\r/g, "").split("\n").forEach(line => {
+      let missing = false;
+      const done = line.replace(/\{([^{}\n]+)\}/g, (m, k) => {
+        k = k.trim();
+        if (!(k in vars)) return m;               // 不认识的 {..} 原样保留
+        const v = vars[k];
+        if (v == null || v === "") { missing = true; return ""; }
+        return String(v);
+      });
+      if (!missing) out.push(done);
+    });
+    return out.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  }
+  // 组合下单讯息（顾客页面和 admin 预览共用，保证两边一模一样）
+  // o = { items:[{name, opt, qty, amount}], subtotal, delivery, areaLabel, address, freeShip, date, name, note }
+  function buildOrderMessage(settings, o) {
+    const itemTpl = waTemplate(settings, "wa_item");
+    const items = o.items.map((it, i) => fillTemplate(itemTpl, {
+      "序号": String(i + 1),
+      "产品": it.name + (it.opt ? ` (${it.opt})` : ""),
+      "数量": String(it.qty),
+      "金额": money(it.amount),
+      "单价": money(it.amount / (it.qty || 1))
+    })).join("\n");
+    const feeKnown = !o.delivery || o.freeShip;
+    return fillTemplate(waTemplate(settings, "wa_order"), {
+      "店名": settings.shop_name || "Little Story Bakery",
+      "订单": items,
+      "小计": money(o.subtotal),
+      "运费金额": feeKnown ? money(0) + (o.delivery ? "（免运 Free）" : "") : "待确认 TBC",
+      "总额": feeKnown ? money(o.subtotal) : money(o.subtotal) + " + 运费",
+      "资料标题": o.delivery ? "📦 Delivery Details｜配送资料" : "🛍️ Pickup Details｜自取资料",
+      "方式": o.delivery ? `配送 Delivery — ${o.areaLabel}` : "自取 Self-pickup",
+      "地址": o.delivery ? o.address : "",
+      "运费": o.delivery ? (o.freeShip ? "免运费" : "Lalamove 运费由顾客承担") : "",
+      "日期": o.date,
+      "名字": o.name,
+      "备注": o.note
+    });
+  }
+  function waTemplate(settings, key) {
+    const t = settings && settings[key];
+    return (t && String(t).trim()) ? t : WA_DEFAULTS[key];
+  }
+
+  window.LSB = { cfg, hasSupabase, sb, ICONS, money, normalizeProduct, loadCatalog, esc, waNumber, store, defaultSettings, WA_DEFAULTS, fillTemplate, waTemplate, buildOrderMessage };
 })();

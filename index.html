@@ -272,6 +272,11 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 .opts{display:grid;gap:8px}
 .opt{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);text-align:left}
 .opt.on{border-color:var(--brown);background:#FFF8EE;box-shadow:inset 0 0 0 1px var(--brown)}
+/* 规格很多时：两排小格子 */
+.opts.compact{grid-template-columns:1fr 1fr}
+.opts.compact .opt{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:10px 12px}
+.opts.compact .opt b{font-size:13.5px}
+.opts.compact .opt span{font-size:14px;line-height:1.3}
 .opt span small{display:block;color:var(--muted);font-size:11.5px}
 .opt b{color:var(--brown);white-space:nowrap}
 .note-box{margin-top:14px;padding:10px 12px;border-radius:10px;background:#FFF3E0;color:#80531C;font-size:12.5px;display:flex;gap:8px}
@@ -717,7 +722,7 @@ function renderPd(){
       ${(p.description_zh||p.description_en)?`<p class="desc">${esc(p.description_zh)}${p.description_en?`<small>${esc(p.description_en)}</small>`:''}</p>`:''}
       ${p.flavors.length?`<span class="label">选择口味 · Flavour</span><div class="fls">${p.flavors.map((f,i)=>`
         <button class="fl ${i===fi?'on':''}" data-fi="${i}">${esc(f.zh||f.en)}${f.zh&&f.en?`<small>${esc(f.en)}</small>`:''}</button>`).join('')}</div>`:''}
-      ${multi?`<span class="label">选择规格 · Option</span><div class="opts">${p.options.map((x,i)=>`
+      ${multi?`<span class="label">${p.flavors.length?'选择规格 · Option':'选择口味 / 规格 · Choose one'}</span><div class="opts ${p.options.length>=4?'compact':''}">${p.options.map((x,i)=>`
         <button class="opt ${i===oi?'on':''}" data-oi="${i}"><span>${esc(x.label_zh||x.label_en||'标准')}${x.label_zh&&x.label_en?`<small>${esc(x.label_en)}</small>`:''}${x.moq>1?`<small>最少 ${x.moq} 份 · Min ${x.moq}</small>`:''}</span><b>${money(x.price)}</b></button>`).join('')}</div>`:''}
       ${!multi && o.moq>1?`<div class="hint">最少 ${o.moq} 份 · Minimum ${o.moq}</div>`:''}
       ${p.preorder_days>0?`<div class="note-box">⏰ <span>此产品需提前 <b>${p.preorder_days}</b> 天预订。<br>Pre-order ${p.preorder_days} day(s) in advance.</span></div>`:''}
@@ -842,13 +847,13 @@ function renderCart(){
           <button data-a="cheras" class="${form.area==='cheras'?'on':''}"><b>${esc(S.free_delivery_area||'Cheras')}</b><small>满 ${money(S.free_delivery_min)} 免运</small></button>
           <button data-a="other" class="${form.area==='other'?'on':''}"><b>其他地区</b><small>Other areas</small></button>
         </div>
-        <label class="field"><span>配送地址 · Address</span><textarea id="fAddr" rows="2" placeholder="门牌、路名、花园、邮区">${esc(form.address)}</textarea></label>
+        <label class="field"><span>配送地址 · Address <b style="color:var(--warn)">*</b></span><textarea id="fAddr" rows="2" placeholder="门牌、路名、花园、邮区">${esc(form.address)}</textarea></label>
         <div class="hint ${dv.free?'ok':'warn'}">${esc(dv.text)}</div>`
       :`<div class="hint">${esc(S.pickup_note_zh||'')}</div>`}
 
       <label class="field"><span>${form.method==='delivery'?'配送日期':'取货日期'} · Date</span><input type="date" id="fDate" min="${minD}" value="${form.date}"></label>
       ${md>0?`<div class="hint warn">购物车里有需要预订的产品，最早 ${prettyDate(minD)}</div>`:''}
-      <label class="field"><span>名字 · Name</span><input id="fName" autocomplete="name" placeholder="怎么称呼您？" value="${esc(form.name)}"></label>
+      <label class="field"><span>名字 · Name <b style="color:var(--warn)">*</b></span><input id="fName" autocomplete="name" placeholder="怎么称呼您？" value="${esc(form.name)}"></label>
       <label class="field"><span>备注 · Notes（可选）</span><textarea id="fNote" rows="2" placeholder="例如：希望下午 3 点后取货、生日蜡烛…">${esc(form.note)}</textarea></label>
 
       <div class="sum">
@@ -889,32 +894,22 @@ function sendOrder(){
   if(!form.name.trim()) return fail('请填写名字 · Please enter your name');
   if(!form.date) return fail('请选择日期 · Please choose a date');
   if(form.date < minD) return fail(`最早可选 ${prettyDate(minD)}`);
-  if(form.method==='delivery' && !form.address.trim()) return fail('请填写配送地址 · Please enter your address');
+  if(form.method==='delivery'){
+    const ad = form.address.trim();
+    if(!ad) return fail('选择配送需要填写地址 · Please enter your delivery address');
+    if(ad.replace(/\s/g,'').length < 10) return fail('地址好像不完整，请填写门牌、路名、花园和邮区 · Please enter your full address');
+  }
   const bad = lines.find(l=>l.qty < l.o.moq);
   if(bad) return fail(`${bad.p.name_zh} 最少 ${bad.o.moq} 份`);
   const sub = subtotal(), dv = deliveryInfo(sub);
-  const L = [];
-  L.push(`你好 ${S.shop_name||'Little Story Bakery'}！我想下单 🧺`, '');
-  L.push('【订单 Order】');
-  lines.forEach((l,i)=>{
-    const name = [l.p.name_zh, l.p.name_en].filter(Boolean).join(' ');
-    const opt = lineLabel(l.p, l.o, l.fi);
-    L.push(`${i+1}. ${name}${opt?` (${opt})`:''} × ${l.qty} = ${money(l.line)}`);
+  const delivery = form.method==='delivery';
+  const text = LSB.buildOrderMessage(S, {
+    items: lines.map(l=>({ name:[l.p.name_zh, l.p.name_en].filter(Boolean).join(' '), opt:lineLabel(l.p, l.o, l.fi), qty:l.qty, amount:l.line })),
+    subtotal: sub, delivery, freeShip: dv.free,
+    areaLabel: form.area==='cheras' ? (S.free_delivery_area||'Cheras') : '其他地区',
+    address: form.address.trim(), date: prettyDate(form.date), name: form.name.trim(), note: form.note.trim()
   });
-  L.push(`小计 Subtotal: ${money(sub)}`, '');
-  if(form.method==='pickup'){
-    L.push('【方式】自取 Self-pickup');
-    L.push(`【日期】${prettyDate(form.date)}`);
-  } else {
-    L.push(`【方式】配送 Delivery — ${form.area==='cheras'?(S.free_delivery_area||'Cheras'):'其他地区'}`);
-    L.push(`【地址】${form.address.trim()}`);
-    L.push(`【运费】${dv.free?'免运费':'Lalamove 运费由我承担'}`);
-    L.push(`【日期】${prettyDate(form.date)}`);
-  }
-  L.push(`【名字】${form.name.trim()}`);
-  if(form.note.trim()) L.push(`【备注】${form.note.trim()}`);
-  L.push('', '谢谢！');
-  window.open(wa(L.join('\n')), '_blank', 'noopener');
+  window.open(wa(text), '_blank', 'noopener');
   close();
   const t = toast(`已打开 WhatsApp，记得按<b>发送</b>哦 ✓ <button id="tClear">清空购物车</button>`, 9000);
   const b = $('#tClear'); if(b) b.onclick=()=>{ cart=[]; saveCart(); updateCart(); t.classList.remove('show'); };
@@ -922,15 +917,12 @@ function sendOrder(){
 
 /* ---------- enquiries ---------- */
 function inquire(kind, p){
-  const shop = S.shop_name||'Little Story Bakery';
-  const msgs = {
-    wholesale: `你好 ${shop}！我想询问批发 🙂\n公司 / 店名：\n想要的产品：\n大概数量：\n需要日期：`,
-    school:    `你好 ${shop}！我想询问学校订单 🙂\n学校名字：\n人数 / 数量：\n需要日期：`,
-    event:     `你好 ${shop}！我想询问活动 / 婚礼 / 企业餐点 🙂\n活动类型：\n人数：\n活动日期：`,
-    custom:    `你好 ${shop}！我想询问定制${p?`：${p.name_zh||p.name_en}`:''} 🎁\n用途 / 节日：\n数量：\n需要日期：\n（参考图片我会另外发）`,
-    ask:       `你好 ${shop}！请问 ${p?(p.name_zh||p.name_en):''} 什么时候会再有货？`
-  };
-  window.open(wa(msgs[kind]||msgs.wholesale), '_blank', 'noopener');
+  const key = { wholesale:'wa_wholesale', school:'wa_school', event:'wa_event', custom:'wa_custom', ask:'wa_ask' }[kind] || 'wa_wholesale';
+  const text = LSB.fillTemplate(LSB.waTemplate(S, key), {
+    '店名': S.shop_name || 'Little Story Bakery',
+    '产品': p ? (p.name_zh || p.name_en) : (kind==='custom' ? '节庆饼干 / 礼盒' : '这个产品')
+  });
+  window.open(wa(text), '_blank', 'noopener');
 }
 
 /* ---------- global clicks ---------- */

@@ -174,6 +174,21 @@ h2{font-size:18px;margin:0 0 4px;color:var(--brown-d)}
 .busy{position:fixed;inset:0;z-index:95;background:rgba(251,246,238,.6);display:grid;place-items:center;font-size:14px;color:var(--brown-d)}
 
 .setup ol{padding-left:20px;margin:8px 0 0}
+.tpl-tags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}
+.tpl-tags button{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--brown-d)}
+.tpl-tags button:active{background:#FFF5E8}
+.tpl-box textarea{font-size:14px;line-height:1.55;min-height:220px}
+.tpl-preview{margin-top:10px;background:#E7F5E2;border-radius:12px;padding:10px 12px;font-size:13px;white-space:pre-wrap;line-height:1.5;color:#1f3a1a;border:1px solid #CBE6C2}
+.tpl-preview-h{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:var(--muted)}
+.tpl-seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.tpl-seg button{font-size:11.5px;padding:3px 10px}
+.tpl-seg button.on{background:var(--brown);color:#FFF6EA}
+.reset-link{font-size:12px;color:var(--brown);text-decoration:underline}
+details.tpl-more{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px}
+details.tpl-more summary{cursor:pointer;font-weight:700;color:var(--brown-d);font-size:14px}
+details.tpl-more textarea{min-height:110px}
+.tpl-row-h{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px}
+.tpl-row-h span{font-size:12.5px;color:var(--muted)}
 .setup li{margin:6px 0}
 .setup code{background:var(--paper);padding:1px 6px;border-radius:6px;font-size:13px}
 
@@ -320,6 +335,44 @@ h2{font-size:18px;margin:0 0 4px;color:var(--brown-d)}
           <div id="heroImgBox"></div>
         </div>
 
+        <div class="card tpl-box" style="margin-top:12px">
+          <h2>WhatsApp 讯息格式</h2>
+          <p class="muted" style="margin:4px 0 0">顾客按"WhatsApp 发送订单"时，讯息会照这个格式。<b>{ }</b> 里的字会自动换成订单内容；如果那一行没有内容（例如自取没有地址），整行会自动省略。</p>
+          <div class="tpl-row-h"><b style="font-size:14px">下单讯息</b><button type="button" class="reset-link" data-reset="wa_order">恢复默认</button></div>
+          <div class="tpl-tags" data-for="wa_order">
+            <button type="button">{店名}</button><button type="button">{订单}</button><button type="button">{小计}</button><button type="button">{运费金额}</button><button type="button">{总额}</button>
+            <button type="button">{资料标题}</button><button type="button">{名字}</button><button type="button">{地址}</button><button type="button">{日期}</button><button type="button">{方式}</button><button type="button">{运费}</button><button type="button">{备注}</button>
+          </div>
+          <label class="field" style="margin-top:6px"><textarea name="wa_order" rows="14" spellcheck="false"></textarea></label>
+          <p class="muted" style="margin:4px 0 0;font-size:12px">💡 用 *星号* 包住的字，WhatsApp 会显示成<b>粗体</b>。</p>
+
+          <div class="tpl-row-h"><b style="font-size:14px">产品行格式</b><button type="button" class="reset-link" data-reset="wa_item">恢复默认</button></div>
+          <p class="muted" style="margin:2px 0 0;font-size:12px">{订单} 里每一样产品的写法。</p>
+          <div class="tpl-tags" data-for="wa_item">
+            <button type="button">{序号}</button><button type="button">{产品}</button><button type="button">{数量}</button><button type="button">{金额}</button><button type="button">{单价}</button>
+          </div>
+          <label class="field" style="margin-top:6px"><input name="wa_item" spellcheck="false"></label>
+          <div class="tpl-preview-h"><span>预览（示范订单）</span>
+            <span class="tpl-seg"><button type="button" data-pv="pickup" class="on">自取</button><button type="button" data-pv="free">免运</button><button type="button" data-pv="lalamove">Lalamove</button></span></div>
+          <div class="tpl-preview" id="waPreview"></div>
+          <p class="muted" id="waWarn" style="color:var(--red);margin:6px 0 0" hidden>⚠️ 格式里没有 {订单}，顾客的讯息会看不到买了什么。</p>
+
+          <details class="tpl-more">
+            <summary>询问讯息（批发 / 学校 / 活动 / 定制 / 补货）</summary>
+            <p class="muted" style="margin:6px 0 0">可以用 {店名}；定制和补货还可以用 {产品}。</p>
+            <div class="tpl-row-h"><b style="font-size:13.5px">批发</b><button type="button" class="reset-link" data-reset="wa_wholesale">恢复默认</button></div>
+            <label class="field" style="margin-top:4px"><textarea name="wa_wholesale" rows="5" spellcheck="false"></textarea></label>
+            <div class="tpl-row-h"><b style="font-size:13.5px">学校订单</b><button type="button" class="reset-link" data-reset="wa_school">恢复默认</button></div>
+            <label class="field" style="margin-top:4px"><textarea name="wa_school" rows="4" spellcheck="false"></textarea></label>
+            <div class="tpl-row-h"><b style="font-size:13.5px">活动 / 婚礼 / 企业</b><button type="button" class="reset-link" data-reset="wa_event">恢复默认</button></div>
+            <label class="field" style="margin-top:4px"><textarea name="wa_event" rows="4" spellcheck="false"></textarea></label>
+            <div class="tpl-row-h"><b style="font-size:13.5px">定制询价</b><button type="button" class="reset-link" data-reset="wa_custom">恢复默认</button></div>
+            <label class="field" style="margin-top:4px"><textarea name="wa_custom" rows="5" spellcheck="false"></textarea></label>
+            <div class="tpl-row-h"><b style="font-size:13.5px">询问补货（售罄产品）</b><button type="button" class="reset-link" data-reset="wa_ask">恢复默认</button></div>
+            <label class="field" style="margin-top:4px"><textarea name="wa_ask" rows="2" spellcheck="false"></textarea></label>
+          </details>
+        </div>
+
         <div class="card" style="margin-top:12px">
           <h2>社交媒体</h2>
           <label class="field"><span>Instagram</span><input name="instagram" type="url"></label>
@@ -350,11 +403,11 @@ h2{font-size:18px;margin:0 0 4px;color:var(--brown-d)}
     <label class="field"><span>介绍 / 材料（英文）</span><textarea id="eDescEn" rows="2" placeholder="Tomato, cheese, lettuce…"></textarea></label>
 
     <div class="sec-label">口味（可选）</div>
-    <p class="muted" style="margin:0">同一个价钱、不同口味的，可以放在一个产品里让顾客选。例如 4粒包：红豆、咖椰…。一行一个，中英文用 | 分开。</p>
+    <p class="muted" style="margin:0"><b>同一个价钱</b>的不同口味放这里，例如 4粒包：红豆、咖椰…。一行一个，中英文用 | 分开。<br>如果每个口味<b>价钱不一样</b>（例如蛋糕卷），这格留空，把口味加在下面的"价钱 & 规格"。</p>
     <label class="field" style="margin-top:6px"><textarea id="eFlavors" rows="3" placeholder="红豆 | Red bean&#10;咖椰牛油 | Kaya butter"></textarea></label>
 
     <div class="sec-label">价钱 & 规格</div>
-    <p class="muted" style="margin:0">只有一种规格的话，规格名字留空就好。例如蛋糕可以加"整条"和"盒装"。</p>
+    <p class="muted" style="margin:0">只有一种规格的话，规格名字留空就好。例如蛋糕可以加"整条"和"盒装"；不同价钱的口味也加在这里，每个口味一行。</p>
     <div class="opts" id="eOpts"></div>
     <button class="btn btn-line btn-sm" id="addOpt" style="margin-top:8px">+ 加规格</button>
 
@@ -919,11 +972,51 @@ function fillSettings(){
   ['shop_name','whatsapp','tagline_zh','tagline_en','announcement','free_delivery_area','free_delivery_min','pickup_note_zh','pickup_note_en','delivery_note_zh','delivery_note_en','instagram','facebook','google']
     .forEach(k=>{ if(f.elements[k]) f.elements[k].value = SETTINGS[k] ?? ''; });
   f.elements.about_points.value = (SETTINGS.about_points||[]).join('\n');
+  WA_KEYS.forEach(k=>{ f.elements[k].value = LSB.waTemplate(SETTINGS, k); });
+  renderWaPreview();
   if(!heroPicker) heroPicker = imagePicker($('#heroImgBox'), { maxSide:1800, wide:true, original:()=>SETTINGS.hero_image });
   if(!aboutPicker) aboutPicker = imagePicker($('#aboutImgBox'), { maxSide:1400, original:()=>SETTINGS.about_image });
   heroPicker.set(SETTINGS.hero_image); aboutPicker.set(SETTINGS.about_image);
 }
-$('#setForm').addEventListener('input', ()=>{ settingsDirty = true; });
+$('#setForm').addEventListener('input', e=>{ settingsDirty = true; if(['wa_order','wa_item','shop_name'].includes(e.target.name)) renderWaPreview(); });
+
+/* ---------- WhatsApp 讯息格式 ---------- */
+const WA_KEYS = ['wa_order','wa_item','wa_wholesale','wa_school','wa_event','wa_custom','wa_ask'];
+let pvMode = 'pickup';
+function renderWaPreview(){
+  const f = $('#setForm'); const tpl = f.elements.wa_order.value;
+  const del = pvMode!=='pickup', free = pvMode==='free';
+  const pv = Object.assign({}, SETTINGS, { shop_name: f.elements.shop_name.value.trim(), wa_order: tpl, wa_item: f.elements.wa_item.value });
+  const msg = LSB.buildOrderMessage(pv, {
+    items: [
+      { name:'低糖蛋糕卷 Low-Sugar Swiss Roll', opt:'咸口黑芝麻', qty:1, amount:16 },
+      { name:'盐面包 Salted Butter Roll', opt:'', qty:2, amount:20 }
+    ],
+    subtotal: 36, delivery: del, freeShip: free, areaLabel: free ? 'Cheras' : '其他地区',
+    address: free ? '12, Jalan Cheras, 56100 KL' : del ? '8, Jalan Puchong, 47100 Puchong' : '', date: '28/10/2026 (周三)', name: 'Amy',
+    note: del ? '' : '下午 3 点后取货'
+  }) || '（空白）';
+  // 和 WhatsApp 一样：*粗体*、_斜体_
+  $('#waPreview').innerHTML = esc(msg).replace(/\*([^*\n]+)\*/g,'<b>$1</b>').replace(/(^|\s)_([^_\n]+)_(?=\s|$)/g,'$1<i>$2</i>');
+  $('#waWarn').hidden = tpl.includes('{订单}');
+}
+$$('[data-pv]').forEach(b=>b.addEventListener('click', ()=>{ pvMode=b.dataset.pv; $$('[data-pv]').forEach(x=>x.classList.toggle('on', x===b)); renderWaPreview(); }));
+// 点 {..} 小按钮：插入到游标位置
+let lastTpl = null;
+$('#setForm').addEventListener('focusin', e=>{ if(e.target.name && WA_KEYS.includes(e.target.name)) lastTpl = e.target; });
+$$('.tpl-tags').forEach(box=>box.addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  const ta = (lastTpl && lastTpl.name===box.dataset.for) ? lastTpl : $('#setForm').elements[box.dataset.for];
+  const st = ta.selectionStart ?? ta.value.length, en = ta.selectionEnd ?? ta.value.length;
+  ta.value = ta.value.slice(0,st) + b.textContent + ta.value.slice(en);
+  ta.focus(); ta.selectionStart = ta.selectionEnd = st + b.textContent.length;
+  ta.dispatchEvent(new Event('input', { bubbles:true }));
+}));
+$$('[data-reset]').forEach(b=>b.addEventListener('click', ()=>{
+  const k = b.dataset.reset; const ta = $('#setForm').elements[k];
+  if(ta.value !== LSB.WA_DEFAULTS[k] && !confirm('恢复成原本的格式？（按保存才会生效）')) return;
+  ta.value = LSB.WA_DEFAULTS[k]; ta.dispatchEvent(new Event('input', { bubbles:true }));
+}));
 $('#setForm').addEventListener('submit', async e=>{
   e.preventDefault(); const f = e.target;
   // 保存前检查：设定有没有在另一部装置被改过
@@ -939,6 +1032,7 @@ $('#setForm').addEventListener('submit', async e=>{
   }catch(err){ toast(friendly(err), true); return; }
   const wa = f.elements.whatsapp.value.replace(/\D/g,'');
   if(wa.length < 9){ toast('WhatsApp 号码好像不对', true); return; }
+  if(!f.elements.wa_order.value.includes('{订单}') && !confirm('下单讯息里没有 {订单}，顾客的讯息会看不到买了什么。确定要这样保存吗？')) return;
   busy(true,'保存中…');
   try{
     const data = Object.assign({}, SETTINGS);
@@ -947,6 +1041,8 @@ $('#setForm').addEventListener('submit', async e=>{
     data.whatsapp = wa;
     data.free_delivery_min = Math.max(0, parseFloat(f.elements.free_delivery_min.value)||0);
     data.about_points = f.elements.about_points.value.split('\n').map(s=>s.trim()).filter(Boolean);
+    // 和默认一样就存空白，以后默认更新时会自动跟着更新
+    WA_KEYS.forEach(k=>{ const v = f.elements[k].value.replace(/\r/g,'').trim(); data[k] = (v === LSB.WA_DEFAULTS[k].trim()) ? '' : v; });
     data.hero_image = (await heroPicker.commit('site')).url;
     data.about_image = (await aboutPicker.commit('site')).url;
     const { error } = await sb.from('settings').upsert({ id:1, data });
