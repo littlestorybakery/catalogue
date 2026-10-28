@@ -52,7 +52,9 @@ header.top{position:sticky;top:0;z-index:40;background:rgba(251,246,238,.92);bac
 .logo .ttl{display:flex;flex-direction:column;align-items:center;min-width:0}
 .logo b{font-family:var(--script);font-weight:600;font-size:25px;color:var(--brown-d);line-height:1;white-space:nowrap}
 .logo small{display:block;font-size:8.5px;letter-spacing:.22em;padding-left:.22em;color:var(--muted);margin-top:4px;white-space:nowrap;text-align:center}
-nav.main{display:none;gap:26px;font-size:13.5px}
+nav.main{display:none;gap:22px;font-size:13.5px;align-items:center}
+nav.main a{display:flex;flex-direction:column;align-items:center;line-height:1.2}
+nav.main a small{font-size:10.5px;opacity:.8}
 nav.main a{white-space:nowrap;color:var(--muted);padding:6px 0;border-bottom:2px solid transparent}
 nav.main a:hover{color:var(--brown-d);border-color:var(--brown)}
 .socials{display:none;gap:10px}
@@ -293,6 +295,7 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 .addon .row2 span{font-weight:700;font-size:12.5px;color:var(--brown)}
 .addon .plus{height:28px;min-width:28px;padding:0 8px;border-radius:999px;background:var(--brown);color:#FFF6EA;display:grid;place-items:center;font-size:11.5px}
 .addon .plus svg{width:15px;height:15px}
+.addon .row2 .plus{color:#FFF6EA}
 .addon.in-cart{border-color:var(--ok)}
 .addon.in-cart .plus{background:var(--ok)}
 .pd-body{padding:16px 18px 6px}
@@ -420,11 +423,11 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
       <span class="ttl"><b id="shopName">Little Story Bakery</b><small id="tagHdr">FRESHLY BAKED · WITH LOVE</small></span>
     </a>
     <nav class="main">
-      <a href="#home">首页</a>
-      <a href="#products">产品</a>
-      <a href="#about">关于我们</a>
-      <a href="#howto">如何下单</a>
-      <a href="#contact">联系</a>
+      <a href="#home">首页<small>Home</small></a>
+      <a href="#products">产品<small>Products</small></a>
+      <a href="#about">关于我们<small>About</small></a>
+      <a href="#howto">如何下单<small>How to order</small></a>
+      <a href="#contact">联系<small>Contact</small></a>
     </nav>
     <div class="socials" id="hdrSocials"></div>
     <a class="btn btn-dark hdr-wa" id="hdrWa" target="_blank" rel="noopener"><span class="icon" data-i="whatsapp"></span>WhatsApp 下单</a>
@@ -457,14 +460,14 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 
   <section id="popularSec" hidden>
     <div class="wrap">
-      <div class="sec-title"><span class="script">Popular Items</span><h2>热门推荐</h2><p>大家最常回购的味道</p></div>
+      <div class="sec-title"><span class="script">Popular Items</span><h2>热门推荐</h2><p>大家最常回购的味道 · Customer favourites</p></div>
       <div class="pop-scroll" id="popList"></div>
     </div>
   </section>
 
   <section id="products" style="padding-top:20px">
     <div class="wrap">
-      <div class="sec-title"><span class="script">Our Products</span><h2>精选产品</h2><p>新鲜食材 · 手工制作 · 每一口都是用心</p></div>
+      <div class="sec-title"><span class="script">Our Products</span><h2>精选产品</h2><p>新鲜食材 · 手工制作 · 每一口都是用心<br>Fresh ingredients · Handmade · Baked with care</p></div>
       <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="search" placeholder="搜寻产品 Search… 例如：贝果、tiramisu" aria-label="搜寻产品"></label>
       <div id="catalog"><div class="loading">载入中… Loading…</div></div>
     </div>
@@ -472,12 +475,12 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 
   <section class="howto" id="howto">
     <div class="wrap">
-      <div class="sec-title"><span class="script">How to Order</span><h2>如何下单</h2><p>三分钟完成，WhatsApp 确认</p></div>
+      <div class="sec-title"><span class="script">How to Order</span><h2>如何下单</h2><p>三分钟完成，WhatsApp 确认 · Order in 3 minutes</p></div>
       <div class="steps">
-        <div class="step"><b>选产品</b><p>加入购物车，选好规格和数量。<br>Pick your items.</p></div>
-        <div class="step"><b>自取或配送</b><p>选择取货方式和日期。<br>Choose pickup or delivery.</p></div>
-        <div class="step"><b>WhatsApp 发送</b><p>订单会自动整理好，按发送就可以。<br>Send via WhatsApp.</p></div>
-        <div class="step"><b>店家确认</b><p>我们会回复确认订单和付款方式。<br>We confirm with you.</p></div>
+        <div class="step"><b>选产品 Pick</b><p>加入购物车，选好规格和数量。<br>Pick your items.</p></div>
+        <div class="step"><b>自取或配送 Pickup / Delivery</b><p>选择取货方式和日期。<br>Choose pickup or delivery.</p></div>
+        <div class="step"><b>WhatsApp 发送 Send</b><p>订单会自动整理好，按发送就可以。<br>Send via WhatsApp.</p></div>
+        <div class="step"><b>店家确认 Confirm</b><p>我们会回复确认订单和付款方式。<br>We confirm with you.</p></div>
       </div>
       <div class="policy">
         <div><span class="icon" data-i="pin"></span><span><b>自取 Self-pickup</b><br><span id="pickupNote"></span></span></div>
@@ -490,7 +493,7 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
     <div class="wrap about-box">
       <div class="about-text">
         <div class="sec-title" style="text-align:left;margin-bottom:16px"><span class="script">About Us</span><h2 style="padding-left:0">关于我们</h2></div>
-        <p class="lead">每一个面包、每一块蛋糕，都是我们亲手做的。<br>没有门店，但有满满的心意。</p>
+        <p class="lead">每一个面包、每一块蛋糕，都是我们亲手做的。<br>没有门店，但有满满的心意。<br><small style="font-size:.8em;opacity:.85">Every bun and every cake is made by hand. No shop front — just a whole lot of heart.</small></p>
         <ul class="points" id="points"></ul>
       </div>
       <div class="about-photo" id="aboutPhoto"></div>
@@ -500,7 +503,7 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
   <div class="band" id="contact">
     <div class="wrap">
       <h3>Wholesale & Custom</h3>
-      <p class="sub">批发、学校、活动订单另有优惠，欢迎 WhatsApp 咨询</p>
+      <p class="sub">批发、学校、活动订单另有优惠，欢迎 WhatsApp 咨询<br>Special rates for wholesale, school &amp; event orders — WhatsApp us</p>
       <div class="tiles">
         <button class="tile" data-inq="school"><span class="icon" data-i="school"></span><span><b>学校订单</b><br><small>School Orders</small></span></button>
         <button class="tile" data-inq="event"><span class="icon" data-i="catering"></span><span><b>企业 / 活动 / 婚礼</b><br><small>Catering & Events</small></span></button>
@@ -522,7 +525,7 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 <div class="cartbar" id="cartbar">
   <span class="icon" data-i="cart"></span>
   <div class="info"><b id="barTotal">RM 0.00</b><small id="barCount"></small></div>
-  <button class="btn" id="barOpen">查看订单 <span class="icon" data-i="arrow"></span></button>
+  <button class="btn" id="barOpen">查看订单 View <span class="icon" data-i="arrow"></span></button>
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -575,7 +578,7 @@ let form = store.get('lsb_form', { method:'pickup', area:'cheras', date:'', name
 const WEEK = ['日','一','二','三','四','五','六'];
 function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function addDays(n){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+n); return d; }
-function prettyDate(s){ if(!s) return ''; const d=new Date(s+'T00:00'); return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} (周${WEEK[d.getDay()]})`; }
+function prettyDate(s){ if(!s) return ''; const d=new Date(s+'T00:00'); return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} (周${WEEK[d.getDay()]} ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]})`; }
 function catIconHTML(c){ return c && c.image_url ? `<img src="${esc(c.image_url)}" alt="">` : (ICONS[(c&&c.icon)||'bread']||ICONS.bread); }
 // big=false 用小图，big=true 用大图；ri = 口味（有自己的照片就用口味照片）
 function imgSrc(p, big, ri){
@@ -594,8 +597,14 @@ function priceLabel(p){
   const { min, max } = P.range(p);
   return min === max ? money(min) : `${money(min)} <small>– ${max.toFixed(2)}</small>`;
 }
-function countTag(p){ const n = P.flavourCount(p); return n ? `${n} 种口味` : ''; }
+function countTag(p){ const n = P.flavourCount(p); return n ? `${n} 种口味 · ${n} flavour${n>1?'s':''}` : ''; }
 function rowNames(p){ return P.single(p) ? '' : p.rows.map(r=>r.label_zh||r.label_en).join('、'); }
+function rowNamesEn(p){ return P.single(p) ? '' : p.rows.map(r=>r.label_en).filter(Boolean).join(', '); }
+// 中英文一起：「抹茶 Matcha」
+function bi(zh, en){ zh = zh||''; en = en||''; return zh && en && zh!==en ? `${zh} ${en}` : (zh||en); }
+function rowBi(r){ return bi(r.label_zh, r.label_en); }
+function specBi(p, si){ const s = p.specs[si||0]; return s ? bi(s.zh, s.en) : ''; }
+function labelBi(p, ri, si){ return [P.single(p) ? '' : rowBi(p.rows[ri]||{}), specBi(p, si)].filter(Boolean).join(' · '); }
 function wa(text){ return `https://wa.me/${waNumber(S.whatsapp)}?text=${encodeURIComponent(text)}`; }
 function saveCart(){ store.set('lsb_cart_v2', cart); }
 function saveForm(){ store.set('lsb_form', form); }
@@ -631,7 +640,7 @@ function renderShop(){
   $('#collage').innerHTML = pick ? `
     <div class="ph p1"><img src="${esc(pick.image_url)}" alt=""></div>
     ${pick2?`<div class="ph p2"><img src="${esc(pick2.image_url)}" alt=""></div>`:''}
-    <div class="note">新鲜制作<br>手作烘焙</div>` : '';
+    <div class="note">新鲜制作<br>Freshly baked</div>` : '';
   const ab = S.about_image || (pick2||pick||{}).image_url;
   $('#aboutPhoto').innerHTML = ab ? `<img src="${esc(ab)}" alt="" loading="lazy">` : '';
   $('#aboutPhoto').hidden = !ab;
@@ -647,8 +656,8 @@ function visibleProducts(slug){ return PRODS.filter(p=>!p.hidden && (!slug || p.
 
 function cardHTML(p){
   const badges = [];
-  if(p.popular) badges.push('<span class="badge hot">热门</span>');
-  if(p.preorder_days>0) badges.push(`<span class="badge pre">需提前 ${p.preorder_days} 天预订</span>`);
+  if(p.popular) badges.push('<span class="badge hot">热门 Popular</span>');
+  if(p.preorder_days>0) badges.push(`<span class="badge pre">需提前 ${p.preorder_days} 天预订 · Pre-order ${p.preorder_days} day${p.preorder_days>1?'s':''}</span>`);
   const desc = p.description_zh || p.description_en || rowNames(p);
   const cnt = countTag(p);
   return `<button class="card ${p.sold_out?'soldout':''}" data-pid="${esc(p.id)}">
@@ -667,9 +676,9 @@ function cardHTML(p){
 function rowHTML(p){
   const tags = [];
   const cnt = countTag(p); if(cnt) tags.push(`<i>${cnt}</i>`);
-  if(p.preorder_days>0) tags.push(`<i>需提前 ${p.preorder_days} 天预订</i>`);
-  if(p.sold_out) tags.push('<i class="so">售罄</i>');
-  const sub = [p.name_en, p.description_zh || rowNames(p)].filter(Boolean).join(' · ');
+  if(p.preorder_days>0) tags.push(`<i>需提前 ${p.preorder_days} 天预订 · Pre-order ${p.preorder_days} day${p.preorder_days>1?'s':''}</i>`);
+  if(p.sold_out) tags.push('<i class="so">售罄 Sold out</i>');
+  const sub = [p.name_en, p.description_zh || rowNames(p), p.description_zh ? p.description_en : rowNamesEn(p)].filter(Boolean).join(' · ');
   return `<button class="row ${p.sold_out?'soldout':''}" data-pid="${esc(p.id)}">
     <span class="t"><b>${esc(p.name_zh||p.name_en)}</b>${sub?`<span>${esc(sub)}</span>`:''}${tags.length?`<span class="tags">${tags.join('')}</span>`:''}</span>
     <span class="price">${priceLabel(p)}</span>
@@ -684,9 +693,9 @@ function renderCatalog(){
   if(Q){
     const hits = visibleProducts().filter(matches);
     const withImg = hits.some(p=>p.image_url);
-    $('#catalog').innerHTML = `<div class="cat-section"><div class="cat-head"><h3>搜寻结果</h3><span>Results</span><em>${hits.length} 款</em></div>
+    $('#catalog').innerHTML = `<div class="cat-section"><div class="cat-head"><h3>搜寻结果</h3><span>Results</span><em>${hits.length} 款 items</em></div>
       ${hits.length ? (withImg ? `<div class="grid">${hits.map(cardHTML).join('')}</div>` : `<div class="rows">${hits.map(rowHTML).join('')}</div>`)
-        : `<div class="empty-cat">找不到「${esc(Q)}」<br><small>可以试试别的字，或直接 WhatsApp 问我们</small></div>`}</div>`;
+        : `<div class="empty-cat">找不到「${esc(Q)}」<br><small>可以试试别的字，或直接 WhatsApp 问我们<br>No results — try another word, or WhatsApp us</small></div>`}</div>`;
     return;
   }
   renderSections();
@@ -696,10 +705,10 @@ function renderSections(){
   $('#catalog').innerHTML = CATS.map(c=>{
     const list = visibleProducts(c.slug);
     return `<div class="cat-section" id="cat-${esc(c.slug)}" data-sec="${esc(c.slug)}">
-      <div class="cat-head"><h3>${esc(c.name_zh)}</h3><span>${esc(c.name_en)}</span><em>${list.length} 款</em></div>
+      <div class="cat-head"><h3>${esc(c.name_zh)}</h3><span>${esc(c.name_en)}</span><em>${list.length} 款 items</em></div>
       ${list.length ? (list.some(p=>p.image_url) ? `<div class="grid">${list.map(cardHTML).join('')}</div>` : `<div class="rows">${list.map(rowHTML).join('')}</div>`)
         : `<div class="empty-cat">${c.slug==='cookies'||/定制|custom/i.test(c.name_zh+c.name_en)
-            ? '节庆饼干、礼盒都可以定制 🎁<br><button class="btn btn-line" style="margin-top:10px" data-inq="custom">WhatsApp 询问定制</button>'
+            ? '节庆饼干、礼盒都可以定制 🎁<br><small>Festive cookies &amp; gift boxes made to order</small><br><button class="btn btn-line" style="margin-top:10px" data-inq="custom">WhatsApp 询问定制 Enquire</button>'
             : '新产品准备中，敬请期待 ♡ Coming soon'}</div>`}
     </div>`;
   }).join('');
@@ -742,6 +751,7 @@ function openProduct(id){
 }
 function specMin(p, si){ const v = p.rows.map((r,i)=>P.ok(p,i,si)?r.prices[si]:null).filter(x=>x!==null); return v.length ? Math.min(...v) : null; }
 function sellsIn(p, ri){ return p.specs.map((s,si)=>P.sells(p,ri,si)?P.specName(p,si):'').filter(Boolean).join(' / '); }
+function sellsInEn(p, ri){ return p.specs.map((s,si)=>P.sells(p,ri,si)?(s.en||s.zh):'').filter(Boolean).join(' / '); }
 // 搭配推荐：同分类里开了"搭配推荐"的产品，每个口味一张卡片
 function addonList(p){
   if(p.addon) return [];
@@ -760,9 +770,10 @@ function addonsHTML(p){
   return `<span class="label">${esc(S.addon_title_zh||'搭配一起吃？')} · ${esc(S.addon_title_en||'Pair it with')}</span>
     <div class="addons">${list.map(({x,ri,si})=>{ const n=inCartQty(x.id,ri,si);
       const nm = (x.name_zh||x.name_en) + (P.single(x) ? '' : ' · ' + P.rowName(x.rows[ri]));
+      const nmEn = [x.name_en, P.single(x) ? '' : x.rows[ri].label_en].filter(Boolean).join(' · ');
       return `<button class="addon ${n?'in-cart':''}" data-addon="${esc(x.id)}" data-ri="${ri}" data-si="${si}">
         <span class="th">${imgHTML(x, false, ri)}</span>
-        <span class="in"><b>${esc(nm)}</b>
+        <span class="in"><b>${esc(nm)}</b>${nmEn?`<small style="display:block;font-size:11px;opacity:.75;line-height:1.25">${esc(nmEn)}</small>`:''}
           <span class="row2"><span>${money(P.price(x,ri,si))}</span><span class="plus">${n?`✓ ${n}`:ICONS.plus}</span></span></span>
       </button>`; }).join('')}</div>`;
 }
@@ -775,20 +786,20 @@ function renderPd(){
   const showThumbs = p.rows.some(r=>r.thumb_url || r.image_url);
   $('#pdScroll').innerHTML = `
     <div class="pd-img" ${big?'data-zoom':''}>${imgHTML(p, true, single ? null : ri)}
-      ${!single && (row.image_url||row.thumb_url) ? `<span class="flv">${esc(P.rowName(row))}</span>`:''}
-      ${big?`<span class="zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg>点击放大</span>`:''}</div>
+      ${!single && (row.image_url||row.thumb_url) ? `<span class="flv">${esc(rowBi(row))}</span>`:''}
+      ${big?`<span class="zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg>点击放大 Zoom</span>`:''}</div>
     <div class="pd-body">
       <h3>${esc(p.name_zh||p.name_en)}</h3>
       ${p.name_zh&&p.name_en?`<div class="en">${esc(p.name_en)}</div>`:''}
       ${p.specs.length===1?`<span class="spec">${esc(p.specs[0].zh)}${p.specs[0].en?` · ${esc(p.specs[0].en)}`:''}</span>`:''}
       ${(p.description_zh||p.description_en)?`<p class="desc">${esc(p.description_zh)}${p.description_en?`<small>${esc(p.description_en)}</small>`:''}</p>`:''}
       ${multiSpec?`<span class="label">选择规格 · Size</span><div class="segs">${p.specs.map((sp,k)=>{ const m = specMin(p,k);
-        return `<button data-si="${k}" class="${k===si?'on':''} ${m===null?'na':''}">${esc(sp.zh||sp.en)}<small>${m===null?'售罄':money(m)+(p.rows.filter((r,i)=>P.ok(p,i,k)).length>1?' 起':'')}</small></button>`; }).join('')}</div>`:''}
+        return `<button data-si="${k}" class="${k===si?'on':''} ${m===null?'na':''}">${esc(sp.zh||sp.en)}${sp.en&&sp.zh&&sp.en!==sp.zh?` <span style="font-size:.82em;opacity:.75">${esc(sp.en)}</span>`:''}<small>${m===null?'售罄 Sold out':(p.rows.filter((r,i)=>P.ok(p,i,k)).length>1?'From ':'')+money(m)+(p.rows.filter((r,i)=>P.ok(p,i,k)).length>1?' 起':'')}</small></button>`; }).join('')}</div>`:''}
       ${!single?`<span class="label">选择口味 · Flavour</span><div class="ogrid">${p.rows.map((r,k)=>{
         const ok = P.ok(p,k,si), sells = P.sells(p,k,si);
-        const state = !sells ? `只有${esc(sellsIn(p,k))}` : r.sold_out ? '售罄' : money(r.prices[si]);
+        const state = !sells ? `只有${esc(sellsIn(p,k))} · ${esc(sellsInEn(p,k))} only` : r.sold_out ? '售罄 Sold out' : money(r.prices[si]);
         const th = showThumbs ? `<img src="${esc(imgSrc(p,false,k))}" alt="" loading="lazy">` : '';
-        return `<button class="o ${k===ri?'on':''} ${ok?'':'na'}" data-ri="${k}">${th}<span>${esc(r.label_zh||r.label_en)}${r.label_zh&&r.label_en&&!showThumbs?`<small class="en">${esc(r.label_en)}</small>`:''}<small>${state}</small></span></button>`; }).join('')}</div>`:''}
+        return `<button class="o ${k===ri?'on':''} ${ok?'':'na'}" data-ri="${k}">${th}<span>${esc(r.label_zh||r.label_en)}${r.label_zh&&r.label_en&&r.label_en!==r.label_zh?`<small class="en">${esc(r.label_en)}</small>`:''}<small>${state}</small></span></button>`; }).join('')}</div>`:''}
       ${row.moq>1?`<div class="hint">最少 ${row.moq} 份 · Minimum ${row.moq}</div>`:''}
       ${p.preorder_days>0?`<div class="note-box">⏰ <span>此产品需提前 <b>${p.preorder_days}</b> 天预订。<br>Pre-order ${p.preorder_days} day(s) in advance.</span></div>`:''}
       ${addonsHTML(p)}
@@ -800,7 +811,7 @@ function renderPd(){
     ? `<button class="btn btn-line" style="flex:1;padding:13px" data-inq="ask" data-pid="${esc(p.id)}">${icon('whatsapp')}询问补货 Ask</button>`
     : can
     ? `<div class="qty"><button data-q="-1" ${qty<=row.moq?'disabled':''} aria-label="减少">${icon('minus')}</button><span>${qty}</span><button data-q="1" aria-label="增加">${icon('plus')}</button></div>
-       <button class="btn btn-dark" id="pdAdd">加入购物车 · ${money(price*qty)}</button>`
+       <button class="btn btn-dark" id="pdAdd">加入购物车 Add · ${money(price*qty)}</button>`
     : `<button class="btn btn-dark" style="flex:1;padding:13px" disabled>请选择其他口味 · Choose another</button>`;
 }
 $('#pdScroll').addEventListener('click', e=>{
@@ -817,7 +828,7 @@ $('#pdScroll').addEventListener('click', e=>{
     const ex = cart.find(c=>c.pid===x.id && c.ri===ri && c.si===si);
     if(ex) ex.qty += 1; else cart.push({ pid:x.id, ri, si, qty:x.rows[ri].moq });
     saveCart(); updateCart(); renderPd();
-    toast(`已加入 ${esc(x.name_zh||x.name_en)}${P.single(x)?'':' · '+esc(P.rowName(x.rows[ri]))} ✓`, 1600);
+    toast(`已加入 Added: ${esc(x.name_zh||x.name_en)}${P.single(x)?'':' · '+esc(rowBi(x.rows[ri]))} ✓`, 1600);
     return;
   }
   const o = e.target.closest('.o[data-ri]');
@@ -832,8 +843,8 @@ $('#pdBottom').addEventListener('click', e=>{
     const ex = cart.find(c=>c.pid===p.id && c.ri===ri && c.si===si);
     if(ex) ex.qty += qty; else cart.push({ pid:p.id, ri, si, qty });
     saveCart(); updateCart(); close();
-    const lab = P.label(p, ri, si);
-    toast(`已加入 ${esc(p.name_zh||p.name_en)}${lab?` (${esc(lab)})`:''} ×${qty} <button id="tGo">查看订单</button>`);
+    const lab = labelBi(p, ri, si);
+    toast(`已加入 Added: ${esc(p.name_zh||p.name_en)}${lab?` (${esc(lab)})`:''} ×${qty} <button id="tGo">查看 View</button>`);
     const g=$('#tGo'); if(g) g.onclick=()=>{ $('#toast').classList.remove('show'); openCart(); };
   }
 });
@@ -842,7 +853,7 @@ $('#pdBottom').addEventListener('click', e=>{
 function openLightbox(p, ri){
   const lb = $('#lb'); lb.classList.remove('zoomed');
   $('#lbImg').src = imgSrc(p, true, ri);
-  $('#lbTitle').textContent = (p.name_zh || p.name_en) + (ri != null ? ' · ' + P.rowName(p.rows[ri]) : '');
+  $('#lbTitle').textContent = (p.name_zh || p.name_en) + (ri != null ? ' · ' + rowBi(p.rows[ri]) : '');
   lb.classList.add('open');
 }
 function closeLightbox(){ $('#lb').classList.remove('open','zoomed'); }
@@ -871,12 +882,12 @@ function subtotal(){ return cartLines().reduce((s,l)=>s+l.line,0); }
 function minDays(){ return cartLines().reduce((m,l)=>Math.max(m,l.p.preorder_days),0); }
 function deliveryInfo(sub){
   const area = S.free_delivery_area || 'Cheras', min = Number(S.free_delivery_min)||0;
-  if(form.method!=='delivery') return { text:'自取 · 无运费', short:'—', free:true };
+  if(form.method!=='delivery') return { text:'自取 · 无运费 · Self-pickup, no delivery fee', short:'—', free:true };
   if(form.area==='cheras'){
-    if(sub>=min) return { text:`${area} 满 ${money(min)}，免运费 ✓`, short:'免运费 FREE', free:true };
-    return { text:`${area} 未满 ${money(min)}，Lalamove 运费由顾客承担。再加 ${money(min-sub)} 即可免运费！`, short:'Lalamove 另计', free:false, gap:min-sub };
+    if(sub>=min) return { text:`${area} 满 ${money(min)}，免运费 ✓ · Free delivery`, short:'免运费 FREE', free:true };
+    return { text:`${area} 未满 ${money(min)}，Lalamove 运费由顾客承担。再加 ${money(min-sub)} 即可免运费！<br>Add ${money(min-sub)} more for free delivery to ${area}; otherwise the Lalamove fee is paid by you.`, short:'Lalamove 另计 extra', free:false, gap:min-sub };
   }
-  return { text:'其他地区：Lalamove 运费由顾客承担。', short:'Lalamove 另计', free:false };
+  return { text:'其他地区：Lalamove 运费由顾客承担。<br>Other areas: Lalamove delivery fee is paid by the customer.', short:'Lalamove 另计 extra', free:false };
 }
 function updateCart(){
   const lines = cartLines();
@@ -905,40 +916,40 @@ function renderCart(){
   $('#cartScroll').innerHTML = `
     <div class="cart-head"><h3>购物车</h3><span>Your order</span></div>
     <div class="cart-body">
-      <div class="items">${lines.map((l,i)=>{ const lab = P.label(l.p,l.ri,l.si); return `
+      <div class="items">${lines.map((l,i)=>{ const lab = labelBi(l.p,l.ri,l.si); return `
         <div class="item">
           <div class="th">${imgHTML(l.p, false, P.single(l.p)?null:l.ri)}</div>
-          <div class="mid"><b>${esc(l.p.name_zh||l.p.name_en)}</b>
+          <div class="mid"><b>${esc(l.p.name_zh||l.p.name_en)}</b>${l.p.name_zh&&l.p.name_en?`<small>${esc(l.p.name_en)}</small>`:''}
             ${lab?`<small>${esc(lab)}</small>`:''}
             <div class="p">${money(l.line)}</div>
-            ${l.row.sold_out?'<span class="warn">已售罄，WhatsApp 时会再确认</span>':''}
+            ${l.row.sold_out?'<span class="warn">已售罄，WhatsApp 时会再确认 · Sold out, we\'ll confirm on WhatsApp</span>':''}
           </div>
           <div class="qty sm"><button data-cq="${i}" data-d="-1" aria-label="减少">${icon('minus')}</button><span>${l.qty}</span><button data-cq="${i}" data-d="1" aria-label="增加">${icon('plus')}</button></div>
         </div>`; }).join('')}</div>
 
       <span class="label">取货方式 · Pickup or Delivery</span>
       <div class="seg">
-        <button data-m="pickup" class="${form.method==='pickup'?'on':''}"><b>自取</b><small>Self-pickup · 无最低消费</small></button>
+        <button data-m="pickup" class="${form.method==='pickup'?'on':''}"><b>自取</b><small>Self-pickup · 无最低消费 No minimum</small></button>
         <button data-m="delivery" class="${form.method==='delivery'?'on':''}"><b>配送</b><small>Delivery</small></button>
       </div>
       ${form.method==='delivery'?`
         <div class="seg" style="margin-top:8px">
-          <button data-a="cheras" class="${form.area==='cheras'?'on':''}"><b>${esc(S.free_delivery_area||'Cheras')}</b><small>满 ${money(S.free_delivery_min)} 免运</small></button>
+          <button data-a="cheras" class="${form.area==='cheras'?'on':''}"><b>${esc(S.free_delivery_area||'Cheras')}</b><small>满 ${money(S.free_delivery_min)} 免运 · Free over ${money(S.free_delivery_min)}</small></button>
           <button data-a="other" class="${form.area==='other'?'on':''}"><b>其他地区</b><small>Other areas</small></button>
         </div>
-        <label class="field"><span>配送地址 · Address <b style="color:var(--warn)">*</b></span><textarea id="fAddr" rows="2" placeholder="门牌、路名、花园、邮区">${esc(form.address)}</textarea></label>
+        <label class="field"><span>配送地址 · Address <b style="color:var(--warn)">*</b></span><textarea id="fAddr" rows="2" placeholder="门牌、路名、花园、邮区 · Unit, street, area, postcode">${esc(form.address)}</textarea></label>
         <div class="hint ${dv.free?'ok':'warn'}">${esc(dv.text)}</div>`
       :`<div class="hint">${esc(S.pickup_note_zh||'')}</div>`}
 
       <label class="field"><span>${form.method==='delivery'?'配送日期':'取货日期'} · Date</span><input type="date" id="fDate" min="${minD}" value="${form.date}"></label>
-      ${md>0?`<div class="hint warn">购物车里有需要预订的产品，最早 ${prettyDate(minD)}</div>`:''}
-      <label class="field"><span>名字 · Name <b style="color:var(--warn)">*</b></span><input id="fName" autocomplete="name" placeholder="怎么称呼您？" value="${esc(form.name)}"></label>
-      <label class="field"><span>备注 · Notes（可选）</span><textarea id="fNote" rows="2" placeholder="例如：希望下午 3 点后取货、生日蜡烛…">${esc(form.note)}</textarea></label>
+      ${md>0?`<div class="hint warn">购物车里有需要预订的产品，最早 ${prettyDate(minD)}<br>Your cart has pre-order items — earliest date ${prettyDate(minD)}</div>`:''}
+      <label class="field"><span>名字 · Name <b style="color:var(--warn)">*</b></span><input id="fName" autocomplete="name" placeholder="怎么称呼您？ Your name" value="${esc(form.name)}"></label>
+      <label class="field"><span>备注 · Notes（可选 optional）</span><textarea id="fNote" rows="2" placeholder="例如：希望下午 3 点后取货、生日蜡烛… e.g. pickup after 3pm, birthday candle">${esc(form.note)}</textarea></label>
 
       <div class="sum">
         <div><span>小计 Subtotal</span><span>${money(sub)}</span></div>
         <div><span>运费 Delivery</span><span>${esc(dv.short)}</span></div>
-        <div class="tot"><span>总计 Total</span><span>${money(sub)}${dv.free?'':' + 运费'}</span></div>
+        <div class="tot"><span>总计 Total</span><span>${money(sub)}${dv.free?'':' + 运费 delivery'}</span></div>
       </div>
       <div style="text-align:center;margin-top:12px"><button class="hint" id="clearCart" style="text-decoration:underline">清空购物车 Clear cart</button></div>
     </div>`;
@@ -957,7 +968,7 @@ $('#cartScroll').addEventListener('click', e=>{
   }
   const m = e.target.closest('[data-m]'); if(m){ form.method=m.dataset.m; saveForm(); renderCart(); return; }
   const a = e.target.closest('[data-a]'); if(a){ form.area=a.dataset.a; saveForm(); renderCart(); return; }
-  if(e.target.closest('#clearCart')){ if(confirm('确定清空购物车？')){ cart=[]; saveCart(); updateCart(); renderCart(); } }
+  if(e.target.closest('#clearCart')){ if(confirm('确定清空购物车？ Clear your cart?')){ cart=[]; saveCart(); updateCart(); renderCart(); } }
 });
 $('#cartScroll').addEventListener('input', e=>{
   const map = { fAddr:'address', fDate:'date', fName:'name', fNote:'note' };
@@ -974,14 +985,14 @@ async function sendOrder(){
   const minD = ymd(addDays(minDays()));
   if(!form.name.trim()) return fail('请填写名字 · Please enter your name');
   if(!form.date) return fail('请选择日期 · Please choose a date');
-  if(form.date < minD) return fail(`最早可选 ${prettyDate(minD)}`);
+  if(form.date < minD) return fail(`最早可选 ${prettyDate(minD)} · Earliest date ${prettyDate(minD)}`);
   if(form.method==='delivery'){
     const ad = form.address.trim();
     if(!ad) return fail('选择配送需要填写地址 · Please enter your delivery address');
     if(ad.replace(/\s/g,'').length < 10) return fail('地址好像不完整，请填写门牌、路名、花园和邮区 · Please enter your full address');
   }
   const bad = lines.find(l=>l.qty < l.row.moq);
-  if(bad) return fail(`${bad.p.name_zh} 最少 ${bad.row.moq} 份`);
+  if(bad) return fail(`${bad.p.name_zh} 最少 ${bad.row.moq} 份 · Minimum ${bad.row.moq} for ${bad.p.name_en||bad.p.name_zh}`);
 
   // iPhone 只允许在按下去的那一刻开新视窗，所以先开好，等拿到订单号码再跳去 WhatsApp
   const win = window.open('', '_blank');
@@ -989,7 +1000,7 @@ async function sendOrder(){
 
   const sub = subtotal(), dv = deliveryInfo(sub);
   const delivery = form.method==='delivery';
-  const areaLabel = form.area==='cheras' ? (S.free_delivery_area||'Cheras') : '其他地区';
+  const areaLabel = form.area==='cheras' ? (S.free_delivery_area||'Cheras') : '其他地区 Other areas';
   const keepUrl = u => (u && !/^data:/.test(u)) ? u : '';
   const order = {
     name: form.name.trim(), date: form.date, method: form.method, area: delivery ? areaLabel : '',
@@ -1008,7 +1019,7 @@ async function sendOrder(){
 
   const text = LSB.buildOrderMessage(S, {
     code,
-    items: lines.map(l=>({ name:[l.p.name_zh, l.p.name_en].filter(Boolean).join(' '), opt:P.label(l.p, l.ri, l.si), qty:l.qty, amount:l.line })),
+    items: lines.map(l=>({ name:[l.p.name_zh, l.p.name_en].filter(Boolean).join(' '), opt:labelBi(l.p, l.ri, l.si), qty:l.qty, amount:l.line })),
     subtotal: sub, delivery, freeShip: dv.free, areaLabel,
     address: form.address.trim(), date: prettyDate(form.date), name: form.name.trim(), note: form.note.trim()
   });
@@ -1017,7 +1028,7 @@ async function sendOrder(){
   else location.href = url;
   sending = false;
   close();
-  const t = toast(`${code?`订单号码 <b>#${esc(code)}</b> · `:''}已打开 WhatsApp，记得按<b>发送</b>哦 ✓ <button id="tClear">清空购物车</button>`, 10000);
+  const t = toast(`${code?`订单号码 Order <b>#${esc(code)}</b> · `:''}已打开 WhatsApp，记得按<b>发送</b>哦 ✓<br>WhatsApp opened — remember to tap <b>Send</b>. <button id="tClear">清空购物车 Clear cart</button>`, 10000);
   const b = $('#tClear'); if(b) b.onclick=()=>{ cart=[]; saveCart(); updateCart(); t.classList.remove('show'); };
 }
 
@@ -1026,7 +1037,7 @@ function inquire(kind, p){
   const key = { wholesale:'wa_wholesale', school:'wa_school', event:'wa_event', custom:'wa_custom', ask:'wa_ask' }[kind] || 'wa_wholesale';
   const text = LSB.fillTemplate(LSB.waTemplate(S, key), {
     '店名': S.shop_name || 'Little Story Bakery',
-    '产品': p ? (p.name_zh || p.name_en) : (kind==='custom' ? '节庆饼干 / 礼盒' : '这个产品')
+    '产品': p ? [p.name_zh, p.name_en].filter(Boolean).join(' ') : (kind==='custom' ? '节庆饼干 / 礼盒 Festive cookies / gift box' : '这个产品 this item')
   });
   window.open(wa(text), '_blank', 'noopener');
 }

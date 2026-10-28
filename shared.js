@@ -224,11 +224,11 @@
   const WA_DEFAULTS = {
     wa_order: "🤎 *LITTLE STORY BAKERY ORDER CONFIRMATION｜订单确认*\n🧾 *Order No. 订单号：{订单号}*\n\n*🧁 Order Details｜订单明细*\n{订单}\n\nSubtotal 小计：{小计}\nDelivery Fee 运费：{运费金额}\n*Total 总额：{总额}*\n\n*{资料标题}*\nName 姓名：{名字}\nAddress 地址：{地址}\nDate 日期：{日期}\nMethod 方式：{方式}\nNotes 备注：{备注}\n\n*💳 Payment Status 付款状态：*\n\nPlease check and confirm your order details. 请确认以上订单资料，谢谢！🤎",
     wa_item: "{产品} × {数量} — {金额}",
-    wa_wholesale: "你好 {店名}！我想询问批发 🙂\n公司 / 店名：\n想要的产品：\n大概数量：\n需要日期：",
-    wa_school: "你好 {店名}！我想询问学校订单 🙂\n学校名字：\n人数 / 数量：\n需要日期：",
-    wa_event: "你好 {店名}！我想询问活动 / 婚礼 / 企业餐点 🙂\n活动类型：\n人数：\n活动日期：",
-    wa_custom: "你好 {店名}！我想询问定制：{产品} 🎁\n用途 / 节日：\n数量：\n需要日期：\n（参考图片我会另外发）",
-    wa_ask: "你好 {店名}！请问 {产品} 什么时候会再有货？"
+    wa_wholesale: "你好 {店名}！我想询问批发 🙂\nHi {店名}! I'd like to ask about wholesale.\n公司 / 店名 Company：\n想要的产品 Items：\n大概数量 Quantity：\n需要日期 Date needed：",
+    wa_school: "你好 {店名}！我想询问学校订单 🙂\nHi {店名}! I'd like to ask about a school order.\n学校名字 School：\n人数 / 数量 Quantity：\n需要日期 Date needed：",
+    wa_event: "你好 {店名}！我想询问活动 / 婚礼 / 企业餐点 🙂\nHi {店名}! I'd like to ask about catering for an event.\n活动类型 Event type：\n人数 Pax：\n活动日期 Event date：",
+    wa_custom: "你好 {店名}！我想询问定制：{产品} 🎁\nHi {店名}! I'd like to ask about a custom order: {产品}\n用途 / 节日 Occasion：\n数量 Quantity：\n需要日期 Date needed：\n（参考图片我会另外发 I'll send reference photos separately）",
+    wa_ask: "你好 {店名}！请问 {产品} 什么时候会再有货？\nHi {店名}! When will {产品} be available again?"
   };
   function fillTemplate(tpl, vars) {
     const out = [];
@@ -263,11 +263,11 @@
       "订单": items,
       "小计": money(o.subtotal),
       "运费金额": feeKnown ? money(0) + (o.delivery ? "（免运 Free）" : "") : "待确认 TBC",
-      "总额": feeKnown ? money(o.subtotal) : money(o.subtotal) + " + 运费",
+      "总额": feeKnown ? money(o.subtotal) : money(o.subtotal) + " + 运费 delivery",
       "资料标题": o.delivery ? "📦 Delivery Details｜配送资料" : "🛍️ Pickup Details｜自取资料",
       "方式": o.delivery ? `配送 Delivery — ${o.areaLabel}` : "自取 Self-pickup",
       "地址": o.delivery ? o.address : "",
-      "运费": o.delivery ? (o.freeShip ? "免运费" : "Lalamove 运费由顾客承担") : "",
+      "运费": o.delivery ? (o.freeShip ? "免运费 Free delivery" : "Lalamove 运费由顾客承担 Delivery fee paid by customer") : "",
       "日期": o.date,
       "名字": o.name,
       "备注": o.note
