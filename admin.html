@@ -311,8 +311,8 @@ input[type=number]{-moz-appearance:textfield}
 .oh b{font-size:15px;color:var(--brown-d)}
 .pills{margin-left:auto;display:flex;gap:4px}
 .pill{font-size:11px;padding:2px 8px;border-radius:999px;white-space:nowrap}
-.pill.n{background:#FFF4CF;color:#8A6A00}.pill.c{background:#EAF0F7;color:#3B5B80}.pill.d{background:#ECE6F5;color:#5B4A80}
-.pill.x{background:#EEE8E1;color:#7A6A5C}.pill.p{background:var(--ok-bg);color:var(--ok)}.pill.u{background:var(--warn-bg);color:var(--warn)}
+.pill.pn{background:#FFF4CF;color:#8A6A00}.pill.pc{background:#EAF0F7;color:#3B5B80}.pill.pd{background:#ECE6F5;color:#5B4A80}
+.pill.px{background:#EEE8E1;color:#7A6A5C}.pill.pp{background:var(--ok-bg);color:var(--ok)}.pill.pu{background:var(--warn-bg);color:var(--warn)}
 .ometa{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.5}
 .oitems{font-size:13px;margin:6px 0 0;padding:6px 8px;background:var(--paper);border-radius:9px;line-height:1.55}
 .oitems .tot{display:flex;justify-content:space-between;border-top:1px dashed var(--line);margin-top:4px;padding-top:3px;font-weight:700;color:var(--brown-d)}
@@ -1554,7 +1554,7 @@ function orderTotal(o){ return (Number(o.subtotal)||0) + (Number(orderFee(o))||0
 function timeOf(iso){ const d = new Date(iso); return isNaN(d) ? '' : `${d.getDate()}/${d.getMonth()+1} ${pad(d.getHours())}:${pad(d.getMinutes())}`; }
 function statusPill(o){
   const del = o.method==='delivery';
-  const m = { new:['n','新订单'], confirmed:['c','已确认'], done:['d', del?'已交货':'已取货'], cancelled:['x','已取消'] }[o.status] || ['n', o.status];
+  const m = { new:['pn','新订单'], confirmed:['pc','已确认'], done:['pd', del?'已交货':'已取货'], cancelled:['px','已取消'] }[o.status] || ['pn', o.status];
   return `<span class="pill ${m[0]}">${m[1]}</span>`;
 }
 function orderCard(o){
@@ -1563,7 +1563,7 @@ function orderCard(o){
   const noFee = del && !o.free_ship && o.delivery_fee==null;
   return `<div class="ord st-${esc(o.status)} ${paid?'paid':''} ${PEND.paid.has(o.id)?'changed':''}" data-oid="${esc(o.id)}">
     <div class="oh"><span class="no">#${esc(o.code)}</span><b>${esc(o.name||'(没有名字)')}</b>
-      <span class="pills">${statusPill(o)}${cancelled?'':`<span class="pill ${paid?'p':'u'}">${paid?'已付款':'未付款'}</span>`}</span></div>
+      <span class="pills">${statusPill(o)}${cancelled?'':`<span class="pill ${paid?'pp':'pu'}">${paid?'已付款':'未付款'}</span>`}</span></div>
     <div class="ometa">${del?'🚚 配送':'🛍️ 自取'} · <b>${esc(prettyDate(o.order_date))}</b>${del&&o.area?` · ${esc(o.area)}`:''}${del?` · ${feeTxt}`:''}
       ${del&&o.address?`<br>📍 ${esc(o.address)}`:''}<br><span style="font-size:11.5px">下单 ${esc(timeOf(o.created_at))}</span></div>
     <div class="oitems">${(o.items||[]).map(it=>`<div style="display:flex;gap:8px"><span style="flex:1">${esc(it.name_zh||it.name_en||'')}${it.label?` <span class="muted">(${esc(it.label)})</span>`:''} × <b>${it.qty}</b></span><span>${money(it.line)}</span></div>`).join('')}
