@@ -1,6 +1,6 @@
 // 网站快取：照片存在顾客手机里，下次打开不用重新下载（也省 Supabase 流量）
 // 网站档案（html / js）每次先拿最新的，没网络时才用旧的。
-const STATIC = "lsb-static-v5";
+const STATIC = "lsb-static-v6";
 const IMAGES = "lsb-img-v1";
 const MAX_IMAGES = 400;
 
