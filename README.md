@@ -14,6 +14,8 @@
 | `images/` | 初始菜单的产品照片（已压缩），`images/t/` 是小图 |
 | `demo-backend.js` | 示范模式（还没连 Supabase 时用） |
 | `supabase-setup.sql` | 在 Supabase 跑一次，建立资料表和权限 |
+| `supabase-update-2.sql` | 第二次更新：规格 + 口味照片、订单表、合并产品（跑完 setup 之后再跑一次） |
+| `og-image.jpg`、`icon-*.png`、`manifest.webmanifest` | WhatsApp 连结预览图、手机桌面图示 |
 | `sw.js` | 把网站和照片存在顾客手机里，下次打开更快 |
 | `.github/workflows/keep-alive.yml` | 每 3 天叫醒 Supabase，避免免费版暂停 |
 
@@ -31,7 +33,7 @@
 
 1. 到 [supabase.com](https://supabase.com) 建立新项目，Region 选 **Southeast Asia (Singapore)**。
 2. 打开 `supabase-setup.sql`，把最下面的 `YOUR-EMAIL@gmail.com` 换成店主登入用的 email。
-3. Supabase 后台 → **SQL Editor** → New query → 贴上整个档案 → **Run**。
+3. Supabase 后台 → **SQL Editor** → New query → 贴上整个档案 → **Run**。接着用同样方法跑 `supabase-update-2.sql`。
 4. **Authentication → Users → Add user → Create new user**：填同一个 email 和密码，勾选 *Auto Confirm User*。
 5. **Authentication → Sign In / Providers**：把 *Allow new users to sign up* 关掉（多一层保险）。
 6. **Project Settings → API**：复制 *Project URL* 和 *anon public* key，填进 `config.js`：
@@ -58,21 +60,25 @@ window.LSB_CONFIG = {
 
 ### 3. 第一次登入
 
-打开 `admin.html` → 登入 → 按 **导入初始菜单**，就会把现有的三明治、香蕉蛋糕、4粒包放进资料库。之后在后台慢慢补照片、改资料就好。
+打开 `admin.html` → 登入 → 按 **导入初始菜单**，就会把现有菜单放进资料库。之后在后台慢慢补照片、改资料就好。
 
 ---
 
 ## 店主日常使用
 
-- **售罄**：产品列表右边直接按开关，网站马上显示"售罄"。
+- **售罄**：产品列表每个口味旁边都有开关。按完下面会出现「有 N 个改动还没保存」，按 **保存** 才会生效（看到绿色 ✓ 已保存）。
 - **新增产品**：右下角"+ 新增产品"。
 - **照片**：可以 📷 上传 / 拍照、📋 贴上图片、长按框框贴上、电脑 Ctrl+V，或直接拖进来。照片会自动压缩到大约 100–200KB，按"保存"才会上传；换照片或删除产品时，旧照片也会自动删掉，不会占空间。
-- **规格**：同一个产品有不同大小 / 包装（例如香蕉蛋糕 整条 / 盒装），就按"+ 加规格"，每个规格可以设价钱和最少数量。
+- **规格**：编辑产品时按规格按钮（整条、盒装…，可以选多个，再按一次取消）。名字可以改，例如「盒装 (2片)」。常用规格在「设定」里可以自己改。
+- **口味 & 价钱**：一个口味一格，可以放照片（📷 或 📋 贴上）、↑↓ 换顺序。有两个规格时每个口味有两格价钱，**留空 = 那个规格不卖这个口味**。「全部口味都是 RM__ 套用到全部」可以一次填好。
+- **订单**：顾客按「WhatsApp 发送订单」时会自动存进「订单」页（有订单号码，例如 #1029-05）。可以打勾已付款、⋯ 里确认订单、编辑、写店家备注、填 Lalamove 运费、已交货、取消。超过一年的订单自动删除。
+- **备货**：选日期，自动算出每样产品要准备几份（可以只算已付款的）。
 - **预订**：填"需要提前几天预订"，顾客选日期时会自动挡掉太早的日子。
 - **热门推荐**：打开就会出现在首页的"热门推荐"。
 - **隐藏**：暂时不卖但不想删除。
 - **只询价**：定制品不显示价钱，顾客按下去直接 WhatsApp 询问。
-- **店铺设定**：WhatsApp 号码、免运费地区和金额、公告横幅、关于我们、首页大图、社交链接。
+- **设定**：WhatsApp 号码、网站 logo、注册号码、常用规格、免运费地区和金额、公告横幅、关于我们、首页大图、WhatsApp 讯息格式、社交链接。
+- **连结预览图**：`og-image.jpg` 的网址写在 `index.html` 里（https://littlestorybakery.github.io/catalogue/og-image.jpg）。换网址的话要一起改。
 - **图片空间**：产品页最上面会显示用了多少（免费版 1GB，压缩后大约可以放几千张）。
 
 ## 订单规则（目前的设定）

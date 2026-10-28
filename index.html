@@ -6,7 +6,18 @@
 <title>Little Story Bakery · 手作烘焙</title>
 <meta name="description" content="Little Story Bakery — 纯手工、新鲜制作的面包、蛋糕、三明治与节庆定制。WhatsApp 下单，自取或配送。">
 <meta name="theme-color" content="#F5EDE2">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>🥐</text></svg>">
+<!-- 发连结时的预览（WhatsApp / Facebook / Instagram） -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Little Story Bakery">
+<meta property="og:title" content="Little Story Bakery">
+<meta property="og:url" content="https://littlestorybakery.github.io/catalogue/">
+<meta property="og:image" content="https://littlestorybakery.github.io/catalogue/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
@@ -37,9 +48,10 @@ input,textarea,select{font:inherit;color:inherit}
 header.top{position:sticky;top:0;z-index:40;background:rgba(251,246,238,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
 .top .wrap{display:flex;align-items:center;gap:18px;height:64px}
 .logo{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
-.logo .icon{width:46px;height:20px;color:var(--brown)}
+.logo img{height:46px;width:auto;flex:none}
+.logo .ttl{display:flex;flex-direction:column;align-items:center;min-width:0}
 .logo b{font-family:var(--script);font-weight:600;font-size:25px;color:var(--brown-d);line-height:1;white-space:nowrap}
-.logo small{display:block;font-size:8.5px;letter-spacing:.22em;color:var(--muted);margin-top:3px;white-space:nowrap}
+.logo small{display:block;font-size:8.5px;letter-spacing:.22em;padding-left:.22em;color:var(--muted);margin-top:4px;white-space:nowrap;text-align:center}
 nav.main{display:none;gap:26px;font-size:13.5px}
 nav.main a{white-space:nowrap;color:var(--muted);padding:6px 0;border-bottom:2px solid transparent}
 nav.main a:hover{color:var(--brown-d);border-color:var(--brown)}
@@ -167,6 +179,26 @@ section{padding:46px 0}
 .fl{padding:9px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--card);font-size:13.5px;line-height:1.25;text-align:center}
 .fl small{display:block;font-size:10.5px;color:var(--muted)}
 .fl.on{border-color:var(--brown);background:#FFF8EE;box-shadow:inset 0 0 0 1px var(--brown);color:var(--brown-d)}
+.card .cnt{display:inline-block;align-self:flex-start;font-size:10.5px;color:#8A5A20;background:#FFF1DD;padding:1px 8px;border-radius:999px;margin-top:5px}
+.card .price small{font-size:12px;font-weight:700;color:var(--brown)}
+.pd-body .spec{display:inline-block;font-size:12px;color:var(--brown);background:#F3E6D4;padding:2px 10px;border-radius:999px;margin-top:6px}
+.pd-img .flv{position:absolute;left:12px;bottom:12px;background:rgba(40,26,16,.62);color:#fff;font-size:12px;padding:4px 10px;border-radius:999px}
+.segs{display:flex;gap:8px}
+.segs button{flex:1;padding:10px 8px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);text-align:center;font-size:14.5px;line-height:1.25}
+.segs button small{display:block;font-size:11.5px;color:var(--muted)}
+.segs button.on{border-color:var(--brown);background:#FFF8EE;box-shadow:inset 0 0 0 1px var(--brown)}
+.segs button.na{opacity:.45}
+.ogrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ogrid .o{display:flex;gap:8px;align-items:center;padding:8px 9px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);text-align:left;min-height:52px}
+.ogrid .o img{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none}
+.ogrid .o span{font-size:13.5px;line-height:1.25;min-width:0}
+.ogrid .o small{display:block;font-weight:700;color:var(--brown);font-size:12.5px;margin-top:1px}
+.ogrid .o small.en{font-weight:400;color:var(--muted);font-size:11px}
+.ogrid .o.on{border-color:var(--brown);background:#FFF8EE;box-shadow:inset 0 0 0 1px var(--brown)}
+.ogrid .o.na{opacity:.45}
+.ogrid .o.na small{color:var(--muted);font-weight:400}
+.btn-dark:disabled{opacity:.5;cursor:default}
+.sending{opacity:.7;pointer-events:none}
 .empty-cat{padding:22px;text-align:center;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);font-size:13.5px}
 
 /* how to order */
@@ -347,7 +379,8 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 }
 @media (min-width:900px){
   html{scroll-padding-top:84px}
-  .top .wrap{height:72px}
+  .top .wrap{height:76px}
+  .logo img{height:54px}
   nav.main,.socials,.hdr-wa{display:flex}
   .hero .wrap{grid-template-columns:1.05fr 1fr;padding-top:56px;padding-bottom:66px}
   .collage{height:380px}
@@ -383,8 +416,8 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 <header class="top">
   <div class="wrap">
     <a href="#home" class="logo" aria-label="Little Story Bakery">
-      <span class="icon" data-i="loaf"></span>
-      <span><b id="shopName">Little Story Bakery</b><small>FRESHLY BAKED · WITH LOVE</small></span>
+      <img id="logoImg" src="images/logo-emblem.webp" alt="" width="64" height="46">
+      <span class="ttl"><b id="shopName">Little Story Bakery</b><small id="tagHdr">FRESHLY BAKED · WITH LOVE</small></span>
     </a>
     <nav class="main">
       <a href="#home">首页</a>
@@ -480,7 +513,7 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 
 <footer>
   <div class="wrap">
-    <span>© <span id="yr"></span> Little Story Bakery · WhatsApp <span id="phoneTxt"></span></span>
+    <span>© <span id="yr"></span> <span id="ftName">Little Story Bakery</span><span id="ftReg"></span> · WhatsApp <span id="phoneTxt"></span></span>
     <div class="socials" id="ftSocials"></div>
   </div>
 </footer>
@@ -533,7 +566,8 @@ paintIcons();
 $('#yr').textContent = new Date().getFullYear();
 
 let S = {}, CATS = [], PRODS = [], byId = {};
-let cart = store.get('lsb_cart', []);           // [{pid, oi, fi, qty}]  fi = 口味 index（-1 = 没有口味）
+const { P } = LSB;
+let cart = store.get('lsb_cart_v2', []);        // [{pid, ri, si, qty}]  ri = 第几个口味，si = 第几个规格
 let Q = '';
 let form = store.get('lsb_form', { method:'pickup', area:'cheras', date:'', name:'', address:'', note:'' });
 
@@ -543,31 +577,38 @@ function ymd(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0
 function addDays(n){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+n); return d; }
 function prettyDate(s){ if(!s) return ''; const d=new Date(s+'T00:00'); return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()} (周${WEEK[d.getDay()]})`; }
 function catIconHTML(c){ return c && c.image_url ? `<img src="${esc(c.image_url)}" alt="">` : (ICONS[(c&&c.icon)||'bread']||ICONS.bread); }
-// big=false 用小图（卡片），big=true 用大图（产品页）
-function imgHTML(p, big){
-  const src = big ? p.image_url : (p.thumb_url || p.image_url);
+// big=false 用小图，big=true 用大图；ri = 口味（有自己的照片就用口味照片）
+function imgSrc(p, big, ri){
+  const r = ri != null ? p.rows[ri] : null;
+  const rs = r && (big ? (r.image_url || r.thumb_url) : (r.thumb_url || r.image_url));
+  return rs || (big ? p.image_url : (p.thumb_url || p.image_url)) || '';
+}
+function imgHTML(p, big, ri){
+  const src = imgSrc(p, big, ri);
   if(src) return `<img src="${esc(src)}" alt="${esc(p.name_zh||p.name_en)}" ${big?'':'loading="lazy"'} decoding="async">`;
   const c = CATS.find(c=>c.slug===p.category_slug);
   return `<div class="ph-empty">${ICONS[(c&&c.icon)||'bread']}</div>`;
 }
 function priceLabel(p){
   if(p.quote_only) return '<small>询价 Enquire</small>';
-  const ps = p.options.map(o=>o.price);
-  const min = Math.min(...ps);
-  return money(min) + (ps.some(x=>x!==min) ? ' <small>起</small>' : '');
+  const { min, max } = P.range(p);
+  return min === max ? money(min) : `${money(min)} <small>– ${max.toFixed(2)}</small>`;
 }
-function optLabel(o){ return [o.label_zh,o.label_en].filter(Boolean).join(' / '); }
-function flavorName(p, fi){ const f = fi>=0 && p.flavors[fi]; return f ? (f.zh || f.en) : ''; }
-function lineLabel(p, o, fi){ return [flavorName(p,fi), o.label_zh || o.label_en].filter(Boolean).join(' · '); }
-function flavorList(p){ return p.flavors.map(f=>f.zh||f.en).join('、'); }
+function countTag(p){ const n = P.flavourCount(p); return n ? `${n} 种口味` : ''; }
+function rowNames(p){ return P.single(p) ? '' : p.rows.map(r=>r.label_zh||r.label_en).join('、'); }
 function wa(text){ return `https://wa.me/${waNumber(S.whatsapp)}?text=${encodeURIComponent(text)}`; }
-function saveCart(){ store.set('lsb_cart', cart); }
+function saveCart(){ store.set('lsb_cart_v2', cart); }
 function saveForm(){ store.set('lsb_form', form); }
 function toast(html, ms=2600){ const t=$('#toast'); t.innerHTML=html; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), ms); return t; }
 
 /* ---------- render shop info ---------- */
 function renderShop(){
   $('#shopName').textContent = S.shop_name || 'Little Story Bakery';
+  $('#ftName').textContent = S.shop_name || 'Little Story Bakery';
+  $('#ftReg').textContent = S.reg_no ? ` (${S.reg_no})` : '';
+  $('#tagHdr').textContent = S.tagline_hdr != null ? S.tagline_hdr : 'FRESHLY BAKED · WITH LOVE';
+  $('#tagHdr').hidden = !$('#tagHdr').textContent;
+  $('#logoImg').src = S.logo_url || 'images/logo-emblem.webp';
   $('#tagZh').textContent = S.tagline_zh || '';
   $('#tagEn').textContent = S.tagline_en || '';
   if(S.announcement){ $('#announce').textContent = S.announcement; $('#announce').hidden=false; } else $('#announce').hidden=true;
@@ -581,7 +622,6 @@ function renderShop(){
   $('#hdrSocials').innerHTML = soc; $('#ftSocials').innerHTML = soc;
   const pts = Array.isArray(S.about_points) ? S.about_points : [];
   $('#points').innerHTML = pts.map(t=>{ const [a,b]=String(t).split('|'); return `<li>${icon('check')}<span>${esc(a.trim())}${b?`<small>${esc(b.trim())}</small>`:''}</span></li>`; }).join('');
-  // hero
   const hero = $('#home');
   if(S.hero_image){ hero.classList.add('has-img'); hero.style.backgroundImage = `url("${S.hero_image}")`; }
   else { hero.classList.remove('has-img'); hero.style.backgroundImage=''; }
@@ -600,7 +640,7 @@ function renderShop(){
 /* ---------- catalog ---------- */
 function matches(p){
   if(!Q) return true;
-  const hay = [p.name_zh,p.name_en,p.description_zh,p.description_en].concat(p.flavors.map(f=>f.zh+' '+f.en)).join(' ').toLowerCase();
+  const hay = [p.name_zh,p.name_en,p.description_zh,p.description_en].concat(p.rows.map(r=>r.label_zh+' '+r.label_en)).join(' ').toLowerCase();
   return Q.split(/\s+/).every(w=>hay.includes(w));
 }
 function visibleProducts(slug){ return PRODS.filter(p=>!p.hidden && (!slug || p.category_slug===slug)).sort((a,b)=>a.sort-b.sort); }
@@ -609,13 +649,15 @@ function cardHTML(p){
   const badges = [];
   if(p.popular) badges.push('<span class="badge hot">热门</span>');
   if(p.preorder_days>0) badges.push(`<span class="badge pre">需提前 ${p.preorder_days} 天预订</span>`);
-  const desc = p.description_zh || p.description_en || (p.flavors.length ? '口味：'+flavorList(p) : '');
+  const desc = p.description_zh || p.description_en || rowNames(p);
+  const cnt = countTag(p);
   return `<button class="card ${p.sold_out?'soldout':''}" data-pid="${esc(p.id)}">
     <div class="img">${imgHTML(p)}<div class="badges">${badges.join('')}</div></div>
     <div class="body">
       <b>${esc(p.name_zh || p.name_en)}</b>
       ${p.name_zh && p.name_en ? `<span class="en">${esc(p.name_en)}</span>`:''}
       ${desc?`<span class="desc">${esc(desc)}</span>`:''}
+      ${cnt?`<span class="cnt">${cnt}</span>`:''}
       <div class="foot"><span class="price">${priceLabel(p)}</span>
         ${p.quote_only ? `<span class="add quote">询价</span>` : `<span class="add" aria-hidden="true">${icon('plus')}</span>`}
       </div>
@@ -624,10 +666,10 @@ function cardHTML(p){
 
 function rowHTML(p){
   const tags = [];
-  if(p.flavors.length) tags.push(`<i>${p.flavors.length} 种口味</i>`);
+  const cnt = countTag(p); if(cnt) tags.push(`<i>${cnt}</i>`);
   if(p.preorder_days>0) tags.push(`<i>需提前 ${p.preorder_days} 天预订</i>`);
   if(p.sold_out) tags.push('<i class="so">售罄</i>');
-  const sub = [p.name_en, p.description_zh || (p.flavors.length ? flavorList(p) : '')].filter(Boolean).join(' · ');
+  const sub = [p.name_en, p.description_zh || rowNames(p)].filter(Boolean).join(' · ');
   return `<button class="row ${p.sold_out?'soldout':''}" data-pid="${esc(p.id)}">
     <span class="t"><b>${esc(p.name_zh||p.name_en)}</b>${sub?`<span>${esc(sub)}</span>`:''}${tags.length?`<span class="tags">${tags.join('')}</span>`:''}</span>
     <span class="price">${priceLabel(p)}</span>
@@ -650,8 +692,7 @@ function renderCatalog(){
   renderSections();
 }
 function renderSections(){
-  $('#catRow').innerHTML = CATS.map((c,i)=>`<button class="cat${i===0?' active':''}" data-cat="${esc(c.slug)}">
-    <span class="ic">${catIconHTML(c)}</span><span><b>${esc(c.name_zh)}</b><small>${esc(c.name_en)}</small></span></button>`).join('');
+  renderCats();
   $('#catalog').innerHTML = CATS.map(c=>{
     const list = visibleProducts(c.slug);
     return `<div class="cat-section" id="cat-${esc(c.slug)}" data-sec="${esc(c.slug)}">
@@ -665,7 +706,7 @@ function renderSections(){
   const pop = visibleProducts().filter(p=>p.popular);
   $('#popularSec').hidden = !pop.length;
   $('#popList').innerHTML = pop.map(p=>`<button class="pop" data-pid="${esc(p.id)}">
-    <span class="th">${imgHTML(p)}</span><span class="meta"><b>${esc(p.name_zh||p.name_en)}</b><small>${esc(p.name_en)}</small><span class="price">${priceLabel(p)}</span></span></button>`).join('');
+    <span class="th">${imgHTML(p)}</span><span class="meta"><b>${esc(p.name_zh||p.name_en)}</b><small>${esc([p.name_en, countTag(p)].filter(Boolean).join(' · '))}</small><span class="price">${priceLabel(p)}</span></span></button>`).join('');
   setupSpy();
 }
 
@@ -688,43 +729,67 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
 $$('[data-close]').forEach(b=>b.addEventListener('click', close));
 
 /* ---------- product sheet ---------- */
-let pd = { p:null, oi:0, fi:-1, qty:1 };
+let pd = { p:null, ri:0, si:0, qty:1 };
+function firstOk(p, si){ return p.rows.findIndex((r,i)=>P.ok(p,i,si)); }
 function openProduct(id){
   const p = byId[id]; if(!p) return;
   if(p.quote_only){ inquire('custom', p); return; }
-  pd = { p, oi:0, fi:p.flavors.length?0:-1, qty:p.options[0].moq };
+  let si = 0, ri = -1;
+  for(let s=0; s<P.nSpec(p); s++){ const r = firstOk(p, s); if(r>=0){ si=s; ri=r; break; } }
+  if(ri<0) ri = 0;
+  pd = { p, ri, si, qty:p.rows[ri].moq };
   renderPd(); open('#pdSheet'); $('#pdScroll').scrollTop=0;
 }
+function specMin(p, si){ const v = p.rows.map((r,i)=>P.ok(p,i,si)?r.prices[si]:null).filter(x=>x!==null); return v.length ? Math.min(...v) : null; }
+function sellsIn(p, ri){ return p.specs.map((s,si)=>P.sells(p,ri,si)?P.specName(p,si):'').filter(Boolean).join(' / '); }
+// 搭配推荐：同分类里开了"搭配推荐"的产品，每个口味一张卡片
 function addonList(p){
   if(p.addon) return [];
-  return visibleProducts(p.category_slug).filter(x=>x.addon && x.id!==p.id && !x.sold_out && !x.quote_only);
+  const out = [];
+  visibleProducts(p.category_slug).filter(x=>x.addon && x.id!==p.id && !x.quote_only).forEach(x=>{
+    x.rows.forEach((r,ri)=>{
+      let si = -1; for(let s=0;s<P.nSpec(x);s++){ if(P.ok(x,ri,s)){ si=s; break; } }
+      if(si>=0) out.push({ x, ri, si });
+    });
+  });
+  return out;
 }
-function inCartQty(id){ return cart.filter(c=>c.pid===id).reduce((s,c)=>s+c.qty,0); }
+function inCartQty(pid, ri, si){ return cart.filter(c=>c.pid===pid && c.ri===ri && c.si===si).reduce((s,c)=>s+c.qty,0); }
 function addonsHTML(p){
   const list = addonList(p); if(!list.length) return '';
   return `<span class="label">${esc(S.addon_title_zh||'搭配一起吃？')} · ${esc(S.addon_title_en||'Pair it with')}</span>
-    <div class="addons">${list.map(x=>{ const n=inCartQty(x.id), o=x.options[0];
-      return `<button class="addon ${n?'in-cart':''}" data-addon="${esc(x.id)}">
-        <span class="th">${imgHTML(x)}</span>
-        <span class="in"><b>${esc(x.name_zh||x.name_en)}</b>
-          <span class="row2"><span>${money(o.price)}</span><span class="plus">${n?`✓ ${n}`:ICONS.plus}</span></span></span>
+    <div class="addons">${list.map(({x,ri,si})=>{ const n=inCartQty(x.id,ri,si);
+      const nm = (x.name_zh||x.name_en) + (P.single(x) ? '' : ' · ' + P.rowName(x.rows[ri]));
+      return `<button class="addon ${n?'in-cart':''}" data-addon="${esc(x.id)}" data-ri="${ri}" data-si="${si}">
+        <span class="th">${imgHTML(x, false, ri)}</span>
+        <span class="in"><b>${esc(nm)}</b>
+          <span class="row2"><span>${money(P.price(x,ri,si))}</span><span class="plus">${n?`✓ ${n}`:ICONS.plus}</span></span></span>
       </button>`; }).join('')}</div>`;
 }
 function renderPd(){
   const keep = $('#pdScroll').scrollTop;
-  const { p, oi, fi, qty } = pd; const o = p.options[oi];
-  const multi = p.options.length>1 || optLabel(p.options[0]);
+  const { p, ri, si, qty } = pd; const row = p.rows[ri];
+  const price = P.price(p, ri, si), can = P.ok(p, ri, si);
+  const multiSpec = p.specs.length > 1, single = P.single(p);
+  const big = imgSrc(p, true, single ? null : ri);
+  const showThumbs = p.rows.some(r=>r.thumb_url || r.image_url);
   $('#pdScroll').innerHTML = `
-    <div class="pd-img" ${p.image_url?'data-zoom':''}>${imgHTML(p, true)}${p.image_url?`<span class="zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg>点击放大</span>`:''}</div>
+    <div class="pd-img" ${big?'data-zoom':''}>${imgHTML(p, true, single ? null : ri)}
+      ${!single && (row.image_url||row.thumb_url) ? `<span class="flv">${esc(P.rowName(row))}</span>`:''}
+      ${big?`<span class="zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg>点击放大</span>`:''}</div>
     <div class="pd-body">
       <h3>${esc(p.name_zh||p.name_en)}</h3>
       ${p.name_zh&&p.name_en?`<div class="en">${esc(p.name_en)}</div>`:''}
+      ${p.specs.length===1?`<span class="spec">${esc(p.specs[0].zh)}${p.specs[0].en?` · ${esc(p.specs[0].en)}`:''}</span>`:''}
       ${(p.description_zh||p.description_en)?`<p class="desc">${esc(p.description_zh)}${p.description_en?`<small>${esc(p.description_en)}</small>`:''}</p>`:''}
-      ${p.flavors.length?`<span class="label">选择口味 · Flavour</span><div class="fls">${p.flavors.map((f,i)=>`
-        <button class="fl ${i===fi?'on':''}" data-fi="${i}">${esc(f.zh||f.en)}${f.zh&&f.en?`<small>${esc(f.en)}</small>`:''}</button>`).join('')}</div>`:''}
-      ${multi?`<span class="label">${p.flavors.length?'选择规格 · Option':'选择口味 / 规格 · Choose one'}</span><div class="opts ${p.options.length>=4?'compact':''}">${p.options.map((x,i)=>`
-        <button class="opt ${i===oi?'on':''}" data-oi="${i}"><span>${esc(x.label_zh||x.label_en||'标准')}${x.label_zh&&x.label_en?`<small>${esc(x.label_en)}</small>`:''}${x.moq>1?`<small>最少 ${x.moq} 份 · Min ${x.moq}</small>`:''}</span><b>${money(x.price)}</b></button>`).join('')}</div>`:''}
-      ${!multi && o.moq>1?`<div class="hint">最少 ${o.moq} 份 · Minimum ${o.moq}</div>`:''}
+      ${multiSpec?`<span class="label">选择规格 · Size</span><div class="segs">${p.specs.map((sp,k)=>{ const m = specMin(p,k);
+        return `<button data-si="${k}" class="${k===si?'on':''} ${m===null?'na':''}">${esc(sp.zh||sp.en)}<small>${m===null?'售罄':money(m)+(p.rows.filter((r,i)=>P.ok(p,i,k)).length>1?' 起':'')}</small></button>`; }).join('')}</div>`:''}
+      ${!single?`<span class="label">选择口味 · Flavour</span><div class="ogrid">${p.rows.map((r,k)=>{
+        const ok = P.ok(p,k,si), sells = P.sells(p,k,si);
+        const state = !sells ? `只有${esc(sellsIn(p,k))}` : r.sold_out ? '售罄' : money(r.prices[si]);
+        const th = showThumbs ? `<img src="${esc(imgSrc(p,false,k))}" alt="" loading="lazy">` : '';
+        return `<button class="o ${k===ri?'on':''} ${ok?'':'na'}" data-ri="${k}">${th}<span>${esc(r.label_zh||r.label_en)}${r.label_zh&&r.label_en&&!showThumbs?`<small class="en">${esc(r.label_en)}</small>`:''}<small>${state}</small></span></button>`; }).join('')}</div>`:''}
+      ${row.moq>1?`<div class="hint">最少 ${row.moq} 份 · Minimum ${row.moq}</div>`:''}
       ${p.preorder_days>0?`<div class="note-box">⏰ <span>此产品需提前 <b>${p.preorder_days}</b> 天预订。<br>Pre-order ${p.preorder_days} day(s) in advance.</span></div>`:''}
       ${addonsHTML(p)}
       ${p.sold_out?`<div class="note-box">今天已售罄，可以 WhatsApp 问问下一批的时间。<br>Sold out for now.</div>`:''}
@@ -733,41 +798,51 @@ function renderPd(){
   $('#pdScroll').scrollTop = keep;
   $('#pdBottom').innerHTML = p.sold_out
     ? `<button class="btn btn-line" style="flex:1;padding:13px" data-inq="ask" data-pid="${esc(p.id)}">${icon('whatsapp')}询问补货 Ask</button>`
-    : `<div class="qty"><button data-q="-1" ${qty<=o.moq?'disabled':''} aria-label="减少">${icon('minus')}</button><span>${qty}</span><button data-q="1" aria-label="增加">${icon('plus')}</button></div>
-       <button class="btn btn-dark" id="pdAdd">加入购物车 · ${money(o.price*qty)}</button>`;
+    : can
+    ? `<div class="qty"><button data-q="-1" ${qty<=row.moq?'disabled':''} aria-label="减少">${icon('minus')}</button><span>${qty}</span><button data-q="1" aria-label="增加">${icon('plus')}</button></div>
+       <button class="btn btn-dark" id="pdAdd">加入购物车 · ${money(price*qty)}</button>`
+    : `<button class="btn btn-dark" style="flex:1;padding:13px" disabled>请选择其他口味 · Choose another</button>`;
 }
 $('#pdScroll').addEventListener('click', e=>{
-  const f = e.target.closest('.fl'); if(f){ pd.fi = +f.dataset.fi; renderPd(); return; }
+  const sp = e.target.closest('[data-si]:not([data-addon])');
+  if(sp){
+    pd.si = +sp.dataset.si;
+    if(!P.ok(pd.p, pd.ri, pd.si)){ const r = firstOk(pd.p, pd.si); if(r>=0) pd.ri = r; }
+    pd.qty = Math.max(pd.qty, pd.p.rows[pd.ri].moq); renderPd(); return;
+  }
   const ad = e.target.closest('[data-addon]');
   if(ad){
     const x = byId[ad.dataset.addon]; if(!x) return;
-    const ex = cart.find(c=>c.pid===x.id && c.oi===0 && (c.fi??-1)===(x.flavors.length?0:-1));
-    if(ex) ex.qty += 1; else cart.push({ pid:x.id, oi:0, fi:x.flavors.length?0:-1, qty:x.options[0].moq });
+    const ri = +ad.dataset.ri, si = +ad.dataset.si;
+    const ex = cart.find(c=>c.pid===x.id && c.ri===ri && c.si===si);
+    if(ex) ex.qty += 1; else cart.push({ pid:x.id, ri, si, qty:x.rows[ri].moq });
     saveCart(); updateCart(); renderPd();
-    toast(`已加入 ${esc(x.name_zh||x.name_en)} ✓`, 1600);
+    toast(`已加入 ${esc(x.name_zh||x.name_en)}${P.single(x)?'':' · '+esc(P.rowName(x.rows[ri]))} ✓`, 1600);
     return;
   }
-  const z = e.target.closest('[data-zoom]'); if(z){ openLightbox(pd.p); return; }
-  const b = e.target.closest('.opt'); if(!b) return;
-  pd.oi = +b.dataset.oi; pd.qty = Math.max(pd.qty, pd.p.options[pd.oi].moq); renderPd();
+  const o = e.target.closest('.o[data-ri]');
+  if(o){ const k = +o.dataset.ri; pd.ri = k; pd.qty = Math.max(1, pd.p.rows[k].moq, pd.qty); renderPd(); return; }
+  const z = e.target.closest('[data-zoom]'); if(z){ openLightbox(pd.p, P.single(pd.p) ? null : pd.ri); return; }
 });
 $('#pdBottom').addEventListener('click', e=>{
   const q = e.target.closest('[data-q]');
-  if(q){ pd.qty = Math.max(pd.p.options[pd.oi].moq, pd.qty + (+q.dataset.q)); renderPd(); return; }
+  if(q){ pd.qty = Math.max(pd.p.rows[pd.ri].moq, pd.qty + (+q.dataset.q)); renderPd(); return; }
   if(e.target.closest('#pdAdd')){
-    const ex = cart.find(c=>c.pid===pd.p.id && c.oi===pd.oi && (c.fi??-1)===pd.fi);
-    if(ex) ex.qty += pd.qty; else cart.push({ pid:pd.p.id, oi:pd.oi, fi:pd.fi, qty:pd.qty });
+    const { p, ri, si, qty } = pd;
+    const ex = cart.find(c=>c.pid===p.id && c.ri===ri && c.si===si);
+    if(ex) ex.qty += qty; else cart.push({ pid:p.id, ri, si, qty });
     saveCart(); updateCart(); close();
-    const lab = lineLabel(pd.p, pd.p.options[pd.oi], pd.fi);
-    toast(`已加入 ${esc(pd.p.name_zh||pd.p.name_en)}${lab?` (${esc(lab)})`:''} ×${pd.qty} <button id="tGo">查看订单</button>`);
+    const lab = P.label(p, ri, si);
+    toast(`已加入 ${esc(p.name_zh||p.name_en)}${lab?` (${esc(lab)})`:''} ×${qty} <button id="tGo">查看订单</button>`);
     const g=$('#tGo'); if(g) g.onclick=()=>{ $('#toast').classList.remove('show'); openCart(); };
   }
 });
 
 /* ---------- 照片放大 ---------- */
-function openLightbox(p){
+function openLightbox(p, ri){
   const lb = $('#lb'); lb.classList.remove('zoomed');
-  $('#lbImg').src = p.image_url; $('#lbTitle').textContent = p.name_zh || p.name_en;
+  $('#lbImg').src = imgSrc(p, true, ri);
+  $('#lbTitle').textContent = (p.name_zh || p.name_en) + (ri != null ? ' · ' + P.rowName(p.rows[ri]) : '');
   lb.classList.add('open');
 }
 function closeLightbox(){ $('#lb').classList.remove('open','zoomed'); }
@@ -786,7 +861,11 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('#lb').classL
 
 /* ---------- cart ---------- */
 function cartLines(){
-  return cart.map(c=>{ const p=byId[c.pid]; if(!p) return null; const o=p.options[c.oi]||p.options[0]; const fi = (c.fi>=0 && c.fi<p.flavors.length) ? c.fi : (p.flavors.length?0:-1); return { ...c, fi, p, o, line:o.price*c.qty }; }).filter(Boolean);
+  return cart.map(c=>{
+    const p = byId[c.pid]; if(!p || !p.rows[c.ri]) return null;
+    const price = P.price(p, c.ri, c.si); if(price === null || price === undefined) return null;
+    return { ...c, p, row:p.rows[c.ri], price, line:price*c.qty };
+  }).filter(Boolean);
 }
 function subtotal(){ return cartLines().reduce((s,l)=>s+l.line,0); }
 function minDays(){ return cartLines().reduce((m,l)=>Math.max(m,l.p.preorder_days),0); }
@@ -801,7 +880,7 @@ function deliveryInfo(sub){
 }
 function updateCart(){
   const lines = cartLines();
-  if(lines.length !== cart.length){ cart = lines.map(l=>({pid:l.pid,oi:l.oi,fi:l.fi,qty:l.qty})); saveCart(); }
+  if(lines.length !== cart.length){ cart = lines.map(l=>({pid:l.pid,ri:l.ri,si:l.si,qty:l.qty})); saveCart(); }
   const n = lines.reduce((s,l)=>s+l.qty,0), sub = subtotal();
   $('#cartCount').textContent = n || '';
   $('#barTotal').textContent = money(sub);
@@ -826,16 +905,16 @@ function renderCart(){
   $('#cartScroll').innerHTML = `
     <div class="cart-head"><h3>购物车</h3><span>Your order</span></div>
     <div class="cart-body">
-      <div class="items">${lines.map((l,i)=>`
+      <div class="items">${lines.map((l,i)=>{ const lab = P.label(l.p,l.ri,l.si); return `
         <div class="item">
-          <div class="th">${imgHTML(l.p)}</div>
+          <div class="th">${imgHTML(l.p, false, P.single(l.p)?null:l.ri)}</div>
           <div class="mid"><b>${esc(l.p.name_zh||l.p.name_en)}</b>
-            ${lineLabel(l.p,l.o,l.fi)?`<small>${esc(lineLabel(l.p,l.o,l.fi))}</small>`:''}
+            ${lab?`<small>${esc(lab)}</small>`:''}
             <div class="p">${money(l.line)}</div>
-            ${l.p.sold_out?'<span class="warn">已售罄，WhatsApp 时会再确认</span>':''}
+            ${l.row.sold_out?'<span class="warn">已售罄，WhatsApp 时会再确认</span>':''}
           </div>
           <div class="qty sm"><button data-cq="${i}" data-d="-1" aria-label="减少">${icon('minus')}</button><span>${l.qty}</span><button data-cq="${i}" data-d="1" aria-label="增加">${icon('plus')}</button></div>
-        </div>`).join('')}</div>
+        </div>`; }).join('')}</div>
 
       <span class="label">取货方式 · Pickup or Delivery</span>
       <div class="seg">
@@ -864,7 +943,7 @@ function renderCart(){
       <div style="text-align:center;margin-top:12px"><button class="hint" id="clearCart" style="text-decoration:underline">清空购物车 Clear cart</button></div>
     </div>`;
   $('#cartBottom').innerHTML = `<p class="err" id="cartErr"></p>
-    <button class="btn btn-wa" id="sendWa">${icon('whatsapp')}WhatsApp 发送订单 · Send order</button>`;
+    <button class="btn btn-wa" id="sendWa">${icon('whatsapp')}<span>WhatsApp 发送订单 · Send order</span></button>`;
 }
 
 $('#cartScroll').addEventListener('click', e=>{
@@ -872,7 +951,7 @@ $('#cartScroll').addEventListener('click', e=>{
   if(q){
     const i=+q.dataset.cq, l=cartLines()[i]; const d=+q.dataset.d;
     let nq = l.qty + d;
-    if(d<0 && nq < l.o.moq) nq = 0;
+    if(d<0 && nq < l.row.moq) nq = 0;
     if(nq<=0) cart.splice(i,1); else cart[i].qty=nq;
     saveCart(); updateCart(); renderCart(); return;
   }
@@ -886,7 +965,9 @@ $('#cartScroll').addEventListener('input', e=>{
 });
 $('#cartBottom').addEventListener('click', e=>{ if(e.target.closest('#sendWa')) sendOrder(); });
 
-function sendOrder(){
+let sending = false;
+async function sendOrder(){
+  if(sending) return;
   const lines = cartLines(), err = $('#cartErr');
   const fail = msg => { err.textContent = msg; err.classList.add('show'); };
   err.classList.remove('show');
@@ -899,19 +980,44 @@ function sendOrder(){
     if(!ad) return fail('选择配送需要填写地址 · Please enter your delivery address');
     if(ad.replace(/\s/g,'').length < 10) return fail('地址好像不完整，请填写门牌、路名、花园和邮区 · Please enter your full address');
   }
-  const bad = lines.find(l=>l.qty < l.o.moq);
-  if(bad) return fail(`${bad.p.name_zh} 最少 ${bad.o.moq} 份`);
+  const bad = lines.find(l=>l.qty < l.row.moq);
+  if(bad) return fail(`${bad.p.name_zh} 最少 ${bad.row.moq} 份`);
+
+  // iPhone 只允许在按下去的那一刻开新视窗，所以先开好，等拿到订单号码再跳去 WhatsApp
+  const win = window.open('', '_blank');
+  sending = true; const btn = $('#sendWa'); btn.classList.add('sending'); btn.querySelector('span').textContent = '正在送出订单… Sending';
+
   const sub = subtotal(), dv = deliveryInfo(sub);
   const delivery = form.method==='delivery';
+  const areaLabel = form.area==='cheras' ? (S.free_delivery_area||'Cheras') : '其他地区';
+  const keepUrl = u => (u && !/^data:/.test(u)) ? u : '';
+  const order = {
+    name: form.name.trim(), date: form.date, method: form.method, area: delivery ? areaLabel : '',
+    address: delivery ? form.address.trim() : '', note: form.note.trim(), subtotal: Math.round(sub*100)/100, free_ship: delivery && dv.free,
+    items: lines.map(l=>({
+      pid: l.p.id, cat: l.p.category_slug, name_zh: l.p.name_zh, name_en: l.p.name_en,
+      row_zh: P.single(l.p) ? '' : (l.row.label_zh||l.row.label_en), spec_zh: P.specName(l.p, l.si),
+      label: P.label(l.p, l.ri, l.si), qty: l.qty, price: l.price, line: Math.round(l.line*100)/100,
+      thumb: keepUrl(imgSrc(l.p, false, P.single(l.p) ? null : l.ri))
+    }))
+  };
+  let code = '';
+  try{
+    code = await Promise.race([ LSB.placeOrder(order), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), 8000)) ]);
+  }catch(e){ console.warn('订单没有存进后台：', e); }
+
   const text = LSB.buildOrderMessage(S, {
-    items: lines.map(l=>({ name:[l.p.name_zh, l.p.name_en].filter(Boolean).join(' '), opt:lineLabel(l.p, l.o, l.fi), qty:l.qty, amount:l.line })),
-    subtotal: sub, delivery, freeShip: dv.free,
-    areaLabel: form.area==='cheras' ? (S.free_delivery_area||'Cheras') : '其他地区',
+    code,
+    items: lines.map(l=>({ name:[l.p.name_zh, l.p.name_en].filter(Boolean).join(' '), opt:P.label(l.p, l.ri, l.si), qty:l.qty, amount:l.line })),
+    subtotal: sub, delivery, freeShip: dv.free, areaLabel,
     address: form.address.trim(), date: prettyDate(form.date), name: form.name.trim(), note: form.note.trim()
   });
-  window.open(wa(text), '_blank', 'noopener');
+  const url = wa(text);
+  if(win && !win.closed){ try{ win.opener = null; win.location.href = url; }catch(e){ location.href = url; } }
+  else location.href = url;
+  sending = false;
   close();
-  const t = toast(`已打开 WhatsApp，记得按<b>发送</b>哦 ✓ <button id="tClear">清空购物车</button>`, 9000);
+  const t = toast(`${code?`订单号码 <b>#${esc(code)}</b> · `:''}已打开 WhatsApp，记得按<b>发送</b>哦 ✓ <button id="tClear">清空购物车</button>`, 10000);
   const b = $('#tClear'); if(b) b.onclick=()=>{ cart=[]; saveCart(); updateCart(); t.classList.remove('show'); };
 }
 
@@ -947,12 +1053,12 @@ function apply(data){
   renderShop(); renderCats(); renderCatalog(); updateCart();
 }
 async function boot(){
-  const cached = LSB.hasSupabase && store.get('lsb_catalog_cache', null);
+  const cached = LSB.hasSupabase && store.get('lsb_catalog_v2', null);
   if(cached) apply(cached);
   try{
     const data = await LSB.loadCatalog();
     if(data.demo){ const f=document.createElement('div'); f.className='demo-flag'; f.textContent='示范模式 Demo data'; document.body.appendChild(f); }
-    else store.set('lsb_catalog_cache', data);
+    else store.set('lsb_catalog_v2', data);
     apply(data);
   }catch(err){
     console.error(err);
@@ -967,6 +1073,8 @@ boot();
 if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
   window.addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
+// 有新版本时提示顾客重新载入（购物车存在手机里，不会不见）
+LSB.watchUpdates(['index.html','shared.js','config.js']);
 </script>
 </body>
 </html>

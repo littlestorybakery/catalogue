@@ -3,10 +3,34 @@
   const cfg = window.LSB_CONFIG || {};
   const hasSupabase = !!(cfg.SUPABASE_URL && cfg.SUPABASE_ANON_KEY);
 
+  // ---------- 网络：最多等几秒，失败自动再试一次（解决 iPhone 放久了回来会卡住） ----------
+  function netFetch(input, init) {
+    init = Object.assign({}, init || {});
+    const method = String(init.method || (input && input.method) || "GET").toUpperCase();
+    const isRead = method === "GET" || method === "HEAD";
+    const url = typeof input === "string" ? input : (input && input.url) || "";
+    const ms = isRead ? 12000 : (/\/storage\//.test(url) ? 60000 : 20000);
+    const attempt = () => {
+      const ctrl = new AbortController();
+      const outer = init.signal;
+      if (outer) { if (outer.aborted) ctrl.abort(); else outer.addEventListener("abort", () => ctrl.abort()); }
+      const t = setTimeout(() => ctrl.abort(), ms);
+      return fetch(input, Object.assign({}, init, { signal: ctrl.signal })).finally(() => clearTimeout(t));
+    };
+    return attempt().catch(err => {
+      if (!isRead || (init.signal && init.signal.aborted)) throw err;
+      return new Promise(r => setTimeout(r, 600)).then(attempt);   // 读取类的请求自动再试一次
+    });
+  }
+  function isNetErr(e) {
+    const m = String((e && (e.message || e.name)) || e || "");
+    return /Load failed|Failed to fetch|NetworkError|network|AbortError|aborted|timeout/i.test(m);
+  }
+
   let client = null;
   function sb() {
     if (!hasSupabase) return null;
-    if (!client) client = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    if (!client) client = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, { global: { fetch: netFetch } });
     return client;
   }
 
@@ -39,8 +63,43 @@
     return "RM " + (Number(n) || 0).toFixed(2);
   }
 
-  function normalizeProduct(p, i) {
+  // ---------- 产品资料 ----------
+  // 新格式：specs = 规格 [{zh, en}]；options = 口味（每一行）[{label_zh, label_en, prices:[每个规格的价钱或 null], moq, sold_out, image_url, thumb_url}]
+  // 旧格式（options 只有 price、flavors 是同价口味）会自动转换，不会坏掉
+  const num = v => (v === null || v === undefined || v === "" || isNaN(Number(v))) ? null : Math.round(Number(v) * 100) / 100;
+  function cleanRow(o, n) {
+    const prices = [];
+    for (let i = 0; i < n; i++) prices.push(num(o.prices ? o.prices[i] : (i === 0 ? o.price : null)));
+    return {
+      label_zh: o.label_zh || "", label_en: o.label_en || "", prices,
+      moq: Math.max(1, parseInt(o.moq, 10) || 1), sold_out: !!o.sold_out,
+      image_url: o.image_url || "", thumb_url: o.thumb_url || ""
+    };
+  }
+  function convertLegacy(p) {
     const opts = Array.isArray(p.options) && p.options.length ? p.options : [{ label_zh: "", label_en: "", price: 0, moq: 1 }];
+    const flavors = (Array.isArray(p.flavors) ? p.flavors : []).map(f => {
+      if (typeof f === "string") { const [zh, en] = f.split("|"); return { zh: (zh || "").trim(), en: (en || "").trim() }; }
+      return { zh: (f && f.zh) || "", en: (f && f.en) || "" };
+    }).filter(f => f.zh || f.en);
+    const lab = o => o.label_zh || o.label_en;
+    if (flavors.length) {
+      const specs = (opts.length > 1 || lab(opts[0])) ? opts.map(o => ({ zh: o.label_zh || o.label_en, en: o.label_en || "" })) : [];
+      const moq = Math.max(...opts.map(o => parseInt(o.moq, 10) || 1));
+      return { specs, rows: flavors.map(f => ({ label_zh: f.zh, label_en: f.en, prices: opts.map(o => o.price), moq, sold_out: !!p.sold_out })) };
+    }
+    if (opts.length > 1) return { specs: [], rows: opts.map(o => Object.assign({}, o, { prices: [o.price], sold_out: !!p.sold_out })) };
+    const o = opts[0];
+    return { specs: lab(o) ? [{ zh: o.label_zh || o.label_en, en: o.label_en || "" }] : [], rows: [{ label_zh: "", label_en: "", prices: [o.price], moq: o.moq, sold_out: !!p.sold_out }] };
+  }
+  function normalizeProduct(p, i) {
+    const isNew = Array.isArray(p.options) && p.options.length && p.options.every(o => Array.isArray(o.prices));
+    let specs, rows;
+    if (isNew) { specs = Array.isArray(p.specs) ? p.specs : []; rows = p.options; }
+    else ({ specs, rows } = convertLegacy(p));
+    specs = specs.map(x => ({ zh: (x && (x.zh || x.label_zh)) || "", en: (x && (x.en || x.label_en)) || "" })).filter(x => x.zh || x.en);
+    const n = Math.max(1, specs.length);
+    rows = rows.map(r => cleanRow(r, n));
     return {
       id: p.id || ("demo-" + i),
       category_slug: p.category_slug || p.category || "",
@@ -50,16 +109,9 @@
       description_en: p.description_en || "",
       image_url: p.image_url || "",
       thumb_url: p.thumb_url || "",
-      options: opts.map(o => ({
-        label_zh: o.label_zh || "", label_en: o.label_en || "",
-        price: Number(o.price) || 0, moq: Math.max(1, parseInt(o.moq, 10) || 1)
-      })),
-      flavors: (Array.isArray(p.flavors) ? p.flavors : []).map(f => {
-        if (typeof f === "string") { const [zh, en] = f.split("|"); return { zh: (zh || "").trim(), en: (en || "").trim() }; }
-        return { zh: (f && f.zh) || "", en: (f && f.en) || "" };
-      }).filter(f => f.zh || f.en),
+      specs, rows,
       preorder_days: parseInt(p.preorder_days, 10) || 0,
-      sold_out: !!p.sold_out,
+      sold_out: rows.every(r => r.sold_out),
       popular: !!p.popular,
       hidden: !!p.hidden,
       quote_only: !!p.quote_only,
@@ -68,6 +120,28 @@
       updated_at: p.updated_at || undefined   // 用来检查有没有被另一部装置改过
     };
   }
+  // 存回资料库时的格式
+  function productToRow(p) {
+    return {
+      specs: p.specs, options: p.rows, flavors: [], sold_out: p.rows.every(r => r.sold_out)
+    };
+  }
+  // 小工具
+  const P = {
+    nSpec: p => Math.max(1, p.specs.length),
+    price: (p, ri, si) => { const r = p.rows[ri]; return r ? r.prices[si || 0] : null; },
+    sells: (p, ri, si) => { const v = P.price(p, ri, si); return v !== null && v !== undefined; },
+    ok: (p, ri, si) => P.sells(p, ri, si) && !p.rows[ri].sold_out,
+    single: p => p.rows.length === 1 && !(p.rows[0].label_zh || p.rows[0].label_en),
+    rowName: r => r.label_zh || r.label_en || "",
+    specName: (p, si) => { const s = p.specs[si || 0]; return s ? (s.zh || s.en) : ""; },
+    label: (p, ri, si) => [P.single(p) ? "" : P.rowName(p.rows[ri] || {}), P.specName(p, si)].filter(Boolean).join(" · "),
+    range: p => {
+      const all = []; p.rows.forEach(r => r.prices.forEach(v => { if (v !== null) all.push(v); }));
+      return all.length ? { min: Math.min(...all), max: Math.max(...all) } : { min: 0, max: 0 };
+    },
+    flavourCount: p => P.single(p) ? 0 : p.rows.length
+  };
 
   function defaultSettings() {
     return Object.assign({}, (window.LSB_SEED && window.LSB_SEED.settings) || {});
@@ -100,12 +174,12 @@
     // 旧版 anon key（eyJ… 开头）还需要 Authorization；新版 publishable key 只要 apikey
     if (/^eyJ/.test(cfg.SUPABASE_ANON_KEY)) headers.Authorization = "Bearer " + cfg.SUPABASE_ANON_KEY;
     let data;
-    const r = await fetch(base + "rpc/get_catalog", { headers });
+    const r = await netFetch(base + "rpc/get_catalog", { headers });
     if (r.ok) {
       data = await r.json();
     } else {
       // 旧版资料库（还没有 get_catalog）就分开拿
-      const get = async q => { const x = await fetch(base + q, { headers }); if (!x.ok) throw new Error("HTTP " + x.status); return x.json(); };
+      const get = async q => { const x = await netFetch(base + q, { headers }); if (!x.ok) throw new Error("HTTP " + x.status); return x.json(); };
       const [st, cats, prods] = await Promise.all([
         get("settings?select=data&id=eq.1"), get("categories?select=*&order=sort"), get("products?select=*&hidden=eq.false&order=sort")
       ]);
@@ -117,6 +191,17 @@
       categories: data.categories || [],
       products: (data.products || []).map(normalizeProduct)
     };
+  }
+
+  // ---------- 下单：存进后台，拿回订单号码 ----------
+  async function placeOrder(order) {
+    if (!hasSupabase) return window.LSB_DEMO ? window.LSB_DEMO.addOrder(order) : "";
+    const headers = { apikey: cfg.SUPABASE_ANON_KEY, "Content-Type": "application/json" };
+    if (/^eyJ/.test(cfg.SUPABASE_ANON_KEY)) headers.Authorization = "Bearer " + cfg.SUPABASE_ANON_KEY;
+    const r = await netFetch(cfg.SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/rpc/place_order", { method: "POST", headers, body: JSON.stringify({ p: order }) });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const code = await r.json();
+    return typeof code === "string" ? code : "";
   }
 
   function esc(s) {
@@ -137,7 +222,7 @@
   // ---------- WhatsApp 讯息格式 ----------
   // {名称} 会自动换成实际内容；某一行里的 {名称} 没有内容（例如自取没有地址），那一整行会自动省略
   const WA_DEFAULTS = {
-    wa_order: "🤎 *LITTLE STORY BAKERY ORDER CONFIRMATION｜订单确认*\n\n*🧁 Order Details｜订单明细*\n{订单}\n\nSubtotal 小计：{小计}\nDelivery Fee 运费：{运费金额}\n*Total 总额：{总额}*\n\n*{资料标题}*\nName 姓名：{名字}\nAddress 地址：{地址}\nDate 日期：{日期}\nMethod 方式：{方式}\nNotes 备注：{备注}\n\n*💳 Payment Status 付款状态：*\n\nPlease check and confirm your order details. 请确认以上订单资料，谢谢！🤎",
+    wa_order: "🤎 *LITTLE STORY BAKERY ORDER CONFIRMATION｜订单确认*\n🧾 *Order No. 订单号：{订单号}*\n\n*🧁 Order Details｜订单明细*\n{订单}\n\nSubtotal 小计：{小计}\nDelivery Fee 运费：{运费金额}\n*Total 总额：{总额}*\n\n*{资料标题}*\nName 姓名：{名字}\nAddress 地址：{地址}\nDate 日期：{日期}\nMethod 方式：{方式}\nNotes 备注：{备注}\n\n*💳 Payment Status 付款状态：*\n\nPlease check and confirm your order details. 请确认以上订单资料，谢谢！🤎",
     wa_item: "{产品} × {数量} — {金额}",
     wa_wholesale: "你好 {店名}！我想询问批发 🙂\n公司 / 店名：\n想要的产品：\n大概数量：\n需要日期：",
     wa_school: "你好 {店名}！我想询问学校订单 🙂\n学校名字：\n人数 / 数量：\n需要日期：",
@@ -174,6 +259,7 @@
     const feeKnown = !o.delivery || o.freeShip;
     return fillTemplate(waTemplate(settings, "wa_order"), {
       "店名": settings.shop_name || "Little Story Bakery",
+      "订单号": o.code ? "#" + o.code : "",
       "订单": items,
       "小计": money(o.subtotal),
       "运费金额": feeKnown ? money(0) + (o.delivery ? "（免运 Free）" : "") : "待确认 TBC",
@@ -189,8 +275,55 @@
   }
   function waTemplate(settings, key) {
     const t = settings && settings[key];
-    return (t && String(t).trim()) ? t : WA_DEFAULTS[key];
+    if (!(t && String(t).trim())) return WA_DEFAULTS[key];
+    // 以前自己改过格式、里面没有 {订单号} 的，自动加在最上面
+    if (key === "wa_order" && !/\{\s*订单号\s*\}/.test(t)) return "🧾 *Order No. 订单号：{订单号}*\n" + t;
+    return t;
   }
 
-  window.LSB = { cfg, hasSupabase, sb, ICONS, money, normalizeProduct, loadCatalog, esc, waNumber, store, defaultSettings, WA_DEFAULTS, fillTemplate, waTemplate, buildOrderMessage };
+  // ---------- 新版本提示 ----------
+  // 定时检查 GitHub 上的档案有没有变；有变就在上方显示"有新版本 · 重新载入"
+  // files：要检查的档案；beforeReload()：回传 false 就不重新载入（例如还有没保存的修改）
+  function watchUpdates(files, beforeReload) {
+    if (!/^https?:$/.test(location.protocol) || !window.fetch) return;
+    const hash = t => { let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return h; };
+    const read = async () => {
+      const parts = await Promise.all(files.map(f => fetch(f, { cache: "no-cache" }).then(r => r.ok ? r.text() : "")));
+      return hash(parts.join("\u0000"));
+    };
+    let base = null, shown = false, checking = false, last = 0;
+    async function check(force) {
+      if (shown || checking || document.hidden) return;
+      if (!force && Date.now() - last < 60000) return;
+      checking = true; last = Date.now();
+      try {
+        const h = await read();
+        if (base === null) base = h;
+        else if (h !== base) show();
+      } catch (e) {}
+      checking = false;
+    }
+    function show() {
+      shown = true;
+      if (!document.getElementById("lsbUpd")) {
+        const st = document.createElement("style");
+        st.textContent = "#lsbUpd{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top));transform:translate(-50%,-140%);z-index:200;display:flex;align-items:center;gap:10px;background:#4C3320;color:#FFF6EA;padding:8px 8px 8px 16px;border-radius:999px;box-shadow:0 10px 30px rgba(40,26,16,.3);font-size:13.5px;transition:transform .35s cubic-bezier(.2,.8,.2,1);max-width:calc(100% - 24px);white-space:nowrap}#lsbUpd.on{transform:translate(-50%,0)}#lsbUpd button{font:inherit;border:0;cursor:pointer;border-radius:999px}#lsbUpd .go{background:#FFF6EA;color:#4C3320;padding:7px 14px;font-weight:600}#lsbUpd .no{background:none;color:#D9C3A6;padding:4px 6px;font-size:16px;line-height:1}";
+        document.head.appendChild(st);
+        const el = document.createElement("div");
+        el.id = "lsbUpd"; el.setAttribute("role", "status");
+        el.innerHTML = '<span>✨ 有新版本 · New version</span><button class="go" type="button">重新载入</button><button class="no" type="button" aria-label="稍后">✕</button>';
+        document.body.appendChild(el);
+        el.querySelector(".go").onclick = () => { if (beforeReload && beforeReload() === false) return; location.reload(); };
+        el.querySelector(".no").onclick = () => { el.classList.remove("on"); setTimeout(() => { shown = false; base = null; }, 600000); };
+        requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("on")));
+      } else document.getElementById("lsbUpd").classList.add("on");
+    }
+    check(true);
+    document.addEventListener("visibilitychange", () => check(false));
+    window.addEventListener("focus", () => check(false));
+    setInterval(() => check(true), 300000);
+    return { check: () => check(true) };
+  }
+
+  window.LSB = { cfg, hasSupabase, sb, ICONS, money, normalizeProduct, productToRow, P, loadCatalog, placeOrder, netFetch, isNetErr, esc, waNumber, store, defaultSettings, WA_DEFAULTS, fillTemplate, waTemplate, buildOrderMessage, watchUpdates };
 })();

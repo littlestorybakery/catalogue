@@ -4,6 +4,19 @@
 (function () {
   // 小工具：P(分类, 中文名, 英文名, 价钱或规格, 其他设定)
   let sortN = {};
+  // 新格式：N(分类, 中文名, 英文名, 规格[[中,英]], 口味[[中,英,价钱 或 [价钱...], 照片]], 其他)
+  function N(cat, zh, en, specs, rows, x) {
+    sortN[cat] = (sortN[cat] || 0) + 1;
+    x = x || {};
+    const img = n => n ? { image_url: "images/" + n + ".webp", thumb_url: "images/t/" + n + ".webp" } : { image_url: "", thumb_url: "" };
+    return Object.assign({
+      category: cat, name_zh: zh, name_en: en,
+      specs: specs.map(s => ({ zh: s[0], en: s[1] || "" })),
+      options: rows.map(r => Object.assign({ label_zh: r[0], label_en: r[1], prices: Array.isArray(r[2]) ? r[2] : [r[2]], moq: 1, sold_out: false }, img(r[3]))),
+      flavors: [], description_zh: x.d || "", description_en: x.de || "",
+      popular: !!x.pop, quote_only: false, hidden: false, addon: !!x.addon, preorder_days: x.pre || 0, sort: sortN[cat]
+    }, img(x.img));
+  }
   function P(cat, zh, en, price, x) {
     sortN[cat] = (sortN[cat] || 0) + 1;
     x = x || {};
@@ -48,9 +61,9 @@
 
   const products = buns.concat([
     // ---- 包装面包 & 吐司 ----
-    P("packs", "4粒装小面包", "4-pc Filled Buns", 7.20, { d: "4粒装 · 有馅", de: "4 buns per pack, with filling",
+    P("packs", "4粒装小面包", "4-pc Filled Buns", [["袋装", "Bag", 7.20]], { d: "4粒装 · 有馅", de: "4 buns per pack, with filling",
       f: ["红豆 | Red bean", "咖椰牛油 | Kaya butter", "黑芝麻 | Black sesame", "起司 | Cheese", "糖牛油 | Butter sugar", "椰子 | Coconut"] }),
-    P("packs", "5粒装原味小餐包", "5-pc Kosong Buns", 8.70, { d: "5粒装 · 无馅，适合早餐", de: "5 plain buns per pack",
+    P("packs", "5粒装原味小餐包", "5-pc Kosong Buns", [["袋装", "Bag", 8.70]], { d: "5粒装 · 无馅，适合早餐", de: "5 plain buns per pack",
       f: ["全麦 | Wholemeal", "南瓜 | Pumpkin", "马铃薯 | Potato", "斑斓葡萄干 | Pandan raisin", "南瓜葡萄干 | Pumpkin raisin", "黑芝麻 | Black sesame"] }),
     P("packs", "盐面包", "Salted Butter Roll", 10.00, { img: "salted-butter-roll", pop: true,
       d: "2粒装。100% 纯牛油，外脆内软，咸香牛油味", de: "2 pcs/pack. 100% pure butter, crisp outside & soft inside" }),
@@ -66,38 +79,25 @@
     P("packs", "蒜蓉面包", "Garlic Bread", 19.00, { d: "4粒装一袋", de: "4 pcs per bag" }),
 
     // ---- 贝果 ----
-    P("bagels", "原味贝果", "Plain Bagel", 4.50, { img: "bagel-pumpkin-plain" }),
-    P("bagels", "黑白芝麻贝果", "Black & White Sesame Bagel", 5.50, { img: "bagel-sesame-oat" }),
-    P("bagels", "燕麦贝果", "Oat Bagel", 5.50, { img: "bagel-sesame-oat" }),
-    P("bagels", "罂粟籽贝果", "Poppy Seed Bagel", 5.50, { img: "bagel-mix" }),
-    P("bagels", "南瓜子贝果", "Pumpkin Seed Bagel", 5.30, { img: "bagel-pumpkin-plain" }),
-    P("bagels", "紫薯贝果（馅）", "Purple Sweet Potato Bagel", 6.00, { img: "bagel-mix", d: "有馅", de: "With filling" }),
-    P("bagels", "巧克力贝果", "Chocolate Plain Bagel", 5.80, { img: "bagel-mix" }),
-    P("bagels", "双重巧克力贝果（馅）", "Double Chocolate Chips Bagel", 7.50, { img: "bagel-mix", d: "有馅", de: "With filling" }),
-    P("bagels", "墨西哥辣椒美式腊肠贝果（馅）", "Jalapeño Pepperoni Bagel", 8.00, { img: "bagel-mix", pop: true, d: "有馅，微辣", de: "With filling, mildly spicy" }),
+    N("bagels", "贝果", "Bagel", [["个", "pc"]], [
+      ["原味", "Plain", 4.50], ["南瓜子", "Pumpkin Seed", 5.30], ["黑白芝麻", "Black & White Sesame", 5.50], ["燕麦", "Oat", 5.50],
+      ["罂粟籽", "Poppy Seed", 5.50], ["巧克力", "Chocolate", 5.80], ["紫薯（馅）", "Purple Sweet Potato (filled)", 6.00],
+      ["双重巧克力（馅）", "Double Chocolate Chips (filled)", 7.50], ["墨西哥辣椒美式腊肠（馅）", "Jalapeño Pepperoni (filled)", 8.00]
+    ], { img: "bagel-pumpkin-plain", pop: true }),
 
     // ---- 蛋糕 & 甜点 ----
-    P("cakes", "咖啡提拉米苏", "Coffee Tiramisu", 12.00, { img: "tiramisu-coffee", pop: true,
-      d: "手指饼干制作。浓郁咖啡香，经典原味，低糖", de: "Made with ladyfingers. Classic coffee, low sugar" }),
-    P("cakes", "抹茶提拉米苏", "Matcha Tiramisu", 13.00, { img: "tiramisu-matcha",
-      d: "手指饼干制作。清香抹茶配奶香，微苦回甘，低糖", de: "Made with ladyfingers. Fragrant matcha, low sugar" }),
-    P("cakes", "芒果提拉米苏", "Mango Tiramisu", 12.00, { img: "tiramisu-mango",
-      d: "手指饼干制作。芒果果酱和果肉，清新不腻", de: "Made with ladyfingers. Mango jam & fruit" }),
-    P("cakes", "蓝莓提拉米苏", "Blueberry Tiramisu", 12.00, { img: "tiramisu-blueberry",
-      d: "手指饼干制作。酸甜蓝莓果酱，清爽开胃", de: "Made with ladyfingers. Sweet-tangy blueberry" }),
-    P("cakes", "焦糖饼提拉米苏", "Lotus Biscoff Tiramisu", 12.00, { img: "tiramisu-lotus",
-      d: "手指饼干制作。焦糖饼干碎铺满表面，香脆咸香", de: "Made with ladyfingers. Topped with Biscoff crumbs" }),
-    P("cakes", "奥利奥提拉米苏", "Oreo Tiramisu", 12.00, { img: "tiramisu-oreo",
-      d: "手指饼干制作。奥利奥碎配奶香，层层交融", de: "Made with ladyfingers. Oreo crumbs & cream" }),
-    P("cakes", "低糖蛋糕卷", "Low-Sugar Swiss Roll", [["2片", "2 pcs", 5.00], ["盒装", "Box", 15.00]], {
-      f: ["原味 | Original", "班兰 | Pandan", "巧克力 | Chocolate", "咖啡 | Coffee", "柠檬 | Lemon"] }),
-    P("cakes", "宇治抹茶红豆蛋糕卷", "Uji Matcha Red Bean Swiss Roll", [["2片", "2 pcs", 7.00], ["盒装", "Box", 18.00]]),
-    P("cakes", "特色蛋糕卷", "Special Swiss Roll", [["2片", "2 pcs", 6.00], ["盒装", "Box", 16.00]], {
-      f: ["咸口黑芝麻 | Salty black sesame", "蓝莓果酱 | Blueberry"] }),
+    N("cakes", "提拉米苏", "Tiramisu", [["盒装", "Box"]], [
+      ["咖啡", "Coffee", 12, "tiramisu-coffee"], ["芒果", "Mango", 12, "tiramisu-mango"], ["蓝莓", "Blueberry", 12, "tiramisu-blueberry"],
+      ["焦糖饼", "Lotus Biscoff", 12, "tiramisu-lotus"], ["奥利奥", "Oreo", 12, "tiramisu-oreo"], ["抹茶", "Matcha", 13, "tiramisu-matcha"]
+    ], { img: "tiramisu-real", pop: true, d: "手指饼干制作，低糖", de: "Made with ladyfingers, low sugar" }),
+    N("cakes", "低糖蛋糕卷", "Low-Sugar Swiss Roll", [["盒装", "Box"]], [
+      ["原味", "Original", 15], ["班兰", "Pandan", 15], ["巧克力", "Chocolate", 15], ["咖啡", "Coffee", 15], ["柠檬", "Lemon", 15],
+      ["蓝莓果酱", "Blueberry", 16], ["咸口黑芝麻", "Salty Black Sesame", 16], ["宇治抹茶红豆", "Uji Matcha Red Bean", 18]
+    ], { d: "低糖", de: "Low sugar" }),
     P("cakes", "迷你水果塔", "Mini Fruit Tart", 30.00, { img: "fruit-tart", d: "8粒装。奶香微甜，新鲜水果", de: "8 pcs. Custard cream & fresh fruit" }),
     P("cakes", "葡挞", "Portuguese Tart", [["原味", "Original", 3.80], ["巧克力", "Chocolate", 4.20]]),
-    P("cakes", "香蕉蛋糕", "Banana Cake", [["整条 (32cm)", "Block (32cm)", 22.00], ["盒装 (2片)", "Box (2 pcs)", 6.50, 2]], { img: "banana-cake", pop: true }),
-    P("cakes", "双倍香蕉蛋糕", "Double Banana Cake", [["整条 (19cm)", "Block (19cm)", 25.00], ["盒装 (2片)", "Box (2 pcs)", 7.50]], { img: "double-banana-cake" }),
+    N("cakes", "香蕉蛋糕", "Banana Cake", [["整条 (32cm)", "Whole (32cm)"]], [["", "", 22.00]], { img: "banana-cake", pop: true }),
+    N("cakes", "双倍香蕉蛋糕", "Double Banana Cake", [["整条 (19cm)", "Whole (19cm)"]], [["", "", 25.00]], { img: "double-banana-cake" }),
 
     // ---- 三明治 ----
     P("sandwiches", "鸡蛋芝士三明治", "Egg & Cheese", 7.00, { img: "sw-egg-cheese", d: "番茄、芝士、生菜、美乃滋、黄瓜、鸡蛋", de: "Tomato, cheese, lettuce, mayo, cucumber, egg" }),
@@ -108,18 +108,14 @@
     P("sandwiches", "蛋沙拉三明治", "Egg Mayo", 5.00, { img: "sw-egg-mayo", d: "生菜、美乃滋、鸡蛋、黑胡椒", de: "Lettuce, mayo, egg, black pepper" }),
 
     // ---- 抹酱 (50g)：和贝果放同一个分类 ----
-    P("bagels", "8口味奶酪酱礼盒", "8-Flavour Cream Cheese Pack", 40.00, { img: "cream-cheese-gift", pop: true,
-      d: "蓝莓、奥利奥、蔓越莓、焦糖饼干、焙茶、开心果、茉莉绿茶、草莓各一盒，适合分享和送礼", de: "One of each cream cheese flavour — perfect for sharing & gifting" }),
-    P("bagels", "蓝莓奶酪酱", "Blueberry Cream Cheese", 4.50, { img: "cream-cheese", addon: true, d: "50g 手工奶酪酱", de: "50g" }),
-    P("bagels", "蔓越莓奶酪酱", "Cranberry Cream Cheese", 4.00, { img: "cream-cheese", addon: true, d: "50g 手工奶酪酱", de: "50g" }),
-    P("bagels", "奥利奥奶酪酱", "Oreo Cream Cheese", 4.80, { img: "cream-cheese", addon: true, d: "50g 手工奶酪酱", de: "50g" }),
-    P("bagels", "焦糖饼干奶酪酱", "Lotus Biscoff Cream Cheese", 4.80, { img: "cream-cheese", addon: true, d: "50g 手工奶酪酱", de: "50g" }),
-    P("bagels", "焙茶奶酪酱", "Hojicha Cream Cheese", 6.00, { img: "cream-cheese", addon: true, d: "50g 手工奶酪酱", de: "50g" }),
-    P("bagels", "茉莉绿茶奶酪酱", "Jasmine Green Tea Cream Cheese", 6.00, { img: "cream-cheese", addon: true, d: "50g 手工奶酪酱", de: "50g" }),
-    P("bagels", "草莓奶酪酱", "Strawberry Cream Cheese", 6.40, { img: "cream-cheese", addon: true, d: "50g 手工奶酪酱", de: "50g" }),
-    P("bagels", "开心果奶酪酱", "Pistachio Cream Cheese", 7.50, { img: "cream-cheese", addon: true, d: "50g 手工奶酪酱", de: "50g" }),
-    P("bagels", "烤蒜粒黄油", "Roasted Garlic Butter", 6.50, { img: "butter-spreads", addon: true, d: "50g 手工黄油酱", de: "50g" }),
-    P("bagels", "芥末海藻黄油", "Seaweed Mustard Butter", 6.80, { img: "butter-spreads", addon: true, d: "50g 手工黄油酱", de: "50g" }),
+    N("bagels", "奶酪酱", "Cream Cheese", [["罐 (50g)", "Jar (50g)"]], [
+      ["蔓越莓", "Cranberry", 4.00], ["蓝莓", "Blueberry", 4.50], ["奥利奥", "Oreo", 4.80], ["焦糖饼干", "Lotus Biscoff", 4.80],
+      ["焙茶", "Hojicha", 6.00], ["茉莉绿茶", "Jasmine Green Tea", 6.00], ["草莓", "Strawberry", 6.40], ["开心果", "Pistachio", 7.50],
+      ["8口味礼盒", "8-Flavour Gift Pack", 40.00, "cream-cheese-gift"]
+    ], { img: "cream-cheese", addon: true, d: "手工奶酪酱", de: "Handmade cream cheese" }),
+    N("bagels", "黄油酱", "Butter Spread", [["罐 (50g)", "Jar (50g)"]], [
+      ["烤蒜粒", "Roasted Garlic", 6.50], ["芥末海藻", "Seaweed Mustard", 6.80]
+    ], { img: "butter-spreads", addon: true, d: "手工黄油酱", de: "Handmade butter spread" }),
 
     // ---- 饼干 & 节庆定制 ----
     P("cookies", "巧克力曲奇饼", "Chocolate Chip Cookies", 9.20, { d: "9块装", de: "9 pcs" }),
@@ -128,7 +124,7 @@
   ]);
 
   window.LSB_SEED = {
-    version: "2026-10-18-thumbs",
+    version: "2026-10-29-specs-orders",
     settings: {
       shop_name: "Little Story Bakery",
       tagline_zh: "用烘焙，记录生活的小确幸",
@@ -152,7 +148,11 @@
       instagram: "https://www.instagram.com/littlestory_bakery/",
       facebook: "https://www.facebook.com/littlestorybakery",
       google: "https://share.google/qG8O30CNKfFKZsIuy",
-      hero_image: ""
+      hero_image: "",
+      logo_url: "",
+      reg_no: "SA0567851-T",
+      tagline_hdr: "FRESHLY BAKED · WITH LOVE",
+      spec_presets: ["整条", "盒装", "片装", "袋装", "个", "罐 (50g)"]
     },
     categories: [
       { slug: "buns", name_zh: "面包", name_en: "Buns", icon: "bread", sort: 1 },

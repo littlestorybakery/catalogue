@@ -12,9 +12,12 @@
       categories: s.categories.map(c => Object.assign({ image_url: "" }, c)),
       products: s.products.map(p => {
         const x = window.LSB.normalizeProduct(p, n);
-        x.id = "demo-" + (++n);
-        return x;
+        const out = Object.assign({}, x, window.LSB.productToRow(x));
+        delete out.rows;
+        out.id = "demo-" + (++n);
+        return out;
       }),
+      orders: [],
       files: {}
     };
   }
@@ -35,17 +38,41 @@
     catch (e) { return { message: "示范模式的储存空间满了（浏览器限制约 5MB），可以按「重置示范资料」清空。" }; }
   }
 
+  // 示范模式下单：存在这台装置，产生和真的一样格式的订单号码
+  function addOrder(o) {
+    const db = load() || seedDb();
+    db.orders = db.orders || [];
+    const now = new Date();
+    const same = db.orders.find(x => x.name.toLowerCase() === String(o.name).toLowerCase() &&
+      JSON.stringify(x.items) === JSON.stringify(o.items) && now - new Date(x.created_at) < 120000);
+    if (same) return same.code;
+    const day = String(now.getMonth() + 1).padStart(2, "0") + String(now.getDate()).padStart(2, "0");
+    let k = db.orders.filter(x => x.code.startsWith(day + "-")).length + 1, code;
+    do { code = day + "-" + String(k++).padStart(2, "0"); } while (db.orders.some(x => x.code === code));
+    db.orders.push({
+      id: "ord-" + now.getTime(), code, created_at: now.toISOString(), order_date: o.date || null,
+      method: o.method || "pickup", area: o.area || "", name: o.name || "", address: o.address || "", note: o.note || "",
+      items: o.items || [], subtotal: Number(o.subtotal) || 0, free_ship: !!o.free_ship, delivery_fee: null,
+      paid: false, status: "new", store_note: "", updated_at: now.toISOString()
+    });
+    save(db);
+    return code;
+  }
+
   function client() {
     let db = load() || seedDb();
     save(db);
     let n = Date.now();
 
     function query(table) {
-      let op = "select", payload = null, single = false, orderKey = null;
-      const filters = [];
+      let op = "select", payload = null, single = false, orderKey = null, asc = true, lim = null;
+      const filters = [], ranges = [];
       const b = {
         select() { return b; },
-        order(k) { orderKey = k; return b; },
+        order(k, o) { orderKey = k; asc = !(o && o.ascending === false); return b; },
+        limit(x) { lim = x; return b; },
+        gte(k, v) { ranges.push([k, v, 1]); return b; },
+        lte(k, v) { ranges.push([k, v, -1]); return b; },
         eq(k, v) { filters.push([k, v]); return b; },
         maybeSingle() { single = true; return b; },
         update(p) { op = "update"; payload = p; return b; },
@@ -53,12 +80,20 @@
         upsert(p) { op = "upsert"; payload = p; return b; },
         delete() { op = "delete"; return b; },
         then(res, rej) {
+          db = load() || db;                       // 每次都读最新的（顾客页面可能刚下了单）
+          db[table] = db[table] || [];
           const rows = db[table];
-          const match = r => filters.every(([k, v]) => r[k] === v);
+          const match = r => filters.every(([k, v]) => r[k] === v) &&
+            ranges.every(([k, v, d]) => d > 0 ? String(r[k] ?? "") >= String(v) : String(r[k] ?? "") <= String(v));
           let data = null, error = null;
           if (op === "select") {
             data = rows.filter(match);
-            if (orderKey) data.sort((a, c) => (a[orderKey] || 0) - (c[orderKey] || 0));
+            if (orderKey) data.sort((a, c) => {
+              const x = a[orderKey], y = c[orderKey];
+              const r = (typeof x === "number" && typeof y === "number") ? x - y : String(x ?? "").localeCompare(String(y ?? ""));
+              return asc ? r : -r;
+            });
+            if (lim) data = data.slice(0, lim);
             data = JSON.parse(JSON.stringify(data));
             if (single) data = data[0] || null;
           } else {
@@ -111,5 +146,5 @@
     };
   }
 
-  window.LSB_DEMO = { client, load, KEY };
+  window.LSB_DEMO = { client, load, addOrder, KEY };
 })();

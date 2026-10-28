@@ -1,11 +1,11 @@
 // 网站快取：照片存在顾客手机里，下次打开不用重新下载（也省 Supabase 流量）
 // 网站档案（html / js）每次先拿最新的，没网络时才用旧的。
-const STATIC = "lsb-static-v1";
+const STATIC = "lsb-static-v3";
 const IMAGES = "lsb-img-v1";
 const MAX_IMAGES = 400;
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(STATIC).then(c => c.addAll(["./", "index.html", "shared.js", "seed-data.js", "demo-backend.js", "config.js"])).catch(() => {}));
+  e.waitUntil(caches.open(STATIC).then(c => c.addAll(["./", "index.html", "admin.html", "shared.js", "seed-data.js", "demo-backend.js", "config.js"])).catch(() => {}));
   self.skipWaiting();
 });
 
@@ -34,7 +34,8 @@ async function cacheFirst(req, name) {
 async function networkFirst(req) {
   const c = await caches.open(STATIC);
   try {
-    const res = await fetch(req);
+    // no-cache：每次都跟 GitHub 确认有没有新版本（没变的话只回一个很小的 304）
+    const res = await fetch(req.url, { cache: "no-cache", credentials: "same-origin" });
     if (res && res.ok) c.put(req, res.clone());
     return res;
   } catch (err) {
