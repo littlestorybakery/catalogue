@@ -109,6 +109,7 @@ h2{font-size:18px;margin:0 0 4px;color:var(--brown-d)}
 .tag{font-size:10.5px;padding:1px 7px;border-radius:999px;background:var(--paper);color:var(--muted);border:1px solid var(--line-soft)}
 .tag.so{background:var(--warn-bg);color:var(--red);border-color:#F1CDBE}
 .tag.hot{background:#F3E6D4;color:var(--brown)}
+.tag.en{background:#EAF0F7;color:#3B5B80;border-color:#D5E0EC}
 .prow .side{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .sw{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none}
 .sw input{display:none}
@@ -365,6 +366,63 @@ input[type=number]{-moz-appearance:textfield}
 .logo-box .imgbox .pv{aspect-ratio:auto;height:130px;background:#FBF6EE;padding:10px;overflow:hidden}
 .logo-box .imgbox .pv img{width:auto;height:110px;max-width:100%;object-fit:contain}
 #overlay2{z-index:60}
+#overlay3{z-index:60}
+#nsheet{z-index:61}
+/* 公告页 */
+.nlead{font-size:12.5px;color:var(--muted);margin:0 0 6px}
+.ngrp{font-size:12.5px;font-weight:700;color:var(--brown-d);margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.ngrp::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+.post{background:var(--card);border:1px solid var(--line-soft);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.post .d{font-size:11.5px;color:var(--muted)}
+.post b{display:block;font-size:15px;color:var(--brown-d);margin:2px 0;line-height:1.4}
+.post b small{display:block;font-weight:400;font-size:12.5px;color:var(--muted)}
+.post p{margin:4px 0 0;font-size:13px;line-height:1.5;white-space:pre-line}
+.post p small{display:block;color:var(--muted);font-size:12px}
+.post.star{border:2px solid #D9A441;background:#FFF6DF}
+.post.star .d{color:#9A6A10;font-weight:700}
+.post.weekly{border:1.5px solid #E2C9A6;background:#FFF8EE}
+.post.holiday{border:1.5px solid #E7B9A0;background:#FDF0E8}
+.post.holiday b{color:#9A4A22}
+.post.old{opacity:.55}
+.post .act{display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap}
+.post .act span{font-size:12px;color:var(--muted);margin-right:auto}
+.post .act button{padding:5px 12px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;background:#fff}
+.post .act button.red{color:var(--red);border-color:#EBCBC5}
+.post .act button.st{color:#9A6A10;border-color:#E2C9A6}
+.post .act button.st.on{background:#D9A441;color:#fff;border-color:#D9A441}
+.sbadge{display:inline-block;background:#D9A441;color:#fff;font-size:11px;border-radius:999px;padding:1px 8px;margin-bottom:4px}
+.wkg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+.wkg div{border-radius:8px;padding:4px 0;text-align:center;font-size:12px;background:#EAF3E6;color:#3F7A4F;line-height:1.2}
+.wkg div small{display:block;font-size:9.5px}
+.wkg div.no{background:#F6DDD3;color:#B33A2E}
+.nempty{text-align:center;color:var(--muted);font-size:13px;padding:26px 10px;border:1.5px dashed var(--line);border-radius:14px}
+.nch{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px;background:#fff}
+.nch .ic{font-size:24px;width:44px;height:44px;border-radius:12px;background:var(--paper);display:grid;place-items:center;flex:none}
+.nch b{display:block;font-size:15px;color:var(--brown-d)}
+.nch small{font-size:12px;color:var(--muted);line-height:1.4;display:block}
+.nq{font-size:14px;font-weight:700;color:var(--brown-d);margin:16px 0 6px}
+.nq:first-child{margin-top:0}
+.nq small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.nin{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:15px;margin-bottom:6px;font-family:inherit}
+.nin.en{font-size:13.5px;color:var(--muted)}
+textarea.nin{resize:vertical;min-height:60px;line-height:1.5}
+.ndates{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.ndates input{flex:1;min-width:0;padding:9px 8px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:15px;font-family:inherit;color:var(--text)}
+.nauto{background:#FDF0E8;border:1px solid #E7B9A0;border-radius:12px;padding:10px 12px;margin-top:10px;font-size:13px;color:#7A3A18;line-height:1.55}
+.nauto b{font-size:15px}
+.nauto small{display:block;color:#9A6A50;font-size:12px}
+.nauto .lnk{display:inline-block;margin-top:4px;font-size:12.5px;color:var(--brown);text-decoration:underline}
+.nwk{display:flex;gap:6px;flex-wrap:wrap}
+.nwk button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:15px}
+.nwk button.on{background:var(--brown);color:#FFF6EA;border-color:var(--brown)}
+.nwk.blk button.on{background:#B33A2E;border-color:#B33A2E}
+.ntg{display:flex;align-items:center;gap:10px;border:1.5px solid #E2C9A6;background:#FFF8EE;border-radius:12px;padding:10px 12px;margin-top:14px;cursor:pointer}
+.ntg b{display:block;font-size:14px;color:var(--brown-d)}
+.ntg small{font-size:12px;color:var(--muted);line-height:1.4;display:block}
+.ntg .sw input:checked+i{background:#D9A441}
+.nprev{font-size:12px;color:var(--muted);margin:18px 0 6px}
+.topprev{background:var(--brown-d);color:#F6E9D8;font-size:12.5px;padding:8px 12px;border-radius:10px;display:flex;gap:8px;margin-bottom:8px}
+.topprev span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -439,6 +497,7 @@ input[type=number]{-moz-appearance:textfield}
     <button data-tab="categories">分类</button>
     <button data-tab="orders">订单<span class="dot" id="ordDot"></span></button>
     <button data-tab="prep">备货</button>
+    <button data-tab="notices">公告</button>
     <button data-tab="settings">设定</button>
   </div></div>
 
@@ -478,6 +537,9 @@ input[type=number]{-moz-appearance:textfield}
       <div id="prepList" class="prep"></div>
     </div>
 
+    <!-- notices -->
+    <div data-pane="notices" hidden><div id="nlist"></div></div>
+
     <!-- settings -->
     <div data-pane="settings" hidden>
       <form id="setForm">
@@ -489,7 +551,6 @@ input[type=number]{-moz-appearance:textfield}
             <label class="field"><span>标语（中文）</span><input name="tagline_zh"></label>
             <label class="field"><span>标语（英文）</span><input name="tagline_en"></label>
           </div>
-          <label class="field"><span>公告横幅（留空就不显示）建议中英文都写，例如：中秋节礼盒接受预订中！Mooncake gift boxes now open for pre-order!</span><input name="announcement"></label>
           <div class="sec-label">网站 Logo（左上角）</div>
           <div class="logo-box" id="logoImgBox"></div>
           <p class="muted" style="margin:6px 0 0;font-size:12px">透明背景的 PNG 效果最好。移除的话会用回原本的灯塔 logo。</p>
@@ -578,6 +639,7 @@ input[type=number]{-moz-appearance:textfield}
     </div>
   </main>
   <button class="btn btn-dark fab" id="addProd">+ 新增产品</button>
+  <button class="btn btn-dark fab" id="addNotice" hidden>＋ 新增公告</button>
   <div class="savebar" id="saveBar" hidden><span id="saveBarTxt"></span><button class="ghost" id="saveBarUndo">放弃</button><button id="saveBarBtn">保存</button></div>
 </div>
 
@@ -623,6 +685,16 @@ input[type=number]{-moz-appearance:textfield}
 <!-- order action sheet -->
 <div class="overlay" id="overlay2"></div>
 <div class="asheet" id="sheet"></div>
+
+<!-- 公告：选择类型 + 编辑 -->
+<div class="overlay" id="overlay3"></div>
+<div class="asheet" id="nsheet"></div>
+<div class="overlay" id="overlay4"></div>
+<div class="modal" id="nEditor" role="dialog" aria-modal="true">
+  <div class="mh"><button class="x" data-nclose aria-label="关闭"><span class="icon" data-i="close"></span></button><h3 id="nTitle">公告</h3></div>
+  <div class="mb" id="nBody"></div>
+  <div class="mf"><button class="btn btn-line" data-nclose>取消</button><button class="btn btn-dark" id="nSave">保存</button></div>
+</div>
 
 <div class="toast" id="toast"></div>
 <div class="busy" id="busy" hidden><span id="busyTxt">处理中…</span></div>
@@ -880,7 +952,7 @@ if(DEMO){
 /* =================== DATA =================== */
 let CATS = [], PRODS = [], SETTINGS = {}, filterCat = '', query = '';
 let lastLoad = 0, settingsDirty = false, catsDirty = false, leaving = false, firstLoadOk = false;
-function hasUnsaved(){ return settingsDirty || catsDirty || pendCount()>0 || ($('#editor').classList.contains('open') && (edDirty || prodPicker.dirty())); }
+function hasUnsaved(){ return settingsDirty || catsDirty || pendCount()>0 || ($('#editor').classList.contains('open') && (edDirty || prodPicker.dirty())) || ($('#nEditor').classList.contains('open') && nDirty); }
 window.__lsbHasUnsaved = hasUnsaved;
 window.addEventListener('beforeunload', e=>{ if(!leaving && hasUnsaved()){ e.preventDefault(); e.returnValue=''; } });
 
@@ -898,6 +970,8 @@ async function loadAll(silent){
     renderProducts();
     if(!(silent && catsDirty)){ renderCats(); catsDirty = false; }
     if(!(silent && settingsDirty)){ fillSettings(); settingsDirty = false; }
+    if(!(silent && $('#nEditor').classList.contains('open'))) renderNotices();
+    migrateAnnouncement();
     if(!silent) loadMeter();
     loadBadge();
   }catch(e){
@@ -923,7 +997,7 @@ function replaceLocal(fresh){
 function curTab(){ const b = $('.tabs .on'); return b ? b.dataset.tab : 'products'; }
 function autoRefresh(){
   if(document.hidden || $('#vApp').hidden || !$('#busy').hidden) return;
-  if($('#editor').classList.contains('open') || $('#sheet').classList.contains('open')) return;
+  if($('#editor').classList.contains('open') || $('#sheet').classList.contains('open') || $('#nEditor').classList.contains('open')) return;
   if(Date.now() - lastLoad < 15000) return;
   loadAll(true);
   if(curTab()==='orders') loadOrders(true);
@@ -1061,7 +1135,7 @@ function renderProducts(){
           <div class="mv"><button data-mv="-1" ${i===0||q?'disabled':''} aria-label="往上">${UP}</button><button data-mv="1" ${i===list.length-1||q?'disabled':''} aria-label="往下">${DOWN}</button></div>
           <button class="th" data-edit>${thumb(p)}</button>
           <button class="mid" data-edit><b>${esc(p.name_zh||p.name_en||'(没有名字)')}</b><small>${esc([specTxt, rangeText(p), fc?`${fc} 种口味`:''].filter(Boolean).join(' · '))}</small>
-            <span class="tags">${allSold&&!single?'<span class="tag so">全部售罄</span>':''}${p.popular?'<span class="tag hot">热门</span>':''}${p.preorder_days?`<span class="tag">预订 ${p.preorder_days} 天</span>`:''}${p.hidden?'<span class="tag">已隐藏</span>':''}${p.quote_only?'<span class="tag">询价</span>':''}${p.addon?'<span class="tag">搭配推荐</span>':''}${!p.image_url?'<span class="tag">没有照片</span>':''}</span></button>
+            <span class="tags">${allSold&&!single?'<span class="tag so">全部售罄</span>':''}${missingEn(p)?'<span class="tag en">没有英文</span>':''}${p.popular?'<span class="tag hot">热门</span>':''}${p.preorder_days?`<span class="tag">预订 ${p.preorder_days} 天</span>`:''}${p.hidden?'<span class="tag">已隐藏</span>':''}${p.quote_only?'<span class="tag">询价</span>':''}${p.addon?'<span class="tag">搭配推荐</span>':''}${!p.image_url?'<span class="tag">没有照片</span>':''}</span></button>
           ${single ? `<div class="side">${soldSwitch(p,0)}</div>` : ''}
         </div>
         ${single ? '' : `<div class="frs">${p.rows.map((r,ri)=>{
@@ -1727,7 +1801,7 @@ $('#prepList').addEventListener('click', e=>{ if(e.target.closest('[data-preload
 
 /* =================== SETTINGS =================== */
 let heroPicker, aboutPicker, logoPicker, PRESET_WORK = [];
-const S_TEXT = ['shop_name','tagline_zh','tagline_en','announcement','tagline_hdr','reg_no','free_delivery_area','pickup_note_zh','pickup_note_en','delivery_note_zh','delivery_note_en','instagram','facebook','google'];
+const S_TEXT = ['shop_name','tagline_zh','tagline_en','tagline_hdr','reg_no','free_delivery_area','pickup_note_zh','pickup_note_en','delivery_note_zh','delivery_note_en','instagram','facebook','google'];
 function fillSettings(){
   const f = $('#setForm');
   S_TEXT.concat(['whatsapp','free_delivery_min']).forEach(k=>{ if(f.elements[k]) f.elements[k].value = SETTINGS[k] ?? ''; });
@@ -1841,11 +1915,279 @@ document.addEventListener('paste', e=>{
   if(lastPicker.fromClipboardEvent(e)) e.preventDefault();
 });
 
+/* =================== 公告 =================== */
+const SC = LSB.sched, SD = SC.D;
+const WKS = [1,2,3,4,5,6,0];   // 星期一开始
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function missingEn(p){
+  return !p.name_en.trim() || p.specs.some(x=>x.zh && !x.en) || (!P.single(p) && p.rows.some(r=>r.label_zh && !r.label_en)) || (!!p.description_zh && !p.description_en);
+}
+// 只改公告相关的栏位：先拿云端最新的设定，再套上这次的改动（不会盖掉另一部装置改的其他设定）
+async function saveSettingsPatch(patch){
+  const cur = await sb.from('settings').select('data').eq('id',1).maybeSingle();
+  if(cur.error) throw cur.error;
+  const cloud = Object.assign(defaultSettings(), (cur.data&&cur.data.data)||{});
+  const data = Object.assign({}, cloud, patch);
+  const { error } = await sb.from('settings').upsert({ id:1, data });
+  if(error) throw error;
+  SETTINGS = data;
+  if(!settingsDirty) fillSettings();
+}
+// 以前「店铺设定」里的公告横幅，自动搬成一个重要公告
+let migrating = false;
+function migrateAnnouncement(){
+  if(migrating || Array.isArray(SETTINGS.notices) || !(SETTINGS.announcement||'').trim()) return;
+  migrating = true;
+  saveSettingsPatch({ notices:[{ id:uid(), title_zh:SETTINGS.announcement.trim(), title_en:'', body_zh:'', body_en:'', star:true, until:'', created:SD.today() }], announcement:'' })
+    .then(renderNotices).catch(e=>console.warn(e)).finally(()=>{ migrating = false; });
+}
+
+function wkGrid(block){ return `<div class="wkg">${WKS.map(d=>block.includes(d)?`<div class="no">${SC.WD_ZH[d]}<small>✕ 没货</small></div>`:`<div>${SC.WD_ZH[d]}<small>✓</small></div>`).join('')}</div>`; }
+function postHTML(it, act){
+  if(it.kind==='weekly'){
+    const w = it.w;
+    return `<div class="post weekly"><div class="d">🗓️ 每周取货时间 · Weekly</div><b>${esc(it.title_zh)}<small>${esc(it.title_en)}</small></b>
+      ${w.msg_zh||w.msg_en?`<p>${esc(w.msg_zh)}${w.msg_en?`<small>${esc(w.msg_en)}</small>`:''}</p>`:''}${wkGrid(w.block)}${act||''}</div>`;
+  }
+  if(it.kind==='holiday') return `<div class="post holiday"><div class="d">🛌 特别休息 · Closed</div><b>${esc(it.title_zh)}<small>${esc(it.title_en)}</small></b>
+      <p>${esc(it.body_zh)}<small>${esc(it.body_en)}</small></p>${act||''}</div>`;
+  const n = it.n, star = it.kind==='star', old = it.kind==='old';
+  const title = n.title_zh || n.title_en, sub = n.title_zh ? n.title_en : '';
+  const meta = [star&&!act?'⭐ 重要 · Important':'', n.until?(old?`${SD.zh(n.until)} 已经过期，顾客看不到`:`到 ${SD.zh(n.until)} 自动隐藏`):'', !star&&!n.until&&n.created?SD.zh(n.created):''].filter(Boolean).join(' · ');
+  return `<div class="post ${star?'star':''} ${old?'old':''}">${star&&act?'<span class="sbadge">⭐ 显示在网站最上面</span>':''}<div class="d">${esc(meta)}</div>
+    ${title?`<b>${esc(title)}${sub?`<small>${esc(sub)}</small>`:''}</b>`:''}
+    ${n.body_zh||n.body_en?`<p>${esc(n.body_zh||n.body_en)}${n.body_zh&&n.body_en?`<small>${esc(n.body_en)}</small>`:''}</p>`:''}${act||''}</div>`;
+}
+function renderNotices(){
+  const host = $('#nlist'); if(!host) return;
+  const S = SETTINGS, today = SD.today();
+  const items = SC.board(S, today);
+  const star = items.find(i=>i.kind==='star');
+  const rest = items.filter(i=>i.kind==='weekly'||i.kind==='holiday');
+  const msgs = items.filter(i=>i.kind==='notice');
+  const old = SC.notices(S).filter(n=>n.until && n.until < today).map(n=>({ kind:'old', n }));
+  const actN = (n, isStar) => `<div class="act"><span></span><button class="st ${isStar?'on':''}" data-nstar="${esc(n.id)}">${isStar?'★ 取消重要':'☆ 设为重要'}</button><button data-nedit="notice" data-id="${esc(n.id)}">编辑</button><button class="red" data-ndel="notice" data-id="${esc(n.id)}">删除</button></div>`;
+  let h = `<p class="nlead">这里看到的，就是顾客在网站看到的样子。按右下角「＋ 新增公告」。</p>`;
+  if(star){ h += `<div class="ngrp">⭐ 重要公告（网站最上面）</div>` + postHTML(star, actN(star.n, true)); }
+  h += `<div class="ngrp">🛌 放假 / 休息</div>`;
+  h += rest.length ? rest.map(it=> it.kind==='weekly'
+      ? postHTML(it, `<div class="act"><span>每个${esc(SC.days(it.w.rest.length?it.w.rest:[]) || '星期')}休息</span><button data-nedit="weekly">编辑</button><button class="red" data-ndel="weekly">删除</button></div>`)
+      : postHTML(it, `<div class="act"><span>${it.h.rest_from?`去玩：${esc(SC.rangeZh(it.h.rest_from, it.h.rest_to||it.h.rest_from))}`:''}</span><button data-nedit="holiday" data-id="${esc(it.h.id)}">编辑</button><button class="red" data-ndel="holiday" data-id="${esc(it.h.id)}">删除</button></div>`)
+    ).join('') : `<div class="nempty">没有设定休息日，顾客每天都可以选。</div>`;
+  h += `<div class="ngrp">📢 消息</div>`;
+  h += msgs.length ? msgs.map(it=>postHTML(it, actN(it.n, false))).join('') : `<div class="nempty">还没有消息。新口味、优惠、节日礼盒都可以写在这里。</div>`;
+  if(old.length) h += `<div class="ngrp">已过期（顾客看不到）</div>` + old.map(it=>postHTML(it, `<div class="act"><span></span><button data-nedit="notice" data-id="${esc(it.n.id)}">编辑</button><button class="red" data-ndel="notice" data-id="${esc(it.n.id)}">删除</button></div>`)).join('');
+  h += `<div style="height:70px"></div>`;
+  host.innerHTML = h;
+}
+async function nSave(patch, okMsg){
+  busy(true,'保存中…');
+  try{ await saveSettingsPatch(patch); renderNotices(); toast(okMsg||'✓ 已保存'); return true; }
+  catch(e){ toast(friendly(e), true); return false; }
+  finally{ busy(false); }
+}
+$('#nlist').addEventListener('click', async e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  const S = SETTINGS, id = b.dataset.id;
+  if(b.dataset.nstar){
+    const on = !SC.notices(S).find(n=>n.id===b.dataset.nstar).star;
+    await nSave({ notices: (S.notices||[]).map(n=>Object.assign({}, n, { star: n.id===b.dataset.nstar ? on : false })) }, on ? '✓ 已设为重要公告' : '✓ 已取消重要');
+    return;
+  }
+  if(b.dataset.ndel){
+    const k = b.dataset.ndel;
+    if(!confirm(k==='weekly' ? '删除「每个星期固定休息」？顾客每天都可以选了。' : k==='holiday' ? '删除这个休息日？' : '删除这个公告？')) return;
+    if(k==='weekly') await nSave({ weekly:{ rest:[], block:[], msg_zh:'', msg_en:'' } }, '已删除');
+    if(k==='holiday') await nSave({ holidays:(S.holidays||[]).filter(h=>h.id!==id) }, '已删除');
+    if(k==='notice') await nSave({ notices:(S.notices||[]).filter(n=>n.id!==id) }, '已删除');
+    return;
+  }
+  if(b.dataset.nedit) openNEditor(b.dataset.nedit, id);
+});
+
+/* ---- 新增：先选类型 ---- */
+function openNSheet(){
+  const hasW = SC.weekly(SETTINGS).block.length > 0;
+  $('#nsheet').innerHTML = `<h4>要新增什么？</h4><p class="muted" style="margin:-4px 0 12px;font-size:12.5px">选一个，下一步会一步一步问你。</p>
+    <button class="nch" data-ntype="holiday"><span class="ic">🧳</span><span><b>我要去玩 / 放假</b><small>例如 3 号到 5 号去玩。那几天和回来那天会自动挡住，顾客不能选。</small></span></button>
+    <button class="nch" data-ntype="weekly"><span class="ic">🗓️</span><span><b>${hasW?'修改':''}每个星期固定休息</b><small>例如每个星期五休息不做面包。每个星期都会自动挡住。</small></span></button>
+    <button class="nch" data-ntype="notice"><span class="ic">📢</span><span><b>一般消息</b><small>新口味、优惠、节日礼盒…只是让顾客知道。</small></span></button>
+    <div class="bt"><button data-ntype="">关闭</button></div>`;
+  $('#nsheet').classList.add('open'); $('#overlay3').classList.add('open');
+}
+function closeNSheet(){ $('#nsheet').classList.remove('open'); $('#overlay3').classList.remove('open'); }
+$('#addNotice').addEventListener('click', openNSheet);
+$('#overlay3').addEventListener('click', closeNSheet);
+$('#nsheet').addEventListener('click', e=>{
+  const b = e.target.closest('[data-ntype]'); if(!b) return;
+  closeNSheet(); if(b.dataset.ntype) openNEditor(b.dataset.ntype);
+});
+
+/* ---- 编辑器 ---- */
+let NE = null, nDirty = false;
+function openNEditor(type, id){
+  const S = SETTINGS;
+  if(type==='holiday'){
+    const h = id ? (S.holidays||[]).find(x=>x.id===id) : null;
+    NE = Object.assign({ type, id:id||null, rest_from:'', rest_to:'', from:'', to:'', reason_zh:'', reason_en:'' }, h ? JSON.parse(JSON.stringify(h)) : {});
+    NE.manual = !!h && !(h.rest_from && h.from===h.rest_from && h.to===SD.add(h.rest_to||h.rest_from,1));
+    $('#nTitle').textContent = '🧳 我要去玩 / 放假';
+  } else if(type==='weekly'){
+    const w = SC.weekly(S);
+    NE = { type, rest:w.rest.slice(), block:w.block.slice(), msg_zh:w.msg_zh, msg_en:w.msg_en };
+    const auto = SC.autoMsg(w.rest, w.block);
+    NE.manual = w.rest.length>0 && JSON.stringify(w.block.slice().sort())!==JSON.stringify(w.rest.map(d=>(d+1)%7).sort());
+    NE.msgTouched = !!(w.msg_zh || w.msg_en) && (w.msg_zh!==auto.zh || w.msg_en!==auto.en);
+    $('#nTitle').textContent = '🗓️ 每个星期固定休息';
+  } else {
+    const n = id ? (S.notices||[]).find(x=>x.id===id) : null;
+    NE = Object.assign({ type:'notice', id:id||null, title_zh:'', title_en:'', body_zh:'', body_en:'', star:false, until:'', created:SD.today() }, n ? JSON.parse(JSON.stringify(n)) : {});
+    $('#nTitle').textContent = id ? '📢 编辑消息' : '📢 一般消息';
+  }
+  nDirty = false;
+  renderNEditor();
+  $('#overlay4').classList.add('open'); $('#nEditor').classList.add('open'); document.body.style.overflow='hidden';
+  $('#nEditor .mb').scrollTop = 0;
+}
+function closeNEditor(force){
+  if(!force && nDirty && !confirm('还没保存，确定关闭？')) return;
+  $('#overlay4').classList.remove('open'); $('#nEditor').classList.remove('open'); document.body.style.overflow=''; NE = null; nDirty = false;
+}
+$$('#nEditor [data-nclose]').forEach(b=>b.addEventListener('click', ()=>closeNEditor()));
+$('#overlay4').addEventListener('click', ()=>closeNEditor());
+
+const v = x => esc(x||'');
+function renderNEditor(){
+  let h = '';
+  if(NE.type==='holiday'){
+    h = `<div class="nq">你哪天到哪天休息？<small>不做面包的日子</small></div>
+      <div class="ndates"><input type="date" data-nf="rest_from" value="${v(NE.rest_from)}"><span>到</span><input type="date" data-nf="rest_to" value="${v(NE.rest_to)}"></div>
+      <div class="nauto" id="nAuto"></div>
+      <div id="nManual" ${NE.manual?'':'hidden'}><div class="nq">顾客不能取货的日子<small>自己选</small></div>
+        <div class="ndates"><input type="date" data-nf="from" value="${v(NE.from)}"><span>到</span><input type="date" data-nf="to" value="${v(NE.to)}"></div></div>
+      <div class="nq">原因（可留空）</div>
+      <input class="nin" data-nf="reason_zh" value="${v(NE.reason_zh)}" placeholder="例如：店主放假"><input class="nin en" data-nf="reason_en" value="${v(NE.reason_en)}" placeholder="English，例如 Holiday break">`;
+  } else if(NE.type==='weekly'){
+    h = `<div class="nq">每个星期哪一天休息？<small>不做面包的日子，可以选多个</small></div>
+      <div class="nwk" id="nRest">${WKS.map(d=>`<button type="button" data-wr="${d}" class="${NE.rest.includes(d)?'on':''}">${SC.WD_ZH[d]}</button>`).join('')}</div>
+      <div class="nauto" id="nAuto"></div>
+      <div id="nManual" ${NE.manual?'':'hidden'}><div class="nq">顾客每个星期不能选的日子<small>自己选</small></div>
+        <div class="nwk blk" id="nBlock">${WKS.map(d=>`<button type="button" data-wb="${d}" class="${NE.block.includes(d)?'on':''}">${SC.WD_ZH[d]}</button>`).join('')}</div></div>
+      <div class="nq">想跟顾客说的话<small>已经帮你写好，可以改</small></div>
+      <textarea class="nin" rows="2" data-nf="msg_zh">${v(NE.msg_zh)}</textarea><textarea class="nin en" rows="2" data-nf="msg_en">${v(NE.msg_en)}</textarea>`;
+  } else {
+    h = `<div class="nq">标题</div>
+      <input class="nin" data-nf="title_zh" value="${v(NE.title_zh)}" placeholder="例如：🥮 中秋礼盒接受预订中！"><input class="nin en" data-nf="title_en" value="${v(NE.title_en)}" placeholder="English，例如 Mooncake gift boxes open for pre-order">
+      <div class="nq">内容（可留空）</div>
+      <textarea class="nin" rows="3" data-nf="body_zh" placeholder="例如：11月10日前下单享 9 折">${v(NE.body_zh)}</textarea><textarea class="nin en" rows="2" data-nf="body_en" placeholder="English（可留空）">${v(NE.body_en)}</textarea>
+      <label class="ntg"><span style="flex:1"><b>⭐ 设为重要公告</b><small>会显示在网站最上面的横条，也排在公告板第一个。只能选一个，选了这个，之前的会自动取消。</small></span><span class="sw"><input type="checkbox" data-nf="star" ${NE.star?'checked':''}><i></i></span></label>
+      <div class="nq">自动隐藏（可留空）<small>过了这天就不显示，例如优惠结束的日子</small></div>
+      <div class="ndates"><input type="date" data-nf="until" value="${v(NE.until)}"><button type="button" class="btn btn-line btn-sm" data-nclear="until">不用</button></div>`;
+  }
+  h += `<div class="nprev">顾客会看到：</div><div id="nPrev"></div>`;
+  $('#nBody').innerHTML = h;
+  updateNAuto();
+}
+function updateNAuto(){
+  const a = $('#nAuto');
+  if(NE.type==='holiday'){
+    if(!NE.manual){
+      NE.from = NE.rest_from || '';
+      NE.to = NE.rest_from ? SD.add(NE.rest_to && NE.rest_to >= NE.rest_from ? NE.rest_to : NE.rest_from, 1) : '';
+      const m = $('#nManual'); if(m){ m.querySelector('[data-nf="from"]').value = NE.from; m.querySelector('[data-nf="to"]').value = NE.to; }
+    }
+    if(a) a.innerHTML = NE.from
+      ? `顾客<b>不能取货</b>的日子：<br><b>${esc(SC.rangeZh(NE.from, NE.to||NE.from))}</b>
+         <small>${NE.manual ? '这是你自己选的日子。' : '你不在的日子不能取货；最后一天没做面包，所以隔天也没货。'}</small>
+         <button type="button" class="lnk" data-nmanual>${NE.manual ? '改回自动' : '不对？自己改日期'}</button>`
+      : `先选你休息的日子，我会帮你算出顾客不能取货的日子。`;
+  }
+  if(NE.type==='weekly'){
+    if(!NE.manual){
+      NE.block = [...new Set(NE.rest.map(d=>(d+1)%7))];
+      $$('#nBlock [data-wb]').forEach(b=>b.classList.toggle('on', NE.block.includes(+b.dataset.wb)));
+    }
+    if(!NE.msgTouched){
+      const m = SC.autoMsg(NE.rest, NE.block); NE.msg_zh = m.zh; NE.msg_en = m.en;
+      const z = $('[data-nf="msg_zh"]'), e2 = $('[data-nf="msg_en"]'); if(z) z.value = m.zh; if(e2) e2.value = m.en;
+    }
+    const keep = NE.rest.filter(r=>!NE.block.includes(r));
+    if(a) a.innerHTML = NE.block.length
+      ? `顾客每个星期<b>不能选：${esc(SC.days(NE.block))}</b>
+         <small>${NE.manual ? '这是你自己选的日子。' : `因为${esc(SC.days(NE.rest))}没做面包。${keep.length?esc(SC.days(keep))+'还是可以取货。':''}`}</small>
+         <button type="button" class="lnk" data-nmanual>${NE.manual ? '改回自动' : '不对？自己改'}</button>`
+      : `选你每个星期休息的日子。`;
+  }
+  updateNPrev();
+}
+function draftSettings(){
+  const S = Object.assign({}, SETTINGS);
+  if(NE.type==='holiday') S.holidays = (NE.from ? [{ id:'x', from:NE.from, to:NE.to||NE.from, reason_zh:NE.reason_zh, reason_en:NE.reason_en }] : []);
+  else S.holidays = [];
+  if(NE.type==='weekly') S.weekly = { rest:NE.rest, block:NE.block, msg_zh:NE.msg_zh, msg_en:NE.msg_en };
+  S.notices = NE.type==='notice' ? [Object.assign({}, NE, { until:'' })] : [];
+  return S;
+}
+function updateNPrev(){
+  const box = $('#nPrev'); if(!box) return;
+  const want = NE.type==='holiday' ? ['holiday'] : NE.type==='weekly' ? ['weekly'] : ['star','notice'];
+  const S = draftSettings(), items = SC.board(S, '0000-01-01').filter(it=>want.includes(it.kind));
+  let h = '';
+  if(NE.type==='notice' && NE.star){ const tb = SC.topBar(S, '0000-01-01'); if(tb) h += `<div class="nprev" style="margin-top:0">网站最上面会显示：</div><div class="topprev"><span>${esc(tb.zh)}${tb.en?' '+esc(tb.en):''}</span>公告 ›</div>`; }
+  h += items.map(it=>postHTML(it.kind==='star'||it.kind==='notice' ? Object.assign({}, it, { n:Object.assign({}, it.n, { until:NE.until }) }) : it)).join('') || '<div class="nempty">填好上面的资料，这里会显示顾客看到的样子。</div>';
+  box.innerHTML = h;
+}
+$('#nBody').addEventListener('input', e=>{
+  const k = e.target.dataset.nf; if(!k || !NE) return;
+  nDirty = true;
+  NE[k] = e.target.type==='checkbox' ? e.target.checked : e.target.value;
+  if(k==='msg_zh' || k==='msg_en') NE.msgTouched = true;
+  if(k==='from' || k==='to') NE.manual = true;
+  updateNAuto();
+});
+$('#nBody').addEventListener('change', e=>{ if(e.target.type==='checkbox' || e.target.type==='date') e.target.dispatchEvent(new Event('input', { bubbles:true })); });
+$('#nBody').addEventListener('click', e=>{
+  if(!NE) return;
+  const b = e.target.closest('button'); if(!b) return;
+  if(b.dataset.wr != null){ const d = +b.dataset.wr; NE.rest = NE.rest.includes(d) ? NE.rest.filter(x=>x!==d) : NE.rest.concat(d); b.classList.toggle('on'); nDirty = true; updateNAuto(); return; }
+  if(b.dataset.wb != null){ const d = +b.dataset.wb; NE.block = NE.block.includes(d) ? NE.block.filter(x=>x!==d) : NE.block.concat(d); b.classList.toggle('on'); nDirty = true; updateNAuto(); return; }
+  if(b.hasAttribute('data-nmanual')){ NE.manual = !NE.manual; $('#nManual').hidden = !NE.manual; nDirty = true; updateNAuto(); return; }
+  if(b.dataset.nclear){ NE[b.dataset.nclear] = ''; const i = $(`[data-nf="${b.dataset.nclear}"]`); if(i) i.value=''; nDirty = true; updateNPrev(); }
+});
+$('#nSave').addEventListener('click', async ()=>{
+  if(!NE) return;
+  const S = SETTINGS; let patch;
+  if(NE.type==='holiday'){
+    if(!NE.from){ toast('请先选日期', true); return; }
+    const to = NE.to || NE.from;
+    if(to < NE.from){ toast('结束的日子不能比开始早', true); return; }
+    const rec = { id:NE.id||uid(), rest_from:NE.rest_from, rest_to:NE.rest_to||NE.rest_from, from:NE.from, to, reason_zh:(NE.reason_zh||'').trim(), reason_en:(NE.reason_en||'').trim() };
+    const list = (S.holidays||[]).filter(h=>h.id!==rec.id).concat(rec)
+      .filter(h=>h.to >= SD.add(SD.today(), -30));   // 过了一个月的旧休息日顺便清掉
+    patch = { holidays:list };
+  } else if(NE.type==='weekly'){
+    if(!NE.block.length){ toast(NE.rest.length ? '请选顾客不能取货的日子' : '请选你每个星期休息的日子', true); return; }
+    patch = { weekly:{ rest:NE.rest, block:NE.block, msg_zh:(NE.msg_zh||'').trim(), msg_en:(NE.msg_en||'').trim() } };
+  } else {
+    if(!(NE.title_zh||'').trim() && !(NE.title_en||'').trim()){ toast('请填标题', true); return; }
+    const rec = { id:NE.id||uid(), title_zh:NE.title_zh.trim(), title_en:NE.title_en.trim(), body_zh:NE.body_zh.trim(), body_en:NE.body_en.trim(), star:!!NE.star, until:NE.until||'', created:NE.created||SD.today() };
+    let list = (S.notices||[]).filter(n=>n.id!==rec.id);
+    if(rec.star) list = list.map(n=>Object.assign({}, n, { star:false }));
+    patch = { notices: NE.id ? (S.notices||[]).map(n=>n.id===rec.id ? rec : (rec.star ? Object.assign({}, n, { star:false }) : n)) : [rec].concat(list) };
+  }
+  $('#nSave').disabled = true;
+  const ok = await nSave(patch);
+  $('#nSave').disabled = false;
+  if(ok) closeNEditor(true);
+});
+
 /* =================== TABS / SEED =================== */
 $$('.tabs [data-tab]').forEach(b=>b.addEventListener('click', ()=>{
   $$('.tabs [data-tab]').forEach(x=>x.classList.toggle('on', x===b));
   $$('[data-pane]').forEach(p=>p.hidden = p.dataset.pane!==b.dataset.tab);
   $('#addProd').hidden = b.dataset.tab!=='products';
+  $('#addNotice').hidden = b.dataset.tab!=='notices';
+  if(b.dataset.tab==='notices') renderNotices();
   if(b.dataset.tab==='orders') loadOrders();
   if(b.dataset.tab==='prep') loadPrep();
   window.scrollTo(0,0);

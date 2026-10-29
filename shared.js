@@ -325,5 +325,87 @@
     return { check: () => check(true) };
   }
 
-  window.LSB = { cfg, hasSupabase, sb, ICONS, money, normalizeProduct, productToRow, P, loadCatalog, placeOrder, netFetch, isNetErr, esc, waNumber, store, defaultSettings, WA_DEFAULTS, fillTemplate, waTemplate, buildOrderMessage, watchUpdates };
+  // ---------- 公告 & 不能取货的日子（顾客页面和 admin 共用） ----------
+  // S.weekly   = { rest:[5], block:[6], msg_zh, msg_en }       数字 0=星期日 … 6=星期六
+  // S.holidays = [{ id, rest_from, rest_to, from, to, reason_zh, reason_en }]   from/to = 顾客不能取货的日子
+  // S.notices  = [{ id, title_zh, title_en, body_zh, body_en, star, until, created }]
+  const WD_ZH = ["日", "一", "二", "三", "四", "五", "六"];
+  const WD_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const MON_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const D = {
+    ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); },
+    parse(s) { const [y, m, d] = String(s || "").split("-").map(Number); return y ? new Date(y, m - 1, d, 12) : null; },
+    add(s, n) { const d = D.parse(s); d.setDate(d.getDate() + n); return D.ymd(d); },
+    today() { return D.ymd(new Date()); },
+    zh(s) { const d = D.parse(s); return d ? d.getDate() + "/" + (d.getMonth() + 1) : ""; },
+    en(s) { const d = D.parse(s); return d ? d.getDate() + " " + MON_EN[d.getMonth()] : ""; },
+    wd(s) { const d = D.parse(s); return d ? d.getDay() : -1; }
+  };
+  const sched = {
+    D, WD_ZH, WD_EN,
+    weekly(S) { const w = (S && S.weekly) || {}; return { rest: Array.isArray(w.rest) ? w.rest : [], block: Array.isArray(w.block) ? w.block : [], msg_zh: w.msg_zh || "", msg_en: w.msg_en || "" }; },
+    holidays(S) { return ((S && S.holidays) || []).filter(h => h && h.from && h.to).slice().sort((a, b) => a.from < b.from ? -1 : 1); },
+    notices(S) { return ((S && S.notices) || []).filter(n => n && (n.title_zh || n.title_en || n.body_zh || n.body_en)); },
+    // 这一天顾客能不能取货
+    blocked(S, day) {
+      if (!day) return false;
+      if (sched.weekly(S).block.includes(D.wd(day))) return true;
+      return sched.holidays(S).some(h => day >= h.from && day <= h.to);
+    },
+    nextOpen(S, day) { let d = day; for (let i = 0; i < 120 && sched.blocked(S, d); i++) d = D.add(d, 1); return d; },
+    rangeZh(a, b) { return a === b ? D.zh(a) : D.zh(a) + " – " + D.zh(b); },
+    rangeEn(a, b) { if (a === b) return D.en(a); const x = D.parse(a), y = D.parse(b); return x.getMonth() === y.getMonth() ? x.getDate() + " – " + D.en(b) : D.en(a) + " – " + D.en(b); },
+    days(list, en) { return list.slice().sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map(d => en ? WD_EN[d] + "s" : "星期" + WD_ZH[d]).join(en ? " & " : "、"); },
+    autoMsg(rest, block) {
+      if (!block.length) return { zh: "", en: "" };
+      if (!rest.length) return { zh: "", en: "" };
+      return {
+        zh: "我们" + sched.days(rest) + "休息不做面包，所以" + sched.days(block) + "没有新鲜面包。" + (rest.some(r => !block.includes(r)) ? sched.days(rest.filter(r => !block.includes(r))) + "可以照常取货 🙂" : ""),
+        en: "We rest on " + sched.days(rest, true) + " (no baking), so there's no fresh bread on " + sched.days(block, true) + "." + (rest.some(r => !block.includes(r)) ? " " + sched.days(rest.filter(r => !block.includes(r)), true).replace(/s\b/g, "").replace(/day\b/g, "day") + " pickup is fine." : "")
+      };
+    },
+    // 公告板上要显示的卡片（已经排好顺序）
+    board(S, today) {
+      today = today || D.today();
+      const out = [];
+      const live = sched.notices(S).filter(n => !n.until || n.until >= today);
+      const star = live.find(n => n.star);
+      if (star) out.push({ kind: "star", n: star });
+      const w = sched.weekly(S);
+      if (w.block.length) out.push({ kind: "weekly", w,
+        title_zh: sched.days(w.block) + "没有货，不能取货 / 配送", title_en: "No pickup or delivery on " + sched.days(w.block, true) });
+      sched.holidays(S).filter(h => h.to >= today).forEach(h => {
+        const back = sched.nextOpen(S, D.add(h.to, 1));
+        out.push({ kind: "holiday", h, back,
+          title_zh: sched.rangeZh(h.from, h.to) + " 不能取货 / 配送", title_en: "No pickup or delivery " + sched.rangeEn(h.from, h.to),
+          body_zh: [h.reason_zh, D.zh(back) + " 起照常"].filter(Boolean).join("，") + "。",
+          body_en: [h.reason_en, "Back on " + D.en(back)].filter(Boolean).join(". ") + "." });
+      });
+      live.filter(n => n !== star).sort((a, b) => String(b.created || "").localeCompare(String(a.created || ""))).forEach(n => out.push({ kind: "notice", n }));
+      return out;
+    },
+    // 网站最上面的横条：重要公告 > 14 天内的放假 > 旧版公告横幅
+    topBar(S, today) {
+      today = today || D.today();
+      const star = sched.notices(S).find(n => n.star && (!n.until || n.until >= today));
+      if (star) return { zh: "⭐ " + (star.title_zh || star.title_en), en: star.title_zh ? star.title_en : "" };
+      const h = sched.holidays(S).find(h => h.to >= today && h.from <= D.add(today, 14));
+      if (h) return { zh: "🛌 " + sched.rangeZh(h.from, h.to) + " 不能取货", en: "Closed " + sched.rangeEn(h.from, h.to) };
+      if (!Array.isArray(S.notices) && S.announcement) return { zh: S.announcement, en: "" };
+      return null;
+    },
+    // 选日期下面的一行提示
+    hint(S, today) {
+      today = today || D.today();
+      const zh = [], en = [];
+      const w = sched.weekly(S);
+      if (w.block.length) { zh.push(sched.days(w.block) + "没有货"); en.push("No pickup on " + sched.days(w.block, true)); }
+      sched.holidays(S).filter(h => h.to >= today && h.from <= D.add(today, 90)).forEach(h => {
+        zh.push(sched.rangeZh(h.from, h.to) + " " + (h.reason_zh || "休息")); en.push("Closed " + sched.rangeEn(h.from, h.to));
+      });
+      return zh.length ? { zh: zh.join(" · "), en: en.join(" · ") } : null;
+    }
+  };
+
+  window.LSB = { cfg, hasSupabase, sb, ICONS, money, normalizeProduct, productToRow, P, loadCatalog, placeOrder, netFetch, isNetErr, esc, waNumber, store, defaultSettings, WA_DEFAULTS, fillTemplate, waTemplate, buildOrderMessage, watchUpdates, sched };
 })();

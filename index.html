@@ -18,6 +18,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<script>/* 网址统一成 index.html（手机 app 的范围只包含网站，不包含后台） */
+if(/\/$/.test(location.pathname)) history.replaceState(null,'',location.pathname+'index.html'+location.search+location.hash);</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
@@ -44,7 +46,52 @@ input,textarea,select{font:inherit;color:inherit}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 /* announcement */
-.announce{background:var(--brown-d);color:#F6E9D8;text-align:center;font-size:13px;padding:7px 16px}
+.announce[hidden]{display:none}
+.announce{background:var(--brown-d);color:#F6E9D8;font-size:13px;padding:7px 16px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer}
+.announce .t{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.announce .t small{opacity:.8;margin-left:6px;font-size:12px}
+.announce .go{color:#F1CFA0;white-space:nowrap;flex:none;font-size:12.5px}
+/* 公告板 */
+.nb{padding:22px 0 8px}
+.nb h2{font-family:var(--serif);font-size:22px;margin:0;color:var(--brown-d);display:flex;align-items:baseline;gap:8px}
+.nb h2 small{font-family:var(--sans);font-size:13px;color:var(--muted);font-weight:400}
+.nb .list{display:grid;gap:10px;margin-top:12px}
+@media (min-width:760px){.nb .list{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}}
+.post{background:var(--card);border:1px solid var(--line-soft);border-radius:16px;padding:12px 14px;box-shadow:0 2px 10px rgba(92,62,36,.04)}
+.post .d{font-size:11.5px;color:var(--muted)}
+.post b{display:block;font-size:15px;color:var(--brown-d);margin:2px 0;line-height:1.4}
+.post b small{display:block;font-weight:400;font-size:12.5px;color:var(--muted)}
+.post p{margin:6px 0 0;font-size:13.5px;line-height:1.55;white-space:pre-line}
+.post p small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.post.star{border:2px solid #D9A441;background:#FFF6DF}
+.post.star .d{color:#9A6A10;font-weight:700}
+.post.weekly{border:1.5px solid #E2C9A6;background:#FFF8EE}
+.post.holiday{border:1.5px solid #E7B9A0;background:#FDF0E8}
+.post.holiday b{color:#9A4A22}
+.wkg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+.wkg div{border-radius:10px;padding:5px 0;text-align:center;font-size:13px;background:#EAF3E6;color:#3F7A4F;line-height:1.25}
+.wkg div small{display:block;font-size:10px}
+.wkg div.no{background:#F6DDD3;color:#B33A2E}
+.nb .more{display:block;margin:10px auto 0;font-size:13px;color:var(--brown);text-decoration:underline}
+/* 选日期 */
+.dfield{display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:15px;color:var(--brown-d);text-align:left}
+.dfield.open{border-color:var(--brown);box-shadow:0 0 0 3px rgba(110,75,48,.12)}
+.field .dfield span{display:inline;margin:0;font-size:15px;color:inherit}
+.field .dfield .ph{color:#B9A897}
+.dfield svg{margin-left:auto;width:20px;height:20px;color:var(--brown);flex:none}
+.calp{background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;margin-top:6px;box-shadow:0 12px 34px rgba(76,51,32,.14)}
+.calp .mh2{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.calp .mh2 b{font-size:15px;color:var(--brown-d)}
+.calp .mh2 button{width:34px;height:34px;border-radius:50%;font-size:20px;color:var(--brown-d);line-height:1}
+.calp .mh2 button:disabled{opacity:.2}
+.calp .g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.calp .wd{font-size:11.5px;color:var(--muted);padding:4px 0}
+.calp .dd{height:38px;width:38px;margin:0 auto;display:grid;place-items:center;font-size:15px;color:var(--brown-d);border-radius:50%}
+.calp button.dd:hover{background:var(--paper)}
+.calp .dd.off{color:#D6CBBF;cursor:default}
+.calp .dd.on{background:var(--brown);color:#fff;font-weight:700}
+.dhint{font-size:12.5px;color:#8A5A20;margin-top:6px;line-height:1.5}
+.dhint small{display:block;color:var(--muted);font-size:12px}
 
 /* header */
 header.top{position:sticky;top:0;z-index:40;background:rgba(251,246,238,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
@@ -461,6 +508,12 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 
   <div class="cats wrap"><div class="cat-row" id="catRow"></div></div>
 
+  <section class="nb" id="board" hidden><div class="wrap">
+    <h2>公告 <small>Notice Board</small></h2>
+    <div class="list" id="boardList"></div>
+    <button class="more" id="boardMore" hidden></button>
+  </div></section>
+
   <section id="popularSec" hidden>
     <div class="wrap">
       <div class="sec-title"><span class="script">Popular Items</span><h2>热门推荐</h2><p>大家最常回购的味道 · Customer favourites</p></div>
@@ -613,6 +666,68 @@ function saveCart(){ store.set('lsb_cart_v2', cart); }
 function saveForm(){ store.set('lsb_form', form); }
 function toast(html, ms=2600){ const t=$('#toast'); t.innerHTML=html; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), ms); return t; }
 
+
+/* ---------- 公告板 & 最上面的横条 ---------- */
+const SC = LSB.sched;
+const WKS = [1,2,3,4,5,6,0];   // 星期一开始
+let boardAll = false;
+function postHTML(it){
+  if(it.kind==='weekly'){
+    const w = it.w;
+    return `<div class="post weekly"><div class="d">🗓️ 每周取货时间 · Weekly schedule</div>
+      <b>${esc(it.title_zh)}<small>${esc(it.title_en)}</small></b>
+      ${w.msg_zh||w.msg_en?`<p>${esc(w.msg_zh)}${w.msg_en?`<small>${esc(w.msg_en)}</small>`:''}</p>`:''}
+      <div class="wkg">${WKS.map(d=>w.block.includes(d)?`<div class="no">${SC.WD_ZH[d]}<small>✕ 没货</small></div>`:`<div>${SC.WD_ZH[d]}<small>✓</small></div>`).join('')}</div></div>`;
+  }
+  if(it.kind==='holiday') return `<div class="post holiday"><div class="d">🛌 特别休息 · Closed</div>
+      <b>${esc(it.title_zh)}<small>${esc(it.title_en)}</small></b><p>${esc(it.body_zh)}<small>${esc(it.body_en)}</small></p></div>`;
+  const n = it.n, star = it.kind==='star';
+  const title = n.title_zh || n.title_en, sub = n.title_zh ? n.title_en : '';
+  return `<div class="post ${star?'star':''}"><div class="d">${star?'⭐ 重要 · Important':esc(n.created?prettyDate(n.created).replace(/ \(.*/,''):'')}</div>
+    ${title?`<b>${esc(title)}${sub?`<small>${esc(sub)}</small>`:''}</b>`:''}
+    ${n.body_zh||n.body_en?`<p>${esc(n.body_zh||n.body_en)}${n.body_zh&&n.body_en?`<small>${esc(n.body_en)}</small>`:''}</p>`:''}</div>`;
+}
+function renderBoard(){
+  const items = SC.board(S);
+  const MAX = 4, show = boardAll ? items : items.slice(0, MAX);
+  $('#board').hidden = !items.length;
+  $('#boardList').innerHTML = show.map(postHTML).join('');
+  $('#boardMore').style.display = items.length <= MAX ? 'none' : '';
+  $('#boardMore').textContent = boardAll ? '收起 Show less' : `查看全部公告 See all (${items.length}) ›`;
+  const tb = SC.topBar(S), an = $('#announce');
+  if(tb){ an.innerHTML = `<span class="t">${esc(tb.zh)}${tb.en?`<small>${esc(tb.en)}</small>`:''}</span>${items.length?'<span class="go">公告 ›</span>':''}`; an.hidden = false; }
+  else an.hidden = true;
+}
+$('#boardMore').addEventListener('click', ()=>{ boardAll = !boardAll; renderBoard(); });
+$('#announce').addEventListener('click', ()=>{ if($('#board').hidden) return; const y = $('#board').getBoundingClientRect().top + scrollY - 70; window.scrollTo({ top:y, behavior:'smooth' }); });
+
+/* ---------- 选日期（按了才打开日历） ---------- */
+let calOpen = false, calMonth = '';
+const CAL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
+function calHTML(minD){
+  const [y,m] = calMonth.split('-').map(Number);
+  const first = new Date(y, m-1, 1), days = new Date(y, m, 0).getDate();
+  const maxD = ymd(addDays(120));
+  const lead = (first.getDay()+6)%7;
+  let cells = '';
+  for(let i=0;i<lead;i++) cells += '<div></div>';
+  for(let d=1; d<=days; d++){
+    const k = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const off = k < minD || k > maxD || SC.blocked(S, k);
+    cells += off ? `<div class="dd off">${d}</div>` : `<button type="button" class="dd ${k===form.date?'on':''}" data-day="${k}">${d}</button>`;
+  }
+  const canPrev = calMonth > minD.slice(0,7), canNext = calMonth < maxD.slice(0,7);
+  return `<div class="calp"><div class="mh2"><button type="button" data-calnav="-1" ${canPrev?'':'disabled'} aria-label="上个月">‹</button><b>${y}年${m}月 · ${first.toLocaleString('en',{month:'long'})}</b><button type="button" data-calnav="1" ${canNext?'':'disabled'} aria-label="下个月">›</button></div>
+    <div class="g">${['一','二','三','四','五','六','日'].map(x=>`<div class="wd">${x}</div>`).join('')}${cells}</div></div>`;
+}
+function dateBoxHTML(minD){
+  const h = SC.hint(S);
+  return `<button type="button" class="dfield ${calOpen?'open':''}" id="dBtn">${form.date?`<span>${esc(prettyDate(form.date))}</span>`:'<span class="ph">选择日期 · Choose a date</span>'}${CAL_ICON}</button>
+    ${calOpen ? calHTML(minD) : ''}
+    ${h?`<div class="dhint">🗓️ ${esc(h.zh)}<small>${esc(h.en)}</small></div>`:''}`;
+}
+function redrawDate(){ const b = $('#dateBox'); if(b) b.innerHTML = dateBoxHTML(ymd(addDays(minDays()))); }
+
 /* ---------- render shop info ---------- */
 function renderShop(){
   $('#shopName').textContent = S.shop_name || 'Little Story Bakery';
@@ -623,7 +738,7 @@ function renderShop(){
   $('#logoImg').src = S.logo_url || 'images/logo-emblem.webp';
   $('#tagZh').textContent = S.tagline_zh || '';
   $('#tagEn').textContent = S.tagline_en || '';
-  if(S.announcement){ $('#announce').textContent = S.announcement; $('#announce').hidden=false; } else $('#announce').hidden=true;
+  renderBoard();
   $('#pickupNote').textContent = [S.pickup_note_zh, S.pickup_note_en].filter(Boolean).join(' ');
   $('#deliveryNote').textContent = [S.delivery_note_zh, S.delivery_note_en].filter(Boolean).join(' ');
   const hello = '你好 Little Story Bakery！我想询问一下 🙂';
@@ -915,7 +1030,7 @@ function renderCart(){
     return;
   }
   const sub = subtotal(), md = minDays(), minD = ymd(addDays(md));
-  if(!form.date || form.date < minD) form.date = minD;
+  if(form.date && (form.date < minD || SC.blocked(S, form.date))) { form.date = ''; saveForm(); }
   const dv = deliveryInfo(sub);
   $('#cartScroll').innerHTML = `
     <div class="cart-head"><h3>购物车</h3><span>Your order</span></div>
@@ -945,7 +1060,7 @@ function renderCart(){
         <div class="hint ${dv.free?'ok':'warn'}">${esc(dv.text)}</div>`
       :`<div class="hint">${esc(S.pickup_note_zh||'')}</div>`}
 
-      <label class="field"><span>${form.method==='delivery'?'配送日期':'取货日期'} · Date</span><input type="date" id="fDate" min="${minD}" value="${form.date}"></label>
+      <div class="field"><span>${form.method==='delivery'?'配送日期':'取货日期'} · Date <b style="color:var(--warn)">*</b></span><div id="dateBox">${dateBoxHTML(minD)}</div></div>
       ${md>0?`<div class="hint warn">购物车里有需要预订的产品，最早 ${prettyDate(minD)}<br>Your cart has pre-order items — earliest date ${prettyDate(minD)}</div>`:''}
       <label class="field"><span>名字 · Name <b style="color:var(--warn)">*</b></span><input id="fName" autocomplete="name" placeholder="怎么称呼您？ Your name" value="${esc(form.name)}"></label>
       <label class="field"><span>备注 · Notes（可选 optional）</span><textarea id="fNote" rows="2" placeholder="例如：希望下午 3 点后取货、生日蜡烛… e.g. pickup after 3pm, birthday candle">${esc(form.note)}</textarea></label>
@@ -962,6 +1077,11 @@ function renderCart(){
 }
 
 $('#cartScroll').addEventListener('click', e=>{
+  if(e.target.closest('#dBtn')){ calOpen = !calOpen; if(calOpen) calMonth = (form.date || ymd(addDays(minDays()))).slice(0,7); redrawDate(); return; }
+  const nav = e.target.closest('[data-calnav]');
+  if(nav){ const [y,m] = calMonth.split('-').map(Number); const d = new Date(y, m-1+(+nav.dataset.calnav), 1); calMonth = ymd(d).slice(0,7); redrawDate(); return; }
+  const day = e.target.closest('[data-day]');
+  if(day){ form.date = day.dataset.day; saveForm(); calOpen = false; redrawDate(); const er=$('#cartErr'); if(er) er.classList.remove('show'); return; }
   const q = e.target.closest('[data-cq]');
   if(q){
     const i=+q.dataset.cq, l=cartLines()[i]; const d=+q.dataset.d;
@@ -990,6 +1110,7 @@ async function sendOrder(){
   if(!form.name.trim()) return fail('请填写名字 · Please enter your name');
   if(!form.date) return fail('请选择日期 · Please choose a date');
   if(form.date < minD) return fail(`最早可选 ${prettyDate(minD)} · Earliest date ${prettyDate(minD)}`);
+  if(SC.blocked(S, form.date)) return fail(`${prettyDate(form.date)} 不能取货，请选别的日期 · Not available, please choose another date`);
   if(form.method==='delivery'){
     const ad = form.address.trim();
     if(!ad) return fail('选择配送需要填写地址 · Please enter your delivery address');
