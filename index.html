@@ -179,7 +179,45 @@ section{padding:46px 0}
 .pop .price{margin-top:6px;font-weight:700;color:var(--brown)}
 
 /* catalogue */
-.cat-section{padding-top:8px;margin-bottom:34px}
+.cat-section{padding-top:8px;margin-bottom:34px;scroll-margin-top:118px}
+/* 往下滑时固定在上面的分类 */
+.stickycats{position:fixed;left:0;right:0;z-index:39;background:rgba(251,246,238,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft);transform:translateY(-120%);opacity:0;transition:transform .25s,opacity .25s;pointer-events:none}
+.stickycats.show{transform:none;opacity:1;pointer-events:auto}
+.stickycats .in{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;scrollbar-width:none;max-width:1160px;margin:0 auto}
+.stickycats .in::-webkit-scrollbar{display:none}
+.stickycats button{flex:none;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;color:var(--brown-d);white-space:nowrap}
+.stickycats button small{color:var(--muted);font-size:11px;margin-left:4px}
+.stickycats button.active{background:var(--brown);border-color:var(--brown);color:#FFF6EA}
+.stickycats button.active small{color:#E8D5BD}
+/* 取货地点、保存方法、下单后 */
+.pickloc{background:#FFF8EE;border:1px solid #E2C9A6;border-radius:12px;padding:9px 12px;font-size:13px;color:#7A5A30;margin-top:8px;line-height:1.5}
+.pickloc small{display:block;color:var(--muted);font-size:12px}
+.store{background:#F1F6F8;border:1px solid #CFE0E6;border-radius:12px;padding:10px 12px;font-size:13px;color:#2E5560;line-height:1.55;margin-top:14px;white-space:pre-line}
+.store b{display:block;font-size:13px;margin-bottom:2px}
+.store small{display:block;color:#5F7F88;font-size:12px;margin-top:2px}
+.donedim{position:fixed;inset:0;background:rgba(40,26,16,.45);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s}
+.donedim.open{opacity:1;pointer-events:auto}
+.done{position:fixed;left:0;right:0;bottom:0;z-index:301;background:#fff;border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));text-align:center;transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);max-width:560px;margin:0 auto}
+.done.open{transform:none}
+.done .ck{width:58px;height:58px;border-radius:50%;background:#E6F1E4;color:#3F7A4F;display:grid;place-items:center;margin:0 auto 10px}
+.done .ck svg{width:30px;height:30px}
+.done h3{margin:0;font-size:19px;color:var(--brown-d)}
+.done .no{font-size:14px;color:var(--muted);margin:4px 0 14px}
+.done .no b{color:var(--brown-d);font-size:16px}
+.done .msg{background:#FFF8EE;border:1px solid #E2C9A6;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.6;color:var(--brown-d);text-align:left;white-space:pre-line}
+.done .msg small{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
+.done .bts{display:flex;gap:8px;margin-top:16px}
+.done .bts button{flex:1;padding:13px 10px;border-radius:999px;font-weight:600;font-size:14px;border:1.5px solid var(--line);background:#fff;color:var(--brown-d)}
+.done .bts .y{background:var(--brown);border-color:var(--brown);color:#FFF6EA}
+/* 手机：首页压缩一点，打开就看到分类 */
+@media (max-width:759px){
+  .hero .wrap{padding-top:22px;padding-bottom:44px;gap:0}
+  .hero h1{font-size:44px}
+  .hero .zh{margin:12px 0 2px;font-size:16px}
+  .hero .en{margin:0 0 14px;font-size:13px}
+  .hero-badges{display:none}
+  .hero:not(.has-img) .collage{height:170px;margin-top:18px}
+}
 .cat-head{display:flex;align-items:baseline;gap:10px;margin:0 0 14px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
 .cat-head h3{margin:0;font-family:var(--serif);font-size:19px;color:var(--brown-d)}
 .cat-head span{color:var(--muted);font-size:13px}
@@ -466,6 +504,7 @@ footer .socials a:hover{background:rgba(255,255,255,.08)}
 
 <div class="announce" id="announce" hidden></div>
 
+<div class="stickycats" id="stickyCats"><div class="in" id="stickyIn"></div></div>
 <header class="top">
   <div class="wrap">
     <a href="#home" class="logo" aria-label="Little Story Bakery">
@@ -728,6 +767,66 @@ function dateBoxHTML(minD){
 }
 function redrawDate(){ const b = $('#dateBox'); if(b) b.innerHTML = dateBoxHTML(ymd(addDays(minDays()))); }
 
+
+/* ---------- 取货地点 / 保存方法 / 下单后 ---------- */
+function pickLocHTML(){
+  const zh = (S.pickup_area_zh||'').trim(), en = (S.pickup_area_en||'').trim();
+  if(!zh && !en) return '';
+  return `<div class="pickloc">📍 <b>取货地点：${esc(zh||en)}</b><br>确认订单后会把详细地址发给您。<small>${en?`Pickup area: ${esc(en)}. `:''}We'll send the exact address after confirming your order.</small></div>`;
+}
+function storageHTML(p){
+  const own = (S.storage_map||{})[p.id] || {};
+  const zh = (own.zh||'').trim() || (!(own.en||'').trim() ? (S.storage_zh||'').trim() : '');
+  const en = (own.zh||own.en) ? (own.en||'').trim() : (S.storage_en||'').trim();
+  if(!zh && !en) return '';
+  return `<div class="store"><b>🧊 保存方法 · How to store</b>${esc(zh||en)}${zh&&en?`<small>${esc(en)}</small>`:''}</div>`;
+}
+function showDone(code){
+  let dim = $('#doneDim'), box = $('#doneBox');
+  if(!box){
+    document.body.insertAdjacentHTML('beforeend', '<div class="donedim" id="doneDim"></div><div class="done" id="doneBox" role="dialog" aria-modal="true"></div>');
+    dim = $('#doneDim'); box = $('#doneBox');
+    dim.addEventListener('click', hideDone);
+    box.addEventListener('click', e=>{
+      if(e.target.closest('[data-dclear]')){ cart=[]; saveCart(); updateCart(); hideDone(); }
+      else if(e.target.closest('[data-dok]')) hideDone();
+    });
+  }
+  const zh = (S.thanks_zh||'').trim(), en = (S.thanks_en||'').trim();
+  box.innerHTML = `<div class="ck">${ICONS.check}</div><h3>订单已送出 · Order sent</h3>
+    ${code?`<div class="no">订单号码 Order No. <b>#${esc(code)}</b></div>`:'<div class="no">WhatsApp 已打开，记得按「发送」· Remember to tap Send</div>'}
+    ${zh||en?`<div class="msg">${esc(zh||en)}${zh&&en?`<small>${esc(en)}</small>`:''}</div>`:''}
+    <div class="bts"><button type="button" data-dclear>清空购物车<br><small style="font-weight:400">Clear cart</small></button><button type="button" class="y" data-dok>好的 OK</button></div>`;
+  requestAnimationFrame(()=>{ dim.classList.add('open'); box.classList.add('open'); });
+}
+function hideDone(){ const d=$('#doneDim'), b=$('#doneBox'); if(d) d.classList.remove('open'); if(b) b.classList.remove('open'); }
+
+/* ---------- 往下滑时，分类固定在上面 ---------- */
+function renderStickyCats(){
+  $('#stickyIn').innerHTML = CATS.map(c=>`<button type="button" data-cat="${esc(c.slug)}">${esc(c.name_zh||c.name_en)}${c.name_zh&&c.name_en?`<small>${esc(c.name_en.split(/\s*[&,]/)[0])}</small>`:''}</button>`).join('');
+  stickyCheck();
+}
+function stickyCheck(){
+  const bar = $('#stickyCats'), row = $('#catRow'), hdr = $('header.top');
+  if(!bar || !row || !hdr) return;
+  const hb = hdr.getBoundingClientRect().bottom;
+  bar.style.top = Math.max(0, hb) + 'px';
+  const past = row.getBoundingClientRect().bottom < hb;
+  const cat = $('#catalog').getBoundingClientRect();
+  const show = past && !Q && cat.bottom > hb + 120;
+  bar.classList.toggle('show', show);
+}
+let stT = 0;
+window.addEventListener('scroll', ()=>{ if(stT) return; stT = requestAnimationFrame(()=>{ stT = 0; stickyCheck(); }); }, { passive:true });
+window.addEventListener('resize', stickyCheck);
+$('#stickyIn').addEventListener('click', e=>{
+  const b = e.target.closest('[data-cat]'); if(!b) return;
+  e.stopPropagation();
+  const t = document.getElementById('cat-'+b.dataset.cat); if(!t) return;
+  const off = $('header.top').getBoundingClientRect().bottom + $('#stickyCats').offsetHeight + 8;
+  window.scrollTo({ top: t.getBoundingClientRect().top + scrollY - off, behavior:'smooth' });
+});
+
 /* ---------- render shop info ---------- */
 function renderShop(){
   $('#shopName').textContent = S.shop_name || 'Little Story Bakery';
@@ -739,7 +838,7 @@ function renderShop(){
   $('#tagZh').textContent = S.tagline_zh || '';
   $('#tagEn').textContent = S.tagline_en || '';
   renderBoard();
-  $('#pickupNote').textContent = [S.pickup_note_zh, S.pickup_note_en].filter(Boolean).join(' ');
+  $('#pickupNote').innerHTML = esc([S.pickup_note_zh, S.pickup_note_en].filter(Boolean).join(' ')) + ((S.pickup_area_zh||S.pickup_area_en) ? `<br><b>📍 ${esc(S.pickup_area_zh||S.pickup_area_en)}</b>${S.pickup_area_zh&&S.pickup_area_en?` · ${esc(S.pickup_area_en)}`:''}` : '');
   $('#deliveryNote').textContent = [S.delivery_note_zh, S.delivery_note_en].filter(Boolean).join(' ');
   const hello = '你好 Little Story Bakery！我想询问一下 🙂';
   $('#hdrWa').href = wa(hello); $('#heroWa').href = wa(hello);
@@ -842,7 +941,7 @@ function setupSpy(){
   if(spy) spy.disconnect();
   if(!('IntersectionObserver' in window)) return;
   spy = new IntersectionObserver(es=>{
-    es.forEach(e=>{ if(e.isIntersecting){ $$('.cat').forEach(b=>b.classList.toggle('active', b.dataset.cat===e.target.dataset.sec)); } });
+    es.forEach(e=>{ if(e.isIntersecting){ $$('.cat,#stickyIn button').forEach(b=>b.classList.toggle('active', b.dataset.cat===e.target.dataset.sec)); const a=$('#stickyIn button.active'); if(a && $('#stickyCats').classList.contains('show')) a.scrollIntoView({ inline:'center', block:'nearest' }); } });
   }, { rootMargin:'-45% 0px -50% 0px' });
   $$('.cat-section').forEach(s=>spy.observe(s));
 }
@@ -920,6 +1019,7 @@ function renderPd(){
         const th = showThumbs ? `<img src="${esc(imgSrc(p,false,k))}" alt="" loading="lazy">` : '';
         return `<button class="o ${k===ri?'on':''} ${ok?'':'na'}" data-ri="${k}">${th}<span>${esc(r.label_zh||r.label_en)}${r.label_zh&&r.label_en&&r.label_en!==r.label_zh?`<small class="en">${esc(r.label_en)}</small>`:''}<small>${state}</small></span></button>`; }).join('')}</div>`:''}
       ${row.moq>1?`<div class="hint">最少 ${row.moq} 份 · Minimum ${row.moq}</div>`:''}
+      ${storageHTML(p)}
       ${p.preorder_days>0?`<div class="note-box">⏰ <span>此产品需提前 <b>${p.preorder_days}</b> 天预订。<br>Pre-order ${p.preorder_days} day(s) in advance.</span></div>`:''}
       ${addonsHTML(p)}
       ${p.sold_out?`<div class="note-box">今天已售罄，可以 WhatsApp 问问下一批的时间。<br>Sold out for now.</div>`:''}
@@ -1058,7 +1158,7 @@ function renderCart(){
         </div>
         <label class="field"><span>配送地址 · Address <b style="color:var(--warn)">*</b></span><textarea id="fAddr" rows="2" placeholder="门牌、路名、花园、邮区 · Unit, street, area, postcode">${esc(form.address)}</textarea></label>
         <div class="hint ${dv.free?'ok':'warn'}">${esc(dv.text)}</div>`
-      :`<div class="hint">${esc(S.pickup_note_zh||'')}</div>`}
+      :`${pickLocHTML()}<div class="hint">${esc(S.pickup_note_zh||'')}</div>`}
 
       <div class="field"><span>${form.method==='delivery'?'配送日期':'取货日期'} · Date <b style="color:var(--warn)">*</b></span><div id="dateBox">${dateBoxHTML(minD)}</div></div>
       ${md>0?`<div class="hint warn">购物车里有需要预订的产品，最早 ${prettyDate(minD)}<br>Your cart has pre-order items — earliest date ${prettyDate(minD)}</div>`:''}
@@ -1153,8 +1253,7 @@ async function sendOrder(){
   else location.href = url;
   sending = false;
   close();
-  const t = toast(`${code?`订单号码 Order <b>#${esc(code)}</b> · `:''}已打开 WhatsApp，记得按<b>发送</b>哦 ✓<br>WhatsApp opened — remember to tap <b>Send</b>. <button id="tClear">清空购物车 Clear cart</button>`, 10000);
-  const b = $('#tClear'); if(b) b.onclick=()=>{ cart=[]; saveCart(); updateCart(); t.classList.remove('show'); };
+  showDone(code);
 }
 
 /* ---------- enquiries ---------- */
@@ -1186,7 +1285,7 @@ const _close = close; close = function(){ _close(); updateCart(); };
 function apply(data){
   S = data.settings; CATS = data.categories; PRODS = data.products;
   byId = Object.fromEntries(PRODS.map(p=>[p.id,p]));
-  renderShop(); renderCats(); renderCatalog(); updateCart();
+  renderShop(); renderCats(); renderCatalog(); renderStickyCats(); updateCart();
 }
 async function boot(){
   const cached = LSB.hasSupabase && store.get('lsb_catalog_v2', null);

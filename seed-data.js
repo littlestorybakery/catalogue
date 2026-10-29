@@ -152,7 +152,14 @@
       logo_url: "",
       reg_no: "SA0567851-T",
       tagline_hdr: "FRESHLY BAKED · WITH LOVE",
-      spec_presets: ["整条", "盒装", "片装", "袋装", "个", "罐 (50g)"]
+      spec_presets: ["整条", "盒装", "片装", "袋装", "个", "罐 (50g)"],
+      pickup_area_zh: "",
+      pickup_area_en: "",
+      thanks_zh: "谢谢你的订单！🍞 我们正在努力做面包中，会尽快回复你。如果 3 小时内还没回复，请再 WhatsApp 提醒我们一下～",
+      thanks_en: "Thank you! We're busy baking and will reply soon. If you don't hear from us within 3 hours, please send us a WhatsApp reminder.",
+      storage_zh: "",
+      storage_en: "",
+      storage_map: {}
     },
     categories: [
       { slug: "buns", name_zh: "面包", name_en: "Buns", icon: "bread", sort: 1 },

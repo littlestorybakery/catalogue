@@ -563,6 +563,27 @@ textarea.nin{resize:vertical;min-height:60px;line-height:1.5}
         </div>
 
         <div class="card" style="margin-top:12px">
+          <h2>📍 取货地点</h2>
+          <p class="muted" style="margin:4px 0 0">只写大概地区，详细地址还是确认订单后才发给顾客。留空就不显示。</p>
+          <label class="field"><span>中文（例如：Cheras · Taman Connaught 附近）</span><input name="pickup_area_zh"></label>
+          <label class="field"><span>English（例如：Near Taman Connaught, Cheras）</span><input name="pickup_area_en"></label>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>✅ 顾客下单后看到的话</h2>
+          <p class="muted" style="margin:4px 0 0">顾客按「WhatsApp 发送订单」之后，会跳出「订单已送出」和这段话。</p>
+          <label class="field"><span>中文</span><textarea name="thanks_zh" rows="3"></textarea></label>
+          <label class="field"><span>English</span><textarea name="thanks_en" rows="3"></textarea></label>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2>🧊 保存方法（一般）</h2>
+          <p class="muted" style="margin:4px 0 0">每个产品页都会显示这段。某个产品不一样的话（例如蛋糕要冷藏），可以在那个产品里另外写。留空就不显示。</p>
+          <label class="field"><span>中文（例如：常温可以放 2 天，冷藏 4 天）</span><textarea name="storage_zh" rows="2"></textarea></label>
+          <label class="field"><span>English</span><textarea name="storage_en" rows="2"></textarea></label>
+        </div>
+
+        <div class="card" style="margin-top:12px">
           <h2>常用规格</h2>
           <p class="muted" style="margin:4px 0 6px">编辑产品时会出现这些按钮。可以改名字、删除、加新的、调整顺序。</p>
           <div id="presetList"></div>
@@ -664,6 +685,9 @@ textarea.nin{resize:vertical;min-height:60px;line-height:1.5}
     </div>
     <label class="field"><span>介绍 / 材料（中文）</span><textarea id="eDescZh" rows="2" placeholder="番茄、芝士、生菜…"></textarea></label>
     <label class="field"><span>介绍 / 材料（英文）</span><textarea id="eDescEn" rows="2" placeholder="Tomato, cheese, lettuce…"></textarea></label>
+    <div class="sec-label">🧊 保存方法（这个产品不一样才填）</div>
+    <label class="field"><span>中文（留空 = 用「设定」里一般的保存方法）</span><textarea id="eStoreZh" rows="2" placeholder="例如：需要冷藏，3 天内吃完"></textarea></label>
+    <label class="field"><span>English</span><textarea id="eStoreEn" rows="2" placeholder="e.g. Keep refrigerated. Best within 3 days."></textarea></label>
 
     <div class="sec-label">规格（可以选多个）</div>
     <div class="specs" id="eSpecChips"></div>
@@ -1223,6 +1247,7 @@ function openEditor(p){
   $('#eCat').value = ED.category_slug;
   $('#eNameZh').value = ED.name_zh; $('#eNameEn').value = ED.name_en;
   $('#eDescZh').value = ED.description_zh; $('#eDescEn').value = ED.description_en;
+  { const st = (ED.id && (SETTINGS.storage_map||{})[ED.id]) || {}; $('#eStoreZh').value = st.zh||''; $('#eStoreEn').value = st.en||''; }
   $('#ePre').value = ED.preorder_days;
   $('#ePop').checked = ED.popular; $('#eHide').checked = ED.hidden; $('#eQuote').checked = ED.quote_only; $('#eAddon').checked = ED.addon;
   $('#eDelWrap').hidden = isNew;
@@ -1247,7 +1272,7 @@ $('#editor').addEventListener('change', ()=>{ edDirty = true; });
 // 没有英文的格子标成淡蓝色，上面写有几个
 function markMissingEn(){
   if(!ED) return;
-  const pairs = [[$('#eNameZh'), $('#eNameEn')], [$('#eDescZh'), $('#eDescEn')]];
+  const pairs = [[$('#eNameZh'), $('#eNameEn')], [$('#eDescZh'), $('#eDescEn')], [$('#eStoreZh'), $('#eStoreEn')]];
   $$('#eSpecSel .s').forEach(r=>pairs.push([r.querySelector('[data-sz]'), r.querySelector('[data-se]')]));
   if(ED.flav) $$('#eRows .fl').forEach(r=>pairs.push([r.querySelector('[data-rname]'), r.querySelector('[data-ren]')]));
   let n = 0;
@@ -1527,6 +1552,13 @@ $('#eSave').addEventListener('click', async ()=>{
     const keep = new Set(rowUrls(cleanRows));
     for(const u of origRowImgs) if(!keep.has(u)) await removeImage(u);
     if(result){ replaceLocal(normalizeProduct(result)); }
+    // 这个产品自己的保存方法（存在设定里，不用改资料库）
+    { const pid = (result && result.id) || ED.id, zh = $('#eStoreZh').value.trim(), en = $('#eStoreEn').value.trim();
+      const cur = (SETTINGS.storage_map||{})[pid] || {};
+      if(pid && ((cur.zh||'') !== zh || (cur.en||'') !== en)){
+        const map = Object.assign({}, SETTINGS.storage_map||{}); if(zh||en) map[pid] = { zh, en }; else delete map[pid];
+        try{ await saveSettingsPatch({ storage_map:map }); }catch(err){ toast('保存方法没有存到：'+friendly(err), true); }
+      } }
     closeEditor(true);
     if(!result) await loadAll(true);
     renderProducts(); saved();
@@ -1817,7 +1849,7 @@ $('#prepList').addEventListener('click', e=>{ if(e.target.closest('[data-preload
 
 /* =================== SETTINGS =================== */
 let heroPicker, aboutPicker, logoPicker, PRESET_WORK = [];
-const S_TEXT = ['shop_name','tagline_zh','tagline_en','tagline_hdr','reg_no','free_delivery_area','pickup_note_zh','pickup_note_en','delivery_note_zh','delivery_note_en','instagram','facebook','google'];
+const S_TEXT = ['shop_name','tagline_zh','tagline_en','tagline_hdr','reg_no','pickup_area_zh','pickup_area_en','thanks_zh','thanks_en','storage_zh','storage_en','free_delivery_area','pickup_note_zh','pickup_note_en','delivery_note_zh','delivery_note_en','instagram','facebook','google'];
 function fillSettings(){
   const f = $('#setForm');
   S_TEXT.concat(['whatsapp','free_delivery_min']).forEach(k=>{ if(f.elements[k]) f.elements[k].value = SETTINGS[k] ?? ''; });
@@ -1936,7 +1968,8 @@ const SC = LSB.sched, SD = SC.D;
 const WKS = [1,2,3,4,5,6,0];   // 星期一开始
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function missingEn(p){
-  return !p.name_en.trim() || p.specs.some(x=>x.zh && !x.en) || (!P.single(p) && p.rows.some(r=>r.label_zh && !r.label_en)) || (!!p.description_zh && !p.description_en);
+  const st = (SETTINGS.storage_map||{})[p.id] || {};
+  return !p.name_en.trim() || p.specs.some(x=>x.zh && !x.en) || (!P.single(p) && p.rows.some(r=>r.label_zh && !r.label_en)) || (!!p.description_zh && !p.description_en) || (!!st.zh && !st.en);
 }
 // 只改公告相关的栏位：先拿云端最新的设定，再套上这次的改动（不会盖掉另一部装置改的其他设定）
 async function saveSettingsPatch(patch){
