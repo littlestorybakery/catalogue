@@ -2029,12 +2029,14 @@ function openNEditor(type, id){
   const S = SETTINGS;
   if(type==='holiday'){
     const h = id ? (S.holidays||[]).find(x=>x.id===id) : null;
-    NE = Object.assign({ type, id:id||null, rest_from:'', rest_to:'', from:'', to:'', reason_zh:'', reason_en:'' }, h ? JSON.parse(JSON.stringify(h)) : {});
+    NE = Object.assign({ type, id:id||null, rest_from:'', rest_to:'', from:'', to:'', reason_zh:'', reason_en:'', title_zh:'', title_en:'' }, h ? JSON.parse(JSON.stringify(h)) : {});
+    NE.titleTouched = !!(NE.title_zh || NE.title_en);
     NE.manual = !!h && !(h.rest_from && h.from===h.rest_from && h.to===SD.add(h.rest_to||h.rest_from,1));
     $('#nTitle').textContent = '🧳 我要去玩 / 放假';
   } else if(type==='weekly'){
     const w = SC.weekly(S);
-    NE = { type, rest:w.rest.slice(), block:w.block.slice(), msg_zh:w.msg_zh, msg_en:w.msg_en };
+    NE = { type, rest:w.rest.slice(), block:w.block.slice(), msg_zh:w.msg_zh, msg_en:w.msg_en, title_zh:w.title_zh, title_en:w.title_en };
+    NE.titleTouched = !!(w.title_zh || w.title_en);
     const auto = SC.autoMsg(w.rest, w.block);
     NE.manual = w.rest.length>0 && JSON.stringify(w.block.slice().sort())!==JSON.stringify(w.rest.map(d=>(d+1)%7).sort());
     NE.msgTouched = !!(w.msg_zh || w.msg_en) && (w.msg_zh!==auto.zh || w.msg_en!==auto.en);
@@ -2066,13 +2068,15 @@ function renderNEditor(){
       <div id="nManual" ${NE.manual?'':'hidden'}><div class="nq">顾客不能取货的日子<small>自己选</small></div>
         <div class="ndates"><input type="date" data-nf="from" value="${v(NE.from)}"><span>到</span><input type="date" data-nf="to" value="${v(NE.to)}"></div></div>
       <div class="nq">原因（可留空）</div>
-      <input class="nin" data-nf="reason_zh" value="${v(NE.reason_zh)}" placeholder="例如：店主放假"><input class="nin en" data-nf="reason_en" value="${v(NE.reason_en)}" placeholder="English，例如 Holiday break">`;
+      <input class="nin" data-nf="reason_zh" value="${v(NE.reason_zh)}" placeholder="例如：店主放假"><input class="nin en" data-nf="reason_en" value="${v(NE.reason_en)}" placeholder="English，例如 Holiday break">
+      ${titleFields()}`;
   } else if(NE.type==='weekly'){
     h = `<div class="nq">每个星期哪一天休息？<small>不做面包的日子，可以选多个</small></div>
       <div class="nwk" id="nRest">${WKS.map(d=>`<button type="button" data-wr="${d}" class="${NE.rest.includes(d)?'on':''}">${SC.WD_ZH[d]}</button>`).join('')}</div>
       <div class="nauto" id="nAuto"></div>
       <div id="nManual" ${NE.manual?'':'hidden'}><div class="nq">顾客每个星期不能选的日子<small>自己选</small></div>
         <div class="nwk blk" id="nBlock">${WKS.map(d=>`<button type="button" data-wb="${d}" class="${NE.block.includes(d)?'on':''}">${SC.WD_ZH[d]}</button>`).join('')}</div></div>
+      ${titleFields()}
       <div class="nq">想跟顾客说的话<small>已经帮你写好，可以改</small></div>
       <textarea class="nin" rows="2" data-nf="msg_zh">${v(NE.msg_zh)}</textarea><textarea class="nin en" rows="2" data-nf="msg_en">${v(NE.msg_en)}</textarea>`;
   } else {
@@ -2118,13 +2122,28 @@ function updateNAuto(){
          <button type="button" class="lnk" data-nmanual>${NE.manual ? '改回自动' : '不对？自己改'}</button>`
       : `选你每个星期休息的日子。`;
   }
+  syncTitle();
   updateNPrev();
+}
+function autoTitle(){
+  if(NE.type==='weekly') return NE.block.length ? SC.weeklyTitle(NE.block) : { zh:'', en:'' };
+  return NE.from ? SC.holidayTitle(NE.from, NE.to||NE.from) : { zh:'', en:'' };
+}
+function titleFields(){
+  return `<div class="nq">标题<small>已经帮你写好，可以改</small></div>
+    <input class="nin" data-nf="title_zh" value="${v(NE.title_zh)}"><input class="nin en" data-nf="title_en" value="${v(NE.title_en)}">
+    <button type="button" class="lnk" data-ntitle style="font-size:12.5px;color:var(--brown);text-decoration:underline;margin-top:-2px" ${NE.titleTouched?'':'hidden'}>用回建议的标题</button>`;
+}
+function syncTitle(){
+  if(NE.titleTouched) return;
+  const t = autoTitle(); NE.title_zh = t.zh; NE.title_en = t.en;
+  const z = $('[data-nf="title_zh"]'), e2 = $('[data-nf="title_en"]'); if(z) z.value = t.zh; if(e2) e2.value = t.en;
 }
 function draftSettings(){
   const S = Object.assign({}, SETTINGS);
-  if(NE.type==='holiday') S.holidays = (NE.from ? [{ id:'x', from:NE.from, to:NE.to||NE.from, reason_zh:NE.reason_zh, reason_en:NE.reason_en }] : []);
+  if(NE.type==='holiday') S.holidays = (NE.from ? [{ id:'x', from:NE.from, to:NE.to||NE.from, reason_zh:NE.reason_zh, reason_en:NE.reason_en, title_zh:NE.title_zh, title_en:NE.title_en }] : []);
   else S.holidays = [];
-  if(NE.type==='weekly') S.weekly = { rest:NE.rest, block:NE.block, msg_zh:NE.msg_zh, msg_en:NE.msg_en };
+  if(NE.type==='weekly') S.weekly = { rest:NE.rest, block:NE.block, msg_zh:NE.msg_zh, msg_en:NE.msg_en, title_zh:NE.title_zh, title_en:NE.title_en };
   S.notices = NE.type==='notice' ? [Object.assign({}, NE, { until:'' })] : [];
   return S;
 }
@@ -2142,6 +2161,7 @@ $('#nBody').addEventListener('input', e=>{
   nDirty = true;
   NE[k] = e.target.type==='checkbox' ? e.target.checked : e.target.value;
   if(k==='msg_zh' || k==='msg_en') NE.msgTouched = true;
+  if(k==='title_zh' || k==='title_en'){ NE.titleTouched = true; const tb = $('[data-ntitle]'); if(tb) tb.hidden = false; }
   if(k==='from' || k==='to') NE.manual = true;
   updateNAuto();
 });
@@ -2151,9 +2171,15 @@ $('#nBody').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
   if(b.dataset.wr != null){ const d = +b.dataset.wr; NE.rest = NE.rest.includes(d) ? NE.rest.filter(x=>x!==d) : NE.rest.concat(d); b.classList.toggle('on'); nDirty = true; updateNAuto(); return; }
   if(b.dataset.wb != null){ const d = +b.dataset.wb; NE.block = NE.block.includes(d) ? NE.block.filter(x=>x!==d) : NE.block.concat(d); b.classList.toggle('on'); nDirty = true; updateNAuto(); return; }
+  if(b.hasAttribute('data-ntitle')){ NE.titleTouched = false; b.hidden = true; nDirty = true; updateNAuto(); return; }
   if(b.hasAttribute('data-nmanual')){ NE.manual = !NE.manual; $('#nManual').hidden = !NE.manual; nDirty = true; updateNAuto(); return; }
   if(b.dataset.nclear){ NE[b.dataset.nclear] = ''; const i = $(`[data-nf="${b.dataset.nclear}"]`); if(i) i.value=''; nDirty = true; updateNPrev(); }
 });
+// 标题和建议的一样就不存（以后改日期，标题会自动跟着变）
+function titleToSave(){
+  const t = autoTitle(), zh = (NE.title_zh||'').trim(), en = (NE.title_en||'').trim();
+  return (!NE.titleTouched || (zh===t.zh && en===t.en) || (!zh && !en)) ? { zh:'', en:'' } : { zh, en };
+}
 $('#nSave').addEventListener('click', async ()=>{
   if(!NE) return;
   const S = SETTINGS; let patch;
@@ -2161,13 +2187,15 @@ $('#nSave').addEventListener('click', async ()=>{
     if(!NE.from){ toast('请先选日期', true); return; }
     const to = NE.to || NE.from;
     if(to < NE.from){ toast('结束的日子不能比开始早', true); return; }
-    const rec = { id:NE.id||uid(), rest_from:NE.rest_from, rest_to:NE.rest_to||NE.rest_from, from:NE.from, to, reason_zh:(NE.reason_zh||'').trim(), reason_en:(NE.reason_en||'').trim() };
+    const tt = titleToSave();
+    const rec = { id:NE.id||uid(), rest_from:NE.rest_from, rest_to:NE.rest_to||NE.rest_from, from:NE.from, to, reason_zh:(NE.reason_zh||'').trim(), reason_en:(NE.reason_en||'').trim(), title_zh:tt.zh, title_en:tt.en };
     const list = (S.holidays||[]).filter(h=>h.id!==rec.id).concat(rec)
       .filter(h=>h.to >= SD.add(SD.today(), -30));   // 过了一个月的旧休息日顺便清掉
     patch = { holidays:list };
   } else if(NE.type==='weekly'){
     if(!NE.block.length){ toast(NE.rest.length ? '请选顾客不能取货的日子' : '请选你每个星期休息的日子', true); return; }
-    patch = { weekly:{ rest:NE.rest, block:NE.block, msg_zh:(NE.msg_zh||'').trim(), msg_en:(NE.msg_en||'').trim() } };
+    const tt = titleToSave();
+    patch = { weekly:{ rest:NE.rest, block:NE.block, msg_zh:(NE.msg_zh||'').trim(), msg_en:(NE.msg_en||'').trim(), title_zh:tt.zh, title_en:tt.en } };
   } else {
     if(!(NE.title_zh||'').trim() && !(NE.title_en||'').trim()){ toast('请填标题', true); return; }
     const rec = { id:NE.id||uid(), title_zh:NE.title_zh.trim(), title_en:NE.title_en.trim(), body_zh:NE.body_zh.trim(), body_en:NE.body_en.trim(), star:!!NE.star, until:NE.until||'', created:NE.created||SD.today() };

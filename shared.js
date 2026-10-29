@@ -343,7 +343,10 @@
   };
   const sched = {
     D, WD_ZH, WD_EN,
-    weekly(S) { const w = (S && S.weekly) || {}; return { rest: Array.isArray(w.rest) ? w.rest : [], block: Array.isArray(w.block) ? w.block : [], msg_zh: w.msg_zh || "", msg_en: w.msg_en || "" }; },
+    weekly(S) { const w = (S && S.weekly) || {}; return { rest: Array.isArray(w.rest) ? w.rest : [], block: Array.isArray(w.block) ? w.block : [], msg_zh: w.msg_zh || "", msg_en: w.msg_en || "", title_zh: w.title_zh || "", title_en: w.title_en || "" }; },
+    // 建议的标题（自己没写标题时用这个）
+    weeklyTitle(block) { return { zh: sched.days(block) + "没有货，不能取货 / 配送", en: "No pickup or delivery on " + sched.days(block, true) }; },
+    holidayTitle(from, to) { return { zh: sched.rangeZh(from, to) + " 不能取货 / 配送", en: "No pickup or delivery " + sched.rangeEn(from, to) }; },
     holidays(S) { return ((S && S.holidays) || []).filter(h => h && h.from && h.to).slice().sort((a, b) => a.from < b.from ? -1 : 1); },
     notices(S) { return ((S && S.notices) || []).filter(n => n && (n.title_zh || n.title_en || n.body_zh || n.body_en)); },
     // 这一天顾客能不能取货
@@ -372,12 +375,13 @@
       const star = live.find(n => n.star);
       if (star) out.push({ kind: "star", n: star });
       const w = sched.weekly(S);
-      if (w.block.length) out.push({ kind: "weekly", w,
-        title_zh: sched.days(w.block) + "没有货，不能取货 / 配送", title_en: "No pickup or delivery on " + sched.days(w.block, true) });
+      if (w.block.length) { const t = sched.weeklyTitle(w.block); out.push({ kind: "weekly", w,
+        title_zh: w.title_zh || t.zh, title_en: w.title_zh ? w.title_en : (w.title_en || t.en) }); }
       sched.holidays(S).filter(h => h.to >= today).forEach(h => {
         const back = sched.nextOpen(S, D.add(h.to, 1));
+        const t = sched.holidayTitle(h.from, h.to);
         out.push({ kind: "holiday", h, back,
-          title_zh: sched.rangeZh(h.from, h.to) + " 不能取货 / 配送", title_en: "No pickup or delivery " + sched.rangeEn(h.from, h.to),
+          title_zh: h.title_zh || t.zh, title_en: h.title_zh ? (h.title_en || "") : (h.title_en || t.en),
           body_zh: [h.reason_zh, D.zh(back) + " 起照常"].filter(Boolean).join("，") + "。",
           body_en: [h.reason_en, "Back on " + D.en(back)].filter(Boolean).join(". ") + "." });
       });
