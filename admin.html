@@ -291,6 +291,10 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 input[type=number]{-moz-appearance:textfield}
 .prices .in{gap:3px}
 
+.fl .nm input.ren{margin-top:4px;font-size:13px;padding:5px 9px;color:var(--muted)}
+.miss{background:#EEF4FB!important;border-color:#AFC6E0!important}
+.miss::placeholder{color:#6F8FB3}
+.enwarn{background:#EEF4FB;border:1px solid #C9DAEC;color:#3B5B80;border-radius:12px;padding:8px 12px;font-size:13px;margin-bottom:10px}
 /* orders */
 .days{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:10px;padding-bottom:2px}
 .days::-webkit-scrollbar{display:none}
@@ -651,6 +655,7 @@ textarea.nin{resize:vertical;min-height:60px;line-height:1.5}
     <div class="sec-label" style="margin-top:0">封面照片</div>
     <div id="prodImgBox"></div>
 
+    <div class="enwarn" id="enWarn" hidden></div>
     <div class="sec-label">产品资料</div>
     <label class="field"><span>分类</span><select id="eCat"></select></label>
     <div class="row2">
@@ -1238,8 +1243,20 @@ $('#addProd').addEventListener('click', ()=>{ if(!CATS.length){ toast('请先在
 $('#editor').addEventListener('input', e=>{ if(!e.target.closest('.paste-zone,[data-rzone]')) edDirty = true; });
 $('#editor').addEventListener('change', ()=>{ edDirty = true; });
 
+
+// 没有英文的格子标成淡蓝色，上面写有几个
+function markMissingEn(){
+  if(!ED) return;
+  const pairs = [[$('#eNameZh'), $('#eNameEn')], [$('#eDescZh'), $('#eDescEn')]];
+  $$('#eSpecSel .s').forEach(r=>pairs.push([r.querySelector('[data-sz]'), r.querySelector('[data-se]')]));
+  if(ED.flav) $$('#eRows .fl').forEach(r=>pairs.push([r.querySelector('[data-rname]'), r.querySelector('[data-ren]')]));
+  let n = 0;
+  pairs.forEach(([zh, en])=>{ if(!zh || !en) return; const miss = !!zh.value.trim() && !en.value.trim(); en.classList.toggle('miss', miss); if(en.dataset.ph == null) en.dataset.ph = en.placeholder; en.placeholder = miss ? '还没有英文，请填 English' : en.dataset.ph; if(miss) n++; });
+  const w = $('#enWarn'); w.hidden = !n; w.textContent = `🔤 还有 ${n} 个地方没有英文（淡蓝色的格子），不会看华文的顾客会看不懂。`;
+}
+$('#editor').addEventListener('input', markMissingEn);
 /* ---- 规格 ---- */
-function renderSpecs(){
+function renderSpecs(){ setTimeout(markMissingEn); 
   const ps = PRESETS();
   $('#eSpecChips').innerHTML = ps.map(p=>`<button type="button" data-preset="${esc(p)}" class="${ED.specs.some(s=>s.base===p)?'on':''}">${esc(p)}</button>`).join('')
     + ED.specs.map((s,si)=>s.base ? '' : `<button type="button" class="on" data-cspec="${si}">${esc(s.zh||s.en||'其他')}</button>`).join('')
@@ -1288,7 +1305,7 @@ function priceInputs(r, ri){
   return h + '</div>';
 }
 function rowImg(r){ return r._pend ? r._pend.preview : (r.thumb_url || r.image_url || ''); }
-function renderRows(){
+function renderRows(){ setTimeout(markMissingEn); 
   const n = nCols(), rows = ED.rows;
   rows.forEach(r=>{ while(r.prices.length < n) r.prices.push(null); if(r.prices.length > n) r.prices.length = n; });
   $('#eRowsTitle').textContent = ED.flav ? '口味 & 价钱' : '价钱';
@@ -1312,12 +1329,11 @@ function renderRows(){
       <div class="top">
         <div class="mv"><button type="button" data-rmv="-1" ${ri===0?'disabled':''} aria-label="往上">↑</button><button type="button" data-rmv="1" ${ri===rows.length-1?'disabled':''} aria-label="往下">↓</button></div>
         <label class="fph ${src?'':'noph'}">${src?`<img src="${esc(src)}" alt=""><span class="cam">📷</span>`:'＋<br>照片'}${r._pend?'<span class="new">新照片</span>':''}<input type="file" accept="image/*" hidden data-rfile="${ri}"></label>
-        <div class="nm"><input data-rname="${ri}" value="${esc(r.label_zh)}" placeholder="口味名字，例如 抹茶">${priceInputs(r,ri)}</div>
+        <div class="nm"><input data-rname="${ri}" value="${esc(r.label_zh)}" placeholder="口味名字，例如 抹茶"><input class="ren" data-ren="${ri}" value="${esc(r.label_en)}" placeholder="English，例如 Matcha">${priceInputs(r,ri)}</div>
         <label class="sw"><input type="checkbox" data-rsold="${ri}" ${r.sold_out?'checked':''}><i></i><span>售罄</span></label>
       </div>
       <div class="acts"><button type="button" class="chip" data-rpaste>📋 贴上照片</button><button type="button" class="chip" data-rmore>${r._open?'收起 ▴':'更多 ▾'}</button><button type="button" class="chip del" data-rdel>删除</button></div>
       ${r._open ? `<div class="more">
-        <div><label>English 名字</label><input data-ren="${ri}" value="${esc(r.label_en)}" placeholder="e.g. Matcha"></div>
         <div><label>最少数量</label><input type="number" min="1" step="1" inputmode="numeric" data-rmoq="${ri}" value="${r.moq||1}"></div>
         ${src?`<button type="button" class="chip" data-rimgrm style="grid-column:1/-1;justify-self:start">移除照片</button>`:''}
         <div class="paste-zone" contenteditable="true" spellcheck="false" data-rzone style="grid-column:1/-1;margin:0">贴上照片：在这里长按 → 贴上（电脑：点一下再按 Ctrl+V）</div>
