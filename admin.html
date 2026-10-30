@@ -295,6 +295,14 @@ input[type=number]{-moz-appearance:textfield}
 .miss{background:#EEF4FB!important;border-color:#AFC6E0!important}
 .miss::placeholder{color:#6F8FB3}
 .enwarn{background:#EEF4FB;border:1px solid #C9DAEC;color:#3B5B80;border-radius:12px;padding:8px 12px;font-size:13px;margin-bottom:10px}
+.osr{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 14px;margin-bottom:10px}
+.osr svg{width:18px;height:18px;color:var(--muted);flex:none}
+.osr input{flex:1;border:0;outline:0;font-size:15px;background:transparent;min-width:0;-webkit-appearance:none}
+.osr input::-webkit-search-cancel-button{display:none}
+.osr button{color:var(--muted);font-size:15px;padding:0 2px}
+.ores{font-size:12.5px;color:var(--muted);margin:-2px 2px 8px}
+.days.dim{opacity:.4}
+mark{background:#FFE7A3;color:inherit;border-radius:3px;padding:0 1px}
 /* orders */
 .days{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:10px;padding-bottom:2px}
 .days::-webkit-scrollbar{display:none}
@@ -528,6 +536,8 @@ textarea.nin{resize:vertical;min-height:60px;line-height:1.5}
 
     <!-- orders -->
     <div data-pane="orders" hidden>
+      <label class="osr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="oSearch" type="search" placeholder="搜寻：订单号、名字、产品…" autocomplete="off"><button type="button" id="oSearchX" aria-label="清除" hidden>✕</button></label>
+      <p class="ores" id="oRes" hidden></p>
       <div class="days" id="oDays"></div>
       <div class="stat" id="oStats"></div>
       <div id="olist"></div>
@@ -570,8 +580,8 @@ textarea.nin{resize:vertical;min-height:60px;line-height:1.5}
         </div>
 
         <div class="card" style="margin-top:12px">
-          <h2>✅ 顾客下单后看到的话</h2>
-          <p class="muted" style="margin:4px 0 0">顾客按「WhatsApp 发送订单」之后，会跳出「订单已送出」和这段话。</p>
+          <h2>✅ 订单票上的话</h2>
+          <p class="muted" style="margin:4px 0 0">顾客按「WhatsApp 发送订单」之后，会跳出一张订单票（订单号码 + 这段话 + 绿色「打开 WhatsApp 发送」按钮）。</p>
           <label class="field"><span>中文</span><textarea name="thanks_zh" rows="3"></textarea></label>
           <label class="field"><span>English</span><textarea name="thanks_en" rows="3"></textarea></label>
         </div>
@@ -1652,6 +1662,7 @@ async function loadOrders(silent){
   if(!silent){ $('#olist').innerHTML = '<div class="empty">载入中…</div>'; $('#oStats').innerHTML=''; }
   renderDays();
   try{
+    if(OQ){ await loadAllOrders(); ORDERS = searchOrders(OQ); ordErr = ''; renderOrders(); loadBadge(); return; }
     let q = sb.from('orders').select('*');
     if(ORD_F==='all') q = q.order('created_at', { ascending:false }).limit(300);
     else q = q.eq('order_date', dateOf(ORD_F, ORD_D)).order('created_at');
@@ -1696,6 +1707,15 @@ function orderCard(o){
   </div>`;
 }
 function renderOrders(){
+  $('#oDays').classList.toggle('dim', !!OQ);
+  $('#oRes').hidden = !OQ;
+  if(OQ && !ordErr){
+    $('#oStats').innerHTML = '';
+    $('#oRes').textContent = ORDERS.length ? `找到 ${ORDERS.length} 张订单（所有日期）· 搜寻订单号、名字、地址、产品、备注` : '';
+    $('#olist').innerHTML = ORDERS.length ? ORDERS.map(orderCard).join('') : `<div class="empty card">找不到「${esc(OQ)}」的订单<br><small class="muted">可以试试名字的一部分、订单号码后面的数字，或产品名字</small></div>`;
+    markText($('#olist'), OQ);
+    return;
+  }
   if(ordErr){ $('#oStats').innerHTML=''; $('#olist').innerHTML = `<div class="empty card">${esc(ordErr)}<br><button class="btn btn-dark btn-sm" data-oreload style="margin-top:12px">再试一次</button></div>`; return; }
   const act = ORDERS.filter(o=>o.status!=='cancelled');
   const sum = act.reduce((s,o)=>s+orderTotal(o),0), unpaid = act.filter(o=>!effPaid(o)).length, nw = act.filter(o=>o.status==='new').length;
@@ -1705,7 +1725,56 @@ function renderOrders(){
 function onDayClick(e, key, apply){
   const b = e.target.closest(`[data-${key}]`); if(b && b.tagName==='BUTTON'){ apply(b.dataset[key], ''); }
 }
-$('#oDays').addEventListener('click', e=>onDayClick(e, 'of', f=>{ ORD_F = f; loadOrders(); }));
+
+/* ---- 订单搜寻 ---- */
+let OQ = '', ALLORD = null, allAt = 0;
+async function loadAllOrders(force){
+  if(!force && ALLORD && Date.now() - allAt < 60000) return;
+  const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending:false }).limit(3000);
+  if(error) throw error;
+  ALLORD = cacheOrders(data || []); allAt = Date.now();
+}
+function orderHay(o){
+  return [o.code, '#'+o.code, o.name, o.address, o.area, o.note, o.store_note,
+    ...(o.items||[]).flatMap(it=>[it.name_zh, it.name_en, it.label, it.row_zh, it.spec_zh])].filter(Boolean).join(' ').toLowerCase();
+}
+function searchOrders(q){
+  const terms = q.toLowerCase().replace(/#/g,'').split(/\s+/).filter(Boolean);
+  return (ALLORD||[]).filter(o=>{
+    const h = orderHay(o);
+    return terms.every(t=>{
+      // 只打 1–2 个数字（例如 5 或 05）= 找订单号码最后的数字
+      if(/^\d{1,2}$/.test(t)) return String(o.code||'').endsWith('-' + t.padStart(2,'0')) || [o.address, o.note, o.store_note].join(' ').includes(t);
+      return h.includes(t);
+    });
+  });
+}
+// 把找到的字标成黄色
+function markText(root, q){
+  const terms = q.replace(/#/g,'').split(/\s+/).filter(Boolean).map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+  if(!terms.length) return;
+  const re = new RegExp('(' + terms.join('|') + ')', 'gi');
+  root.querySelectorAll('.oh, .ometa, .oitems, .onote').forEach(el=>{
+    const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); const nodes = [];
+    while(walk.nextNode()) nodes.push(walk.currentNode);
+    nodes.forEach(n=>{
+      if(!re.test(n.nodeValue)) return; re.lastIndex = 0;
+      const span = document.createElement('span');
+      span.innerHTML = esc(n.nodeValue).replace(re, '<mark>$1</mark>');
+      n.parentNode.replaceChild(span, n);
+    });
+  });
+}
+let oT = 0;
+$('#oSearch').addEventListener('input', e=>{
+  clearTimeout(oT);
+  const v = e.target.value.trim();
+  $('#oSearchX').hidden = !e.target.value;
+  oT = setTimeout(()=>{ OQ = v; loadOrders(!!ALLORD); }, 250);
+});
+$('#oSearchX').addEventListener('click', ()=>{ $('#oSearch').value = ''; $('#oSearchX').hidden = true; OQ = ''; loadOrders(); });
+
+$('#oDays').addEventListener('click', e=>onDayClick(e, 'of', f=>{ ORD_F = f; if(OQ){ OQ=''; $('#oSearch').value=''; $('#oSearchX').hidden=true; } loadOrders(); }));
 $('#oDays').addEventListener('change', e=>{ if(e.target.matches('[data-ofdate]') && e.target.value){ ORD_F='date'; ORD_D=e.target.value; loadOrders(); } });
 $('#olist').addEventListener('click', e=>{
   if(e.target.closest('[data-oreload]')){ loadOrders(); return; }

@@ -50,7 +50,7 @@
     let k = db.orders.filter(x => x.code.startsWith(day + "-")).length + 1, code;
     do { code = day + "-" + String(k++).padStart(2, "0"); } while (db.orders.some(x => x.code === code));
     db.orders.push({
-      id: "ord-" + now.getTime(), code, created_at: now.toISOString(), order_date: o.date || null,
+      id: "ord-" + now.getTime() + "-" + Math.random().toString(36).slice(2, 7), code, created_at: now.toISOString(), order_date: o.date || null,
       method: o.method || "pickup", area: o.area || "", name: o.name || "", address: o.address || "", note: o.note || "",
       items: o.items || [], subtotal: Number(o.subtotal) || 0, free_ship: !!o.free_ship, delivery_fee: null,
       paid: false, status: "new", store_note: "", updated_at: now.toISOString()
