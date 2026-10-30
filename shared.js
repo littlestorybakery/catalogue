@@ -228,7 +228,8 @@
     wa_school: "你好 {店名}！我想询问学校订单 🙂\nHi {店名}! I'd like to ask about a school order.\n学校名字 School：\n人数 / 数量 Quantity：\n需要日期 Date needed：",
     wa_event: "你好 {店名}！我想询问活动 / 婚礼 / 企业餐点 🙂\nHi {店名}! I'd like to ask about catering for an event.\n活动类型 Event type：\n人数 Pax：\n活动日期 Event date：",
     wa_custom: "你好 {店名}！我想询问定制：{产品} 🎁\nHi {店名}! I'd like to ask about a custom order: {产品}\n用途 / 节日 Occasion：\n数量 Quantity：\n需要日期 Date needed：\n（参考图片我会另外发 I'll send reference photos separately）",
-    wa_ask: "你好 {店名}！请问 {产品} 什么时候会再有货？\nHi {店名}! When will {产品} be available again?"
+    wa_ask: "你好 {店名}！请问 {产品} 什么时候会再有货？\nHi {店名}! When will {产品} be available again?",
+    wa_hello: "你好 {店名}！我想询问一下 🙂"
   };
   function fillTemplate(tpl, vars) {
     const out = [];

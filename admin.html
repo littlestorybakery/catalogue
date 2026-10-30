@@ -654,8 +654,10 @@ textarea.nin{resize:vertical;min-height:60px;line-height:1.5}
           <p class="muted" id="waWarn" style="color:var(--red);margin:6px 0 0" hidden>⚠️ 格式里没有 {订单}，顾客的讯息会看不到买了什么。</p>
 
           <details class="tpl-more">
-            <summary>询问讯息（批发 / 学校 / 活动 / 定制 / 补货）</summary>
+            <summary>询问讯息（一般询问 / 批发 / 学校 / 活动 / 定制 / 补货）</summary>
             <p class="muted" style="margin:6px 0 0">可以用 {店名}；定制和补货还可以用 {产品}。</p>
+            <div class="tpl-row-h"><b style="font-size:13.5px">一般询问（首页 / 上面的 WhatsApp 按钮）</b><button type="button" class="reset-link" data-reset="wa_hello">恢复默认</button></div>
+            <label class="field" style="margin-top:4px"><textarea name="wa_hello" rows="2" spellcheck="false"></textarea></label>
             <div class="tpl-row-h"><b style="font-size:13.5px">批发</b><button type="button" class="reset-link" data-reset="wa_wholesale">恢复默认</button></div>
             <label class="field" style="margin-top:4px"><textarea name="wa_wholesale" rows="5" spellcheck="false"></textarea></label>
             <div class="tpl-row-h"><b style="font-size:13.5px">学校订单</b><button type="button" class="reset-link" data-reset="wa_school">恢复默认</button></div>
@@ -1956,7 +1958,7 @@ $('#addPreset').addEventListener('click', ()=>{
 $('#setForm').addEventListener('input', e=>{ settingsDirty = true; if(['wa_order','wa_item','shop_name'].includes(e.target.name)) renderWaPreview(); });
 
 /* ---------- WhatsApp 讯息格式 ---------- */
-const WA_KEYS = ['wa_order','wa_item','wa_wholesale','wa_school','wa_event','wa_custom','wa_ask'];
+const WA_KEYS = ['wa_order','wa_item','wa_wholesale','wa_school','wa_event','wa_custom','wa_ask','wa_hello'];
 let pvMode = 'pickup';
 function renderWaPreview(){
   const f = $('#setForm'); const tpl = f.elements.wa_order.value;

@@ -936,7 +936,7 @@ function renderShop(){
   renderBoard();
   $('#pickupNote').innerHTML = esc([S.pickup_note_zh, S.pickup_note_en].filter(Boolean).join(' ')) + ((S.pickup_area_zh||S.pickup_area_en) ? `<br><b>📍 ${esc(S.pickup_area_zh||S.pickup_area_en)}</b>${S.pickup_area_zh&&S.pickup_area_en?` · ${esc(S.pickup_area_en)}`:''}` : '');
   $('#deliveryNote').textContent = [S.delivery_note_zh, S.delivery_note_en].filter(Boolean).join(' ');
-  const hello = '你好 Little Story Bakery！我想询问一下 🙂';
+  const hello = LSB.fillTemplate(LSB.waTemplate(S, 'wa_hello'), { '店名': S.shop_name || 'Little Story Bakery' });
   $('#hdrWa').href = waLink(hello); $('#heroWa').href = waLink(hello);
   if(IS_ANDROID){ ['#hdrWa','#heroWa'].forEach(k=>{ const a=$(k); if(a){ a.removeAttribute('target'); } }); }
   const ph = waNumber(S.whatsapp); $('#phoneTxt').textContent = ph.startsWith('60') ? '0'+ph.slice(2).replace(/^(\d{2})(\d{3})(\d+)/,'$1-$2 $3') : ph;
