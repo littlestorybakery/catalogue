@@ -224,6 +224,20 @@ section{padding:46px 0}
 .donebtn small{display:block;font-weight:500;font-size:12px;opacity:.9}
 .walink{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:#2F8A57;text-decoration:underline}
 .walink svg{width:16px;height:16px}
+.iab{background:#FFF4E5;border:1px solid #F0C98E;border-radius:12px;padding:10px 12px;font-size:13px;color:#7A4A10;line-height:1.5;text-align:left;margin-top:12px}
+.iab b{font-size:13.5px}
+.iab small{display:block;color:#9A7040;font-size:12px;margin-top:2px}
+.dots3{display:inline-block;background:#fff;border:1px solid #E2C9A6;border-radius:6px;padding:0 6px;font-weight:700;letter-spacing:1px}
+.tk .or{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin:14px 0 0}
+.tk .or::before,.tk .or::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+.copybtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:11px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--brown-d);font-weight:600;font-size:14.5px;line-height:1.25}
+.copybtn svg{width:18px;height:18px;flex:none}
+.copybtn small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.copybtn.ok{border-color:#3F7A4F;color:#3F7A4F;background:#EFF7EC}
+.tk .hint1{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+.tk .manual{margin-top:10px;text-align:left;font-size:12.5px;color:#7A4A10;background:#FFF4E5;border:1px solid #F0C98E;border-radius:12px;padding:10px}
+.tk .manual small{display:block;color:#9A7040}
+.tk .manual textarea{width:100%;margin-top:8px;border:1px solid #E2C9A6;border-radius:8px;padding:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--text);-webkit-user-select:text;user-select:text}
 .tk .lnk{display:inline-block;margin:12px 6px 0;font-size:13px;color:var(--muted);text-decoration:underline}
 .tk .lnk.strong{color:var(--brown);font-weight:600}
 /* 手机：首页压缩一点，打开就看到分类 */
@@ -718,6 +732,28 @@ function rowBi(r){ return bi(r.label_zh, r.label_en); }
 function specBi(p, si){ const s = p.specs[si||0]; return s ? bi(s.zh, s.en) : ''; }
 function labelBi(p, ri, si){ return [P.single(p) ? '' : rowBi(p.rows[ri]||{}), specBi(p, si)].filter(Boolean).join(' · '); }
 function wa(text){ return `https://wa.me/${waNumber(S.whatsapp)}?text=${encodeURIComponent(text)}`; }
+// Android：直接叫 WhatsApp / WhatsApp Business 打开（不经过 WhatsApp 的网页），打不开才去 wa.me
+const UA = navigator.userAgent || '';
+const IS_ANDROID = /Android/i.test(UA);
+const IN_APP = /FBAN|FBAV|FB_IAB|FBIOS|Instagram|Line\/|TikTok|musical_ly|Bytedance|BytedanceWebview|Twitter|Snapchat|Pinterest|; wv\)/i.test(UA);
+const IN_APP_NAME = /Instagram/i.test(UA) ? 'Instagram' : /FBAN|FBAV|FB_IAB|FBIOS/i.test(UA) ? 'Facebook' : /TikTok|musical_ly|Bytedance/i.test(UA) ? 'TikTok' : /Line\//i.test(UA) ? 'LINE' : '';
+function waLink(text){
+  const web = wa(text);
+  if(!IS_ANDROID) return web;
+  return `intent://send/?phone=${waNumber(S.whatsapp)}&text=${encodeURIComponent(text)}#Intent;scheme=whatsapp;S.browser_fallback_url=${encodeURIComponent(web)};end`;
+}
+function waTarget(){ return IS_ANDROID ? '' : ' target="_blank" rel="noopener"'; }
+function openWa(text){ const u = waLink(text); if(IS_ANDROID) location.href = u; else window.open(u, '_blank', 'noopener'); }
+// 复制文字：先用新方法，不行再用旧方法；真的复制成功才回传 true
+async function copyText(t){
+  try{ if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(t); return true; } }catch(e){}
+  try{
+    const ta = document.createElement('textarea'); ta.value = t; ta.setAttribute('readonly','');
+    ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0';
+    document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0, t.length);
+    const ok = document.execCommand('copy'); ta.remove(); return !!ok;
+  }catch(e){ return false; }
+}
 function saveCart(){ store.set('lsb_cart_v2', cart); }
 function saveForm(){ store.set('lsb_form', form); }
 function toast(html, ms=2600){ const t=$('#toast'); t.innerHTML=html; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), ms); return t; }
@@ -807,19 +843,34 @@ function showTicket(code, url){
     w.addEventListener('click', e=>{
       if(e.target.closest('[data-wa]')){ setTimeout(()=>{ tkSent = true; drawTicket(); }, 300); return; }   // 让连结照常打开
       if(e.target.closest('[data-tkdone]')){ hideTicket(); try{ cart=[]; saveCart(); updateCart(); close(); }catch(err){ console.warn(err); } return; }
+      if(e.target.closest('[data-tkcopy]')){
+        copyText(tkText).then(ok=>{ tkCopied = ok ? 1 : -1; drawTicket();
+          if(!ok){ const ta = $('#tkManual'); if(ta){ ta.focus(); ta.select(); } } });
+        return;
+      }
       if(e.target.closest('[data-tkclose]')){ hideTicket(); }
     });
     document.addEventListener('keydown', e=>{ if(e.key==='Escape' && w.classList.contains('open')) hideTicket(); });
   }
-  tkCode = code; tkUrl = url; tkSent = false;
+  tkCode = code; tkUrl = url; tkSent = false; tkCopied = 0;
   drawTicket();
   w.classList.add('open'); document.body.style.overflow = 'hidden';
 }
-let tkCode = '', tkUrl = '', tkSent = false;
+let tkCode = '', tkUrl = '', tkSent = false, tkText = '', tkCopied = 0;
+function copyBlock(){
+  const phone = $('#phoneTxt') ? $('#phoneTxt').textContent : '';
+  const btn = tkCopied === 1
+    ? `<button type="button" class="copybtn ok" data-tkcopy>✓ <span>已复制！去 WhatsApp 贴上<small>Copied! Paste it in WhatsApp</small></span></button>`
+    : `<button type="button" class="copybtn" data-tkcopy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>复制订单讯息<small>Copy order message</small></span></button>`;
+  const manual = tkCopied === -1
+    ? `<div class="manual"><b>这个浏览器不让自动复制，请长按下面的文字 → 全选 → 复制</b><small>Please long-press the text below → Select all → Copy</small><textarea id="tkManual" readonly rows="6">${esc(tkText)}</textarea></div>` : '';
+  return `<div class="or">${IN_APP ? '还是打不开？ · Still can\'t open?' : '打不开 WhatsApp？ · Can\'t open?'}</div>${btn}${manual}
+    <div class="hint1">复制后，打开 WhatsApp 贴给我们${phone ? '：' + esc(phone) : ''}<br>Then paste it to us on WhatsApp${phone ? ': ' + esc(phone) : ''}</div>`;
+}
 function drawTicket(){
   const bi2 = (zh, en, tag) => { zh = (zh||'').trim(); en = (en||'').trim(); return zh||en ? `<${tag}>${esc(zh||en)}${zh&&en?`<small>${esc(en)}</small>`:''}</${tag}>` : ''; };
   const X = `<button type="button" class="x2" data-tkclose aria-label="关闭">${ICONS.close}</button>`;
-  const again = `<a class="walink" data-wa href="${esc(tkUrl)}" target="_blank" rel="noopener">${ICONS.whatsapp}WhatsApp 没打开？再试一次 · Try again</a>`;
+  const again = `<a class="walink" data-wa href="${esc(tkUrl)}"${waTarget()}>${ICONS.whatsapp}WhatsApp 没打开？再试一次 · Try again</a>`;
   if(tkSent){
     // 回到网站后：庆祝的样子（字可以在后台「设定」改）
     const t_zh = S.sent_title_zh != null ? S.sent_title_zh : '谢谢你！订单已送出';
@@ -838,7 +889,9 @@ function drawTicket(){
     <div class="top"><small>订单号码 · Order No.</small>${tkCode ? `<b>#${esc(tkCode)}</b>` : '<b class="nocode">订单已准备好 · Order ready</b>'}</div><div class="cut"></div>
     <div class="bd">
       ${bi2(S.thanks_zh, S.thanks_en, 'p')}
-      <a class="wabtn" data-wa href="${esc(tkUrl)}" target="_blank" rel="noopener">${ICONS.whatsapp}<span>打开 WhatsApp 发送<small>Open WhatsApp to send</small></span></a>
+      <a class="wabtn" data-wa href="${esc(tkUrl)}"${waTarget()}>${ICONS.whatsapp}<span>打开 WhatsApp 发送<small>Open WhatsApp to send</small></span></a>
+      ${IN_APP ? `<div class="iab">⚠️ <b>你现在是在 ${esc(IN_APP_NAME || 'app')} 里面打开网站</b><br>如果按了没有打开 WhatsApp，请按右上角 <span class="dots3">⋯</span> →「在浏览器中打开」再下单。<small>You're inside ${esc(IN_APP_NAME || 'an app')}. If WhatsApp doesn't open, tap ⋯ at the top right → "Open in browser".</small></div>` : ''}
+      ${copyBlock()}
       <button type="button" class="lnk" data-tkclose>返回修改订单 · Back</button>
     </div>`;
 }
@@ -884,7 +937,8 @@ function renderShop(){
   $('#pickupNote').innerHTML = esc([S.pickup_note_zh, S.pickup_note_en].filter(Boolean).join(' ')) + ((S.pickup_area_zh||S.pickup_area_en) ? `<br><b>📍 ${esc(S.pickup_area_zh||S.pickup_area_en)}</b>${S.pickup_area_zh&&S.pickup_area_en?` · ${esc(S.pickup_area_en)}`:''}` : '');
   $('#deliveryNote').textContent = [S.delivery_note_zh, S.delivery_note_en].filter(Boolean).join(' ');
   const hello = '你好 Little Story Bakery！我想询问一下 🙂';
-  $('#hdrWa').href = wa(hello); $('#heroWa').href = wa(hello);
+  $('#hdrWa').href = waLink(hello); $('#heroWa').href = waLink(hello);
+  if(IS_ANDROID){ ['#hdrWa','#heroWa'].forEach(k=>{ const a=$(k); if(a){ a.removeAttribute('target'); } }); }
   const ph = waNumber(S.whatsapp); $('#phoneTxt').textContent = ph.startsWith('60') ? '0'+ph.slice(2).replace(/^(\d{2})(\d{3})(\d+)/,'$1-$2 $3') : ph;
   const soc = [['instagram',S.instagram,'Instagram'],['facebook',S.facebook,'Facebook'],['pin',S.google,'Google']].filter(x=>x[1])
     .map(([i,u,l])=>`<a href="${esc(u)}" target="_blank" rel="noopener" aria-label="${l}">${icon(i)}</a>`).join('');
@@ -1290,8 +1344,9 @@ async function sendOrder(){
     subtotal: sub, delivery, freeShip: dv.free, areaLabel,
     address: form.address.trim(), date: prettyDate(form.date), name: form.name.trim(), note: form.note.trim()
   });
-  const url = wa(text);
+  const url = waLink(text);
   sending = false; btn.classList.remove('sending'); btn.querySelector('span:last-child').textContent = 'WhatsApp 发送订单 · Send order';
+  tkText = text;
   showTicket(code, url);
 }
 
@@ -1302,7 +1357,7 @@ function inquire(kind, p){
     '店名': S.shop_name || 'Little Story Bakery',
     '产品': p ? [p.name_zh, p.name_en].filter(Boolean).join(' ') : (kind==='custom' ? '节庆饼干 / 礼盒 Festive cookies / gift box' : '这个产品 this item')
   });
-  window.open(wa(text), '_blank', 'noopener');
+  openWa(text);
 }
 
 /* ---------- global clicks ---------- */
