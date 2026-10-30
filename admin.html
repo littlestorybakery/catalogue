@@ -581,9 +581,15 @@ textarea.nin{resize:vertical;min-height:60px;line-height:1.5}
 
         <div class="card" style="margin-top:12px">
           <h2>✅ 订单票上的话</h2>
-          <p class="muted" style="margin:4px 0 0">顾客按「WhatsApp 发送订单」之后，会跳出一张订单票（订单号码 + 这段话 + 绿色「打开 WhatsApp 发送」按钮）。</p>
+          <p class="muted" style="margin:4px 0 0">顾客按「WhatsApp 发送订单」之后，会跳出一张订单票（订单号码 + 这段话 + 绿色「打开 WhatsApp 发送」按钮）。留空就不显示。</p>
           <label class="field"><span>中文</span><textarea name="thanks_zh" rows="3"></textarea></label>
           <label class="field"><span>English</span><textarea name="thanks_en" rows="3"></textarea></label>
+          <div class="sec-label">🎉 回到网站后（打开过 WhatsApp）</div>
+          <p class="muted" style="margin:0">顾客从 WhatsApp 回到网站时看到的。写短短一句就好。</p>
+          <label class="field"><span>标题（中文）</span><input name="sent_title_zh"></label>
+          <label class="field"><span>标题（English）</span><input name="sent_title_en"></label>
+          <label class="field"><span>一句话（中文）</span><input name="sent_msg_zh"></label>
+          <label class="field"><span>一句话（English）</span><input name="sent_msg_en"></label>
         </div>
 
         <div class="card" style="margin-top:12px">
@@ -1918,7 +1924,7 @@ $('#prepList').addEventListener('click', e=>{ if(e.target.closest('[data-preload
 
 /* =================== SETTINGS =================== */
 let heroPicker, aboutPicker, logoPicker, PRESET_WORK = [];
-const S_TEXT = ['shop_name','tagline_zh','tagline_en','tagline_hdr','reg_no','pickup_area_zh','pickup_area_en','thanks_zh','thanks_en','storage_zh','storage_en','free_delivery_area','pickup_note_zh','pickup_note_en','delivery_note_zh','delivery_note_en','instagram','facebook','google'];
+const S_TEXT = ['shop_name','tagline_zh','tagline_en','tagline_hdr','reg_no','pickup_area_zh','pickup_area_en','thanks_zh','thanks_en','sent_title_zh','sent_title_en','sent_msg_zh','sent_msg_en','storage_zh','storage_en','free_delivery_area','pickup_note_zh','pickup_note_en','delivery_note_zh','delivery_note_en','instagram','facebook','google'];
 function fillSettings(){
   const f = $('#setForm');
   S_TEXT.concat(['whatsapp','free_delivery_min']).forEach(k=>{ if(f.elements[k]) f.elements[k].value = SETTINGS[k] ?? ''; });
